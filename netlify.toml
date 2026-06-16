@@ -1,0 +1,139 @@
+# ══════════════════════════════════════════════════════════════
+# netlify.toml — Terminal de Petróleo
+# Configuración completa de build, functions, headers y redirects
+# ══════════════════════════════════════════════════════════════
+
+# ── BUILD ───────────────────────────────────────────────────
+[build]
+  # No hay paso de build: el proyecto es HTML estático puro.
+  # Netlify sirve index.html directamente desde la raíz.
+  publish = "."
+
+  # Directorio donde viven las Netlify Functions (backend proxy)
+  functions = "netlify/functions"
+
+# ── ENTORNO DE LAS FUNCTIONS ────────────────────────────────
+[functions]
+  # Node 18 tiene fetch nativo — no necesitamos node-fetch como dependencia.
+  # Importante: si usás una versión anterior a 18, fetch no existe en Node
+  # y las funciones fallarían silenciosamente.
+  node_bundler = "esbuild"
+
+  # Timeout por defecto para todas las functions (segundos).
+  # Las APIs de datos tienen 10s; Anthropic tiene su propio timeout de 30s
+  # configurado dentro de ai-analysis.js con AbortController.
+  # Netlify permite hasta 26s en el plan gratuito.
+
+# ── ENTORNO DE DESARROLLO LOCAL (netlify dev) ───────────────
+[dev]
+  # Puerto en el que corre `netlify dev` localmente.
+  # Abrís http://localhost:8888 y tenés el sitio completo con las functions.
+  port = 8888
+
+  # Netlify dev detecta automáticamente que no hay framework
+  # (es HTML estático), así que no necesita comando de build.
+  framework = "#static"
+
+# ── HEADERS DE SEGURIDAD (aplicados a todo el sitio) ────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Evita que el navegador infiera el tipo MIME
+    X-Content-Type-Options = "nosniff"
+
+    # Protección básica contra clickjacking
+    X-Frame-Options = "SAMEORIGIN"
+
+    # Política de referrer: no enviar la URL completa a terceros
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+    # Content Security Policy:
+    # - default-src 'self'       → todo recurso debe venir del mismo origen
+    # - script-src 'unsafe-inline' → necesario porque el JS está inline en el HTML
+    # - style-src 'unsafe-inline'  → necesario porque el CSS está inline en el HTML
+    # - font-src fonts.gstatic.com → Google Fonts (JetBrains Mono, Inter)
+    # - connect-src:
+    #     'self'                 → llamadas a /.netlify/functions/*
+    #     api.worldbank.org      → World Bank no tiene key, llamada directa OK
+    #     fonts.googleapis.com   → para cargar las Google Fonts
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src fonts.gstatic.com; connect-src 'self' api.worldbank.org fonts.googleapis.com; img-src 'self' data:"
+
+# ── HEADERS CORS PARA LAS FUNCTIONS ─────────────────────────
+# Estos headers se aplican a todas las rutas /.netlify/functions/*
+# Definen quién puede llamar a nuestro backend proxy.
+#
+# PARA PRODUCCIÓN: reemplazá el "*" de Access-Control-Allow-Origin
+# por tu dominio real, ej: "https://terminal-petroleo.netlify.app"
+# Esto evita que otras páginas web usen tu proxy (y gasten tus cuotas).
+#
+# PARA DESARROLLO LOCAL: el "*" es necesario porque netlify dev
+# corre en localhost:8888 que no coincide con ningún dominio fijo.
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Access-Control-Allow-Origin  = "*"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Accept"
+    # Cache de preflight OPTIONS por 1 hora (evita requests extra)
+    Access-Control-Max-Age       = "3600"
+
+# ── CACHE DE ARCHIVOS ESTÁTICOS ─────────────────────────────
+# El HTML nunca se cachea: siempre querés la versión más nueva.
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# Los assets con hash en el nombre se pueden cachear para siempre.
+# (Por ahora no tenés assets así, pero queda configurado para el futuro.)
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# ── REDIRECTS ────────────────────────────────────────────────
+# Netlify sirve las functions automáticamente en /.netlify/functions/
+# sin necesidad de redirects manuales. Este bloque es por si en el
+# futuro querés exponer las functions con rutas más limpias,
+# por ejemplo /api/prices en lugar de /.netlify/functions/prices.
+#
+# Descomentá y ajustá según necesites:
+
+# [[redirects]]
+#   from   = "/api/prices"
+#   to     = "/.netlify/functions/prices"
+#   status = 200
+
+# [[redirects]]
+#   from   = "/api/prices-alpha"
+#   to     = "/.netlify/functions/prices-alpha"
+#   status = 200
+
+# [[redirects]]
+#   from   = "/api/news-gnews"
+#   to     = "/.netlify/functions/news-gnews"
+#   status = 200
+
+# [[redirects]]
+#   from   = "/api/news-newsapi"
+#   to     = "/.netlify/functions/news-newsapi"
+#   status = 200
+
+# [[redirects]]
+#   from   = "/api/eia-data"
+#   to     = "/.netlify/functions/eia-data"
+#   status = 200
+
+# [[redirects]]
+#   from   = "/api/ai-analysis"
+#   to     = "/.netlify/functions/ai-analysis"
+#   status = 200
+
+# ── SPA FALLBACK ─────────────────────────────────────────────
+# No necesario (no es una SPA con React Router), pero lo dejamos
+# comentado por si en el futuro el proyecto evoluciona a un framework.
+
+# [[redirects]]
+#   from   = "/*"
+#   to     = "/index.html"
+#   status = 200
