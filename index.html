@@ -504,7 +504,7 @@ const TD_SYM_MAP={brent:'BRENT/USD',wti:'WTI/USD',ng:'XNG/USD',coil:'WTI/USD'};
 const TD_TF_MAP={'1H':'1h','4H':'4h','1D':'1day','1W':'1week','1M':'1month','3M':'1month','6M':'1month','1Y':'1month','5Y':'1month'};
 async function fetchTwelveDataPrices(){  try{
     const syms=['BRENT/USD','WTI/USD','XNG/USD'];
-    const url = `/.netlify/functions/prices?mode=spot`;
+    const url = `/api/prices?mode=spot`;
     const r=await fetch(url);const d=await r.json();
     if(d['BRENT/USD']?.price){S.prices.brent=parseFloat(d['BRENT/USD'].price);S.prices.coil=S.prices.brent-2.96;}
     if(d['WTI/USD']?.price)S.prices.wti=parseFloat(d['WTI/USD'].price);
@@ -516,7 +516,7 @@ async function fetchTwelveDataPrices(){  try{
 async function loadRealCandles(){  const sym=TD_SYM_MAP[S.asset];if(!sym)return;
   const interval=TD_TF_MAP[S.tf]||'1day';
   try{
-    const url = `/.netlify/functions/prices?mode=candles&symbol=${encodeURIComponent(sym)}&interval=${interval}&outputsize=150`;
+    const url = `/api/prices?mode=candles&symbol=${encodeURIComponent(sym)}&interval=${interval}&outputsize=150`;
     const r=await fetch(url);const d=await r.json();
     if(d.values&&d.values.length>0){
       const candles=[...d.values].reverse();
@@ -537,7 +537,7 @@ async function loadRealCandles(){  const sym=TD_SYM_MAP[S.asset];if(!sym)return;
    Se activa si eia no está vacío arriba
 ═══════════════════════════════════════════════ */
 async function fetchEIAInventories(){  try{
-    const url = `/.netlify/functions/eia-data`;
+    const url = `/api/eia-data`;
     const r=await fetch(url);const d=await r.json();
     if(d.response?.data){
       const latest=d.response.data[0];
@@ -557,7 +557,7 @@ async function fetchEIAInventories(){  try{
 ═══════════════════════════════════════════════ */
 async function fetchGNews(){  try{
     const query=encodeURIComponent('crude oil OPEC Brent WTI petroleum');
-    const url = `/.netlify/functions/news-gnews?q=${query}&lang=en&max=10`;
+    const url = `/api/news-gnews?q=${query}&lang=en&max=10`;
     const r=await fetch(url);const d=await r.json();
     if(d.articles&&d.articles.length>0){
       const srcColors={'Reuters':'#ff9100','Bloomberg':'#2979ff','CNBC':'#00e676','Financial Times':'#ff5252'};
@@ -589,8 +589,8 @@ async function fetchGNews(){  try{
 async function fetchNewsAPI(){  try{
     // En localhost funciona directo. En producción (GitHub Pages/Netlify)
     // necesitás la Netlify Function del backend-guide.md
-    // Cambiá la URL a '/.netlify/functions/news' cuando uses Netlify
-    const url = `/.netlify/functions/news-newsapi?q=crude+oil+OPEC+Brent+WTI`;
+    // Cambiá la URL a '/api/news' cuando uses Netlify
+    const url = `/api/news-newsapi?q=crude+oil+OPEC+Brent+WTI`;
     const r=await fetch(url);const d=await r.json();
     if(d.articles){
       d.articles.forEach((a,i)=>{
@@ -620,7 +620,7 @@ async function fetchAlphaVantage(){  const fn=AV_FN_MAP[S.asset];
   if(!['1Y','5Y','3M','6M'].includes(S.tf))return;
   const interval=S.tf==='5Y'?'monthly':S.tf==='1Y'?'weekly':'monthly';
   try{
-    const url = `/.netlify/functions/prices-alpha?function=${fn}&interval=${interval}`;
+    const url = `/api/prices-alpha?function=${fn}&interval=${interval}`;
     const r=await fetch(url);const d=await r.json();
     if(d.data&&d.data.length>0){
       const limit=S.tf==='5Y'?60:S.tf==='1Y'?52:S.tf==='6M'?26:13;
@@ -669,7 +669,7 @@ async function fetchAISummary(){  const headlines=NEWS.slice(0,8).map(n=>n.hl);
   document.getElementById('aiStatus').textContent='IA: ANALIZANDO...';
   document.getElementById('aiStatus').style.color='var(--yellow)';
   try{
-    const r = await fetch('/.netlify/functions/ai-analysis', {
+    const r = await fetch('/api/ai-analysis', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ headlines: headlines })
