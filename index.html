@@ -238,7 +238,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
           <button class="seg-btn" onclick="selTF('5Y',this)">5Y</button>
         </div>
       </div>
-      <div id="priceTag" style="font-family:var(--mono);font-size:13px"></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button id="btnRefreshChart" onclick="manualRefreshChart()" class="seg-btn" style="border-color:var(--blue2);color:var(--blue2)">🔄 ACTUALIZAR</button>
+        <div id="priceTag" style="font-family:var(--mono);font-size:13px"></div>
+      </div>
     </div>
     <div class="ind-bar">
       <span class="ind-group-label">OVERLAY:</span>
@@ -497,26 +500,38 @@ function initChartMouse(){
 }
 
 /* ═══════════════════════════════════════════════
-   API 1 — TWELVE DATA (precios y velas reales)
-   Se activa si twelvedata no está vacío arriba
+   API 1 — YAHOO FINANCE (precios y velas reales)
+   Reemplaza a TwelveData (su plan gratis ya no
+   incluye commodities). Sin API key.
 ═══════════════════════════════════════════════ */
-const TD_SYM_MAP={brent:'BRENT/USD',wti:'WTI/USD',ng:'XNG/USD',coil:'WTI/USD'};
-const TD_TF_MAP={'1H':'1h','4H':'4h','1D':'1day','1W':'1week','1M':'1month','3M':'1month','6M':'1month','1Y':'1month','5Y':'1month'};
+const YAHOO_SYM_MAP={brent:'brent',wti:'wti',ng:'ng',coil:'wti'};
+const YAHOO_TF_MAP={
+  '1H':{interval:'1h',range:'5d'},
+  '4H':{interval:'1h',range:'1mo'},
+  '1D':{interval:'1d',range:'3mo'},
+  '1W':{interval:'1wk',range:'1y'},
+  '1M':{interval:'1mo',range:'5y'},
+  '3M':{interval:'1mo',range:'5y'},
+  '6M':{interval:'1mo',range:'5y'},
+  '1Y':{interval:'1mo',range:'5y'},
+  '5Y':{interval:'1mo',range:'max'},
+};
 async function fetchTwelveDataPrices(){  try{
-    const syms=['BRENT/USD','WTI/USD','XNG/USD'];
-    const url = `/api/prices?mode=spot`;
+    const url = `/api/prices-yahoo?mode=spot`;
     const r=await fetch(url);const d=await r.json();
-    if(d['BRENT/USD']?.price){S.prices.brent=parseFloat(d['BRENT/USD'].price);S.prices.coil=S.prices.brent-2.96;}
-    if(d['WTI/USD']?.price)S.prices.wti=parseFloat(d['WTI/USD'].price);
-    if(d['XNG/USD']?.price)S.prices.ng=parseFloat(d['XNG/USD'].price);
-    setBadgeLive('TwelveData ✓');
-    console.log('[TwelveData] Precios actualizados:',S.prices);
-  }catch(e){console.warn('[TwelveData Error]',e);}
+    if(d.brent?.price){S.prices.brent=d.brent.price;S.prices.coil=+(S.prices.brent-2.96).toFixed(2);}
+    if(d.wti?.price)S.prices.wti=d.wti.price;
+    if(d.ng?.price)S.prices.ng=d.ng.price;
+    if(d.heatoil?.price)S.prices.heatoil=d.heatoil.price;
+    if(d.rbob?.price)S.prices.rbob=d.rbob.price;
+    setBadgeLive('Yahoo Finance ✓');
+    console.log('[YahooFinance] Precios actualizados:',S.prices,d._warnings?`(avisos: ${d._warnings.join(' | ')})`:'');
+  }catch(e){console.warn('[YahooFinance Error]',e);}
 }
-async function loadRealCandles(){  const sym=TD_SYM_MAP[S.asset];if(!sym)return;
-  const interval=TD_TF_MAP[S.tf]||'1day';
+async function loadRealCandles(){  const symKey=YAHOO_SYM_MAP[S.asset];if(!symKey)return;
+  const{interval,range}=YAHOO_TF_MAP[S.tf]||YAHOO_TF_MAP['1D'];
   try{
-    const url = `/api/prices?mode=candles&symbol=${encodeURIComponent(sym)}&interval=${interval}&outputsize=150`;
+    const url = `/api/prices-yahoo?mode=candles&symbol=${symKey}&interval=${interval}&range=${range}`;
     const r=await fetch(url);const d=await r.json();
     if(d.values&&d.values.length>0){
       const candles=[...d.values].reverse();
@@ -527,9 +542,16 @@ async function loadRealCandles(){  const sym=TD_SYM_MAP[S.asset];if(!sym)return;
         volumes:candles.map(b=>parseInt(b.volume||50000))
       };
       renderChart();
-      console.log(`[TwelveData] Velas reales cargadas: ${candles.length} barras ${interval} para ${sym}`);
+      console.log(`[YahooFinance] Velas reales cargadas: ${candles.length} barras ${interval}/${range} para ${symKey}`);
     }
-  }catch(e){console.warn('[TwelveData OHLCV Error]',e);}
+  }catch(e){console.warn('[YahooFinance OHLCV Error]',e);}
+}
+function manualRefreshChart(){
+  const btn=document.getElementById('btnRefreshChart');
+  if(btn){btn.disabled=true;btn.textContent='🔄 ACTUALIZANDO...';}
+  Promise.all([loadRealCandles(),fetchTwelveDataPrices()]).finally(()=>{
+    if(btn){btn.disabled=false;btn.textContent='🔄 ACTUALIZAR';}
+  });
 }
 
 /* ═══════════════════════════════════════════════
