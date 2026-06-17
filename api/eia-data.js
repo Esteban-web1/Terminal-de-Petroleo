@@ -110,3 +110,4 @@ export default async function handler(req, res) {
     return sendError(res, 502, 'Error de red al conectar con EIA.', err.message);
   }
 }
+
