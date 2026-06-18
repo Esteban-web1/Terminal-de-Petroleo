@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Terminal de Petróleo</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Archivo+Black&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -16,7 +16,7 @@
   --orange:#ff6d00;--purple:#b388ff;
   --mono:'JetBrains Mono',monospace;--sans:'Inter',sans-serif;
 }
-html{font-size:13px}
+html{font-size:15px}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:hidden;min-height:100vh}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:var(--bg)}
@@ -26,114 +26,115 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 #topBar{position:sticky;top:0;z-index:100;background:rgba(6,8,16,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border2)}
 .tb-row1{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;border-bottom:1px solid var(--border)}
 .tb-brand{display:flex;align-items:center;gap:10px}
-.tb-logo{background:var(--orange);color:#000;font-family:var(--mono);font-weight:700;font-size:11px;padding:3px 9px;letter-spacing:2px}
-.tb-title{font-family:var(--mono);font-size:11px;color:var(--text2);letter-spacing:2px}
-.data-badge{font-size:9px;font-family:var(--mono);padding:1px 7px;letter-spacing:1px;border:1px solid}
+.tb-logo{background:var(--orange);color:#000;font-family:var(--mono);font-weight:700;font-size:13px;padding:3px 9px;letter-spacing:2px}
+.tb-title{font-family:'Archivo Black',var(--sans);font-size:17px;color:var(--text);letter-spacing:.5px;text-transform:uppercase}
+.data-badge{font-size:11px;font-family:var(--mono);padding:1px 7px;letter-spacing:1px;border:1px solid}
 .badge-sim{background:#1a1200;border-color:var(--yellow);color:var(--yellow)}
 .badge-live{background:#001a08;border-color:var(--green);color:var(--green)}
 .tb-clocks{display:flex}
 .tb-clock{display:flex;flex-direction:column;align-items:center;padding:3px 11px;border-left:1px solid var(--border);min-width:78px}
-.tc-city{font-family:var(--mono);font-size:8px;color:var(--text3);letter-spacing:1px}
-.tc-time{font-family:var(--mono);font-size:12px;font-weight:600}
-.tc-status{font-size:8px;font-family:var(--mono);margin-top:1px}
+.tc-city{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px}
+.tc-time{font-family:var(--mono);font-size:14px;font-weight:600}
+.tc-status{font-size:10px;font-family:var(--mono);margin-top:1px}
 .tc-open{color:var(--green)}.tc-closed{color:var(--red)}
 .tb-ticker{overflow:hidden;height:26px;background:#090b14;border-bottom:1px solid var(--border)}
 .ticker-track{display:flex;align-items:center;height:100%;white-space:nowrap;animation:tickerScroll 50s linear infinite;width:max-content}
 .ticker-track:hover{animation-play-state:paused}
 @keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.ticker-item{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;padding:0 12px;border-right:1px solid var(--border)}
+.ticker-item{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:13px;padding:0 12px;border-right:1px solid var(--border)}
 .ti-name{color:var(--text3)}.ti-price{font-weight:600}
 .price-up{color:var(--green)}.price-dn{color:var(--red)}.price-flat{color:var(--text2)}
 .tab-nav{display:flex;background:var(--panel);border-bottom:2px solid var(--border2)}
-.tab-btn{flex:1;background:none;border:none;color:var(--text3);font-family:var(--mono);font-size:11px;letter-spacing:.8px;padding:10px 0;cursor:pointer;transition:all .2s;border-bottom:2px solid transparent;margin-bottom:-2px;display:flex;align-items:center;justify-content:center;gap:7px}
+.tab-btn{flex:1;background:none;border:none;color:var(--text3);font-family:var(--mono);font-size:13px;letter-spacing:.8px;padding:10px 0;cursor:pointer;transition:all .2s;border-bottom:2px solid transparent;margin-bottom:-2px;display:flex;align-items:center;justify-content:center;gap:7px}
 .tab-btn:hover{color:var(--text2);background:var(--panel2)}
 .tab-btn.active{color:var(--orange);border-bottom-color:var(--orange);background:var(--panel2)}
-.tab-icon{font-size:13px}
+.tab-icon{font-size:15px}
 #mainContent{flex:1}
 .tab-section{display:none}
 .tab-section.active{display:block}
 .chart-controls{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;padding:8px 12px;background:var(--panel2);border-bottom:1px solid var(--border)}
 .seg-group{display:flex;border:1px solid var(--border2)}
-.seg-btn{background:none;border:none;border-right:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:10px;padding:4px 9px;cursor:pointer;transition:all .12s;letter-spacing:.3px}
+.seg-btn{background:none;border:none;border-right:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:12px;padding:4px 9px;cursor:pointer;transition:all .12s;letter-spacing:.3px}
 .seg-btn:last-child{border-right:none}
 .seg-btn:hover{background:var(--panel3);color:var(--text2)}
 .seg-btn.active{background:rgba(0,230,118,.1);color:var(--green);border-color:var(--green)}
 .ind-bar{display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:6px 12px;background:var(--panel);border-bottom:1px solid var(--border)}
-.ind-group-label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.8px;margin-right:2px}
-.ind-btn{background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:9px;padding:2px 7px;cursor:pointer;transition:all .12s;letter-spacing:.3px}
+.ind-group-label{font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:.8px;margin-right:2px}
+.ind-btn{background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:11px;padding:2px 7px;cursor:pointer;transition:all .12s;letter-spacing:.3px}
 .ind-btn:hover{border-color:#444;color:var(--text2)}
 .ind-btn.on{border-color:var(--yellow);color:var(--yellow);background:rgba(255,195,0,.08)}
 .ind-btn.on-blue{border-color:var(--blue2);color:var(--blue2);background:rgba(130,170,255,.08)}
 .ind-btn.on-purple{border-color:var(--purple);color:var(--purple);background:rgba(179,136,255,.08)}
 .ind-btn.on-green{border-color:var(--green);color:var(--green);background:rgba(0,230,118,.08)}
-.chart-wrap{position:relative;background:#060810}
-#priceCanvas{display:block;width:100%;cursor:crosshair}
-.ohlc-display{position:absolute;top:8px;left:12px;font-family:var(--mono);font-size:10px;pointer-events:none;display:flex;gap:14px;flex-wrap:wrap}
+.chart-wrap{position:relative;background:#060810;display:flex;justify-content:center;padding:14px}
+.chart-box{position:relative;width:100%;max-width:920px;aspect-ratio:4/3;background:#060810;border:1px solid var(--border2)}
+#lwChart{position:absolute;inset:0}
+.chart-zoom-hint{position:absolute;bottom:6px;right:10px;font-family:var(--mono);font-size:10px;color:var(--text3);pointer-events:none;z-index:5}
+.chart-asset-label{position:absolute;top:8px;right:12px;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text);letter-spacing:1px;pointer-events:none;z-index:5;background:rgba(6,8,16,.75);padding:3px 9px;border-radius:3px;border:1px solid var(--border2)}
+.ohlc-display{position:absolute;top:8px;left:12px;font-family:var(--mono);font-size:12px;pointer-events:none;display:flex;gap:14px;flex-wrap:wrap;z-index:5;background:rgba(6,8,16,.75);padding:3px 8px;border-radius:3px}
 .ohlc-item{display:flex;gap:4px}
 .ohlc-lbl{color:var(--text3)}.ohlc-val{font-weight:600}
 .event-row{display:flex;gap:5px;padding:5px 12px;flex-wrap:wrap;border-top:1px solid var(--border);background:var(--panel2)}
-.ev-chip{display:flex;align-items:center;gap:4px;font-size:9px;font-family:var(--mono);padding:2px 7px;border:1px solid transparent;letter-spacing:.3px}
+.ev-chip{display:flex;align-items:center;gap:4px;font-size:11px;font-family:var(--mono);padding:2px 7px;border:1px solid transparent;letter-spacing:.3px}
 .ev-war{background:#140306;border-color:#500;color:var(--red2)}
 .ev-opec{background:#141000;border-color:#554400;color:var(--yellow)}
 .ev-eia{background:#001018;border-color:#002840;color:var(--blue2)}
 .ev-geo{background:#001410;border-color:#004025;color:#69f0ae}
 #tab-news{display:none}
-#tab-news.active{display:grid;grid-template-columns:1fr 340px;min-height:calc(100vh - 130px)}
-.news-main{border-right:1px solid var(--border2);display:flex;flex-direction:column}
-.news-hdr{padding:8px 12px;background:var(--panel2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.news-title{font-family:var(--mono);font-size:11px;color:var(--text2);letter-spacing:1px}
-.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease-in-out infinite;display:inline-block;margin-right:5px}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.75)}}
-.news-filters{padding:6px 10px;background:#0a0c15;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:5px}
-.nf-row{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
-.nf-lbl{font-family:var(--mono);font-size:9px;color:var(--text3);min-width:50px}
-.nf-btn{background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:9px;padding:2px 6px;cursor:pointer}
-.nf-btn.on{background:var(--panel3);color:var(--text);border-color:#555}
-.nf-high.on{border-color:var(--red);color:var(--red);background:#140006}
-.nf-med.on{border-color:var(--yellow);color:var(--yellow);background:#141000}
-.nf-low.on{border-color:var(--green);color:var(--green);background:#001408}
-.news-list{flex:1;overflow-y:auto}
-.news-item{padding:8px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
-.news-item:hover{background:var(--panel2)}
-.news-item.hi{border-left:2px solid var(--red);background:#0e0305}
-.ni-meta{display:flex;align-items:center;gap:5px;margin-bottom:3px}
-.ni-time{font-size:9px;color:var(--text3);font-family:var(--mono)}
-.ni-src{font-size:9px;font-weight:700;letter-spacing:.4px}
-.ni-impact{font-size:8px;padding:1px 4px;border:1px solid;font-family:var(--mono)}
-.impact-high{border-color:var(--red);color:var(--red)}
-.impact-med{border-color:var(--yellow);color:var(--yellow)}
-.impact-low{border-color:var(--green);color:var(--green)}
-.ni-headline{font-size:11px;line-height:1.5;color:var(--text)}
-.ni-chg{font-size:10px;font-weight:700;font-family:var(--mono);margin-top:2px}
-.news-sidebar{display:flex;flex-direction:column}
-.ns-section{padding:10px 12px;border-bottom:1px solid var(--border2)}
-.ns-title{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:8px}
-.price-card{background:var(--panel2);border:1px solid var(--border2);padding:10px 12px;margin-bottom:6px}
-.pc-name{font-family:var(--mono);font-size:10px;color:var(--text2);margin-bottom:4px}
-.pc-price{font-family:var(--mono);font-size:20px;font-weight:700}
-.pc-chg{font-family:var(--mono);font-size:11px;margin-top:2px}
-.metric-mini{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:10px}
-.metric-mini:last-child{border:none}
-.mm-lbl{color:var(--text2)}.mm-val{font-weight:600}
+#tab-news.active{display:block;background:#f3f4f6;color:#16181d;min-height:calc(100vh - 130px);margin:0 -16px;padding:0}
+.np-ticker{display:flex;overflow-x:auto;background:#16181d;border-bottom:3px solid #d32f2f}
+.np-ticker-item{display:flex;flex-direction:column;padding:10px 20px;border-right:1px solid #2a2d35;font-family:var(--mono);min-width:96px;flex-shrink:0}
+.np-ticker-name{font-size:10px;color:#9099a8;letter-spacing:.5px}
+.np-ticker-price{font-size:16px;font-weight:700;color:#fff}
+.np-ticker-chg{font-size:12px;font-weight:600}
+.np-breaking{background:#d32f2f;color:#fff;display:flex;align-items:center;gap:10px;padding:8px 18px;font-size:13px;font-weight:600}
+.np-breaking-tag{background:#fff;color:#d32f2f;padding:2px 9px;font-weight:800;letter-spacing:.5px;border-radius:2px;flex-shrink:0;font-family:var(--mono);font-size:11px}
+.np-body{max-width:1180px;margin:0 auto;padding:20px}
+.np-filters-bar{display:flex;flex-direction:column;gap:6px;padding:0 0 14px;margin-bottom:16px;border-bottom:1px solid #ddd;font-family:var(--mono)}
+.np-filters-bar .nf-row{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.np-filters-bar .nf-lbl{font-size:10px;color:#888;min-width:50px;letter-spacing:.5px}
+.np-filters-bar .nf-btn{background:#fff;border:1px solid #ccc;color:#555;font-size:11px;padding:3px 8px;cursor:pointer;border-radius:2px;font-family:var(--mono)}
+.np-filters-bar .nf-btn.on{background:#16181d;color:#fff;border-color:#16181d}
+.np-filters-bar .nf-high.on{border-color:#d32f2f;color:#fff;background:#d32f2f}
+.np-filters-bar .nf-med.on{border-color:#e6a700;color:#1a1a1a;background:#ffd84d}
+.np-filters-bar .nf-low.on{border-color:#0a8a3e;color:#fff;background:#0a8a3e}
+.np-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:28px}
+.np-featured{cursor:pointer}
+.np-featured-img{width:100%;height:300px;object-fit:cover;border-radius:4px;background:linear-gradient(135deg,#2a2d35,#555);display:flex;align-items:center;justify-content:center;color:#aaa;font-size:11px;font-family:var(--mono)}
+.np-featured-src{font-size:11px;font-weight:800;color:#d32f2f;letter-spacing:.6px;margin-top:14px;font-family:var(--mono)}
+.np-featured-title{font-size:25px;font-weight:800;line-height:1.25;margin:6px 0 9px;color:#111;font-family:var(--sans)}
+.np-featured-desc{font-size:14px;color:#555;line-height:1.55}
+.np-side-list{display:flex;flex-direction:column}
+.np-side-hdr{font-size:12px;font-weight:800;letter-spacing:1px;color:#16181d;border-bottom:2px solid #16181d;padding-bottom:8px;margin-bottom:4px}
+.np-side-item{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid #e2e2e6;cursor:pointer}
+.np-side-num{font-size:21px;font-weight:800;color:#d32f2f;font-family:var(--mono);min-width:24px;line-height:1}
+.np-side-title{font-size:13.5px;font-weight:600;line-height:1.35;color:#111}
+.np-cards-title{font-size:13px;font-weight:800;letter-spacing:1px;color:#d32f2f;border-bottom:2px solid #d32f2f;padding-bottom:7px;margin:30px 0 16px}
+.np-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.np-card{cursor:pointer}
+.np-card-img{width:100%;height:110px;object-fit:cover;border-radius:3px;background:linear-gradient(135deg,#2a2d35,#555);display:flex;align-items:center;justify-content:center;color:#999;font-size:10px;font-family:var(--mono)}
+.np-card-src{font-size:9.5px;font-weight:800;color:#d32f2f;letter-spacing:.5px;margin-top:9px;font-family:var(--mono)}
+.np-card-title{font-size:12.5px;font-weight:600;line-height:1.4;color:#111;margin-top:4px}
+.np-empty{padding:40px 20px;text-align:center;color:#888;font-family:var(--mono);font-size:13px}
 #tab-map{display:none}
 #tab-map.active{display:flex;flex-direction:column;min-height:calc(100vh - 130px)}
 .map-hdr{display:flex;align-items:center;justify-content:space-between;padding:7px 14px;background:var(--panel2);border-bottom:1px solid var(--border)}
-.map-hdr-title{font-family:var(--mono);font-size:11px;color:var(--text2);letter-spacing:1px}
+.map-hdr-title{font-family:var(--mono);font-size:13px;color:var(--text2);letter-spacing:1px}
 .map-toggle{display:flex;border:1px solid var(--border2)}
-.mt-btn{background:none;border:none;border-right:1px solid var(--border2);color:var(--text3);font-family:var(--mono);font-size:10px;padding:4px 12px;cursor:pointer;transition:all .12s}
+.mt-btn{background:none;border:none;border-right:1px solid var(--border2);color:var(--text3);font-family:var(--mono);font-size:12px;padding:4px 12px;cursor:pointer;transition:all .12s}
 .mt-btn:last-child{border-right:none}
 .mt-btn.active{background:rgba(41,121,255,.15);color:var(--blue2)}
 .map-body{flex:1;display:grid;grid-template-columns:1fr 320px}
 #mapView{position:relative;overflow:hidden;background:#030508}
 #mapCanvas{display:block;width:100%;height:100%;min-height:420px}
-.map-tooltip{position:absolute;background:var(--panel2);border:1px solid var(--border2);padding:10px 12px;font-family:var(--mono);font-size:10px;max-width:220px;pointer-events:none;z-index:10;display:none}
+.map-tooltip{position:absolute;background:var(--panel2);border:1px solid var(--border2);padding:10px 12px;font-family:var(--mono);font-size:12px;max-width:220px;pointer-events:none;z-index:10;display:none}
 .map-tooltip.show{display:block}
-.mt-country{font-size:12px;font-weight:700;color:var(--yellow);margin-bottom:6px}
+.mt-country{font-size:14px;font-weight:700;color:var(--yellow);margin-bottom:6px}
 .mt-row{display:flex;justify-content:space-between;gap:16px;margin-bottom:3px}
 .mt-lbl{color:var(--text3)}.mt-val{color:var(--text)}
 #listView{display:none;overflow-y:auto}
-.prod-table{width:100%;font-family:var(--mono);font-size:10px;border-collapse:collapse}
-.prod-table th{padding:7px 10px;background:var(--panel2);color:var(--text3);font-weight:500;text-align:left;font-size:9px;letter-spacing:.8px;border-bottom:1px solid var(--border2);position:sticky;top:0}
+.prod-table{width:100%;font-family:var(--mono);font-size:12px;border-collapse:collapse}
+.prod-table th{padding:7px 10px;background:var(--panel2);color:var(--text3);font-weight:500;text-align:left;font-size:11px;letter-spacing:.8px;border-bottom:1px solid var(--border2);position:sticky;top:0}
 .prod-table td{padding:6px 10px;border-bottom:1px solid var(--border)}
 .prod-table tr:hover td{background:var(--panel2)}
 .status-stable{color:var(--green)}.status-tension{color:var(--yellow)}.status-conflict{color:var(--red)}.status-sanction{color:var(--purple)}
@@ -141,43 +142,46 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .prod-bar-fill{height:100%;border-radius:2px}
 .map-sidebar{border-left:1px solid var(--border2);display:flex;flex-direction:column;overflow-y:auto}
 .ms-section{padding:10px 12px;border-bottom:1px solid var(--border2)}
-.ms-title{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.ms-title{font-family:var(--mono);font-size:12px;color:var(--text3);letter-spacing:1px;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
 .storage-card{background:var(--panel2);border:1px solid var(--border);padding:8px 10px;margin-bottom:5px}
-.sc-hub{font-family:var(--mono);font-size:10px;color:var(--text2);margin-bottom:4px}
+.sc-hub{font-family:var(--mono);font-size:12px;color:var(--text2);margin-bottom:4px}
 .sc-fill-bar{height:5px;background:var(--border);border-radius:3px;margin-bottom:4px}
 .sc-fill-inner{height:100%;border-radius:3px}
-.sc-stats{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--text3)}
+.sc-stats{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--text3)}
 .tanker-row{display:flex;flex-direction:column;gap:2px;padding:6px 0;border-bottom:1px solid var(--border)}
 .tanker-row:last-child{border:none}
-.tr-route{font-family:var(--mono);font-size:10px;color:var(--text2)}
-.tr-meta{display:flex;gap:8px;font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:2px;flex-wrap:wrap}
+.tr-route{font-family:var(--mono);font-size:12px;color:var(--text2)}
+.tr-meta{display:flex;gap:8px;font-family:var(--mono);font-size:11px;color:var(--text3);margin-top:2px;flex-wrap:wrap}
 .tr-status-normal{color:var(--green)}.tr-status-diverted{color:var(--red)}.tr-status-restricted{color:var(--yellow)}
 #tab-analysis{display:none}
 #tab-analysis.active{display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 130px)}
 .analysis-left{border-right:1px solid var(--border2);display:flex;flex-direction:column}
 .analysis-right{display:flex;flex-direction:column}
-.panel-hdr{padding:8px 14px;background:var(--panel2);border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11px;color:var(--text2);letter-spacing:1px;display:flex;justify-content:space-between;align-items:center}
+.panel-hdr{padding:8px 14px;background:var(--panel2);border-bottom:1px solid var(--border);font-family:var(--mono);font-size:13px;color:var(--text2);letter-spacing:1px;display:flex;justify-content:space-between;align-items:center}
 .digest-list{flex:1;overflow-y:auto;padding:10px 0}
 .digest-item{padding:8px 14px;border-bottom:1px solid var(--border);display:flex;gap:10px}
-.di-time{font-family:var(--mono);font-size:9px;color:var(--text3);min-width:38px;margin-top:2px}
+.di-time{font-family:var(--mono);font-size:11px;color:var(--text3);min-width:38px;margin-top:2px}
 .di-body{flex:1}
-.di-impact{display:inline-block;font-size:8px;font-family:var(--mono);padding:1px 5px;border:1px solid;margin-bottom:4px}
-.di-text{font-size:11px;line-height:1.5;color:var(--text)}
+.di-impact{display:inline-block;font-size:10px;font-family:var(--mono);padding:1px 5px;border:1px solid;margin-bottom:4px}
+.impact-high{border-color:var(--red);color:var(--red)}
+.impact-med{border-color:var(--yellow);color:var(--yellow)}
+.impact-low{border-color:var(--green);color:var(--green)}
+.di-text{font-size:13px;line-height:1.5;color:var(--text)}
 .di-tags{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
-.di-tag{font-family:var(--mono);font-size:8px;padding:1px 5px;background:var(--panel3);color:var(--text3);letter-spacing:.3px}
-.proj-table{width:100%;font-family:var(--mono);font-size:10px;border-collapse:collapse}
-.proj-table th{padding:7px 10px;background:var(--panel2);color:var(--text3);font-size:9px;letter-spacing:.8px;border-bottom:1px solid var(--border2);text-align:left;position:sticky;top:0}
+.di-tag{font-family:var(--mono);font-size:10px;padding:1px 5px;background:var(--panel3);color:var(--text3);letter-spacing:.3px}
+.proj-table{width:100%;font-family:var(--mono);font-size:12px;border-collapse:collapse}
+.proj-table th{padding:7px 10px;background:var(--panel2);color:var(--text3);font-size:11px;letter-spacing:.8px;border-bottom:1px solid var(--border2);text-align:left;position:sticky;top:0}
 .proj-table td{padding:6px 10px;border-bottom:1px solid var(--border)}
 .proj-table tr:hover td{background:var(--panel2)}
 .bias-bull{color:var(--green)}.bias-bear{color:var(--red)}.bias-neu{color:var(--text2)}
 .sentiment-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px;border-top:1px solid var(--border2)}
 .sent-card{background:var(--panel2);border:1px solid var(--border);padding:10px;text-align:center}
-.sent-label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.8px;margin-bottom:8px}
+.sent-label{font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:.8px;margin-bottom:8px}
 .sent-gauge{width:60px;height:60px;margin:0 auto 6px}
-.sent-value{font-family:var(--mono);font-size:14px;font-weight:700}
-.sent-desc{font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:2px}
+.sent-value{font-family:var(--mono);font-size:16px;font-weight:700}
+.sent-desc{font-family:var(--mono);font-size:11px;color:var(--text3);margin-top:2px}
 @media(max-width:1100px){
-  #tab-news.active{grid-template-columns:1fr}.news-sidebar{display:none}
+  .np-grid{grid-template-columns:1fr}.np-cards{grid-template-columns:repeat(2,1fr)}
   .map-body{grid-template-columns:1fr}.map-sidebar{display:none}
   #tab-analysis.active{grid-template-columns:1fr}.analysis-right{display:none}
 }
@@ -203,7 +207,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
       <div class="tb-clock"><span class="tc-city">SINGAPORE</span><span class="tc-time" id="clk-sgp">--:--</span><span class="tc-status" id="st-sgp"></span></div>
       <div class="tb-clock"><span class="tc-city">BUE. AIRES</span><span class="tc-time" id="clk-bue">--:--</span><span class="tc-status" id="st-bue"></span></div>
     </div>
-    <div id="apiStatus" style="font-family:var(--mono);font-size:9px;color:var(--text3);text-align:right;line-height:1.8"></div>
+    <div id="apiStatus" style="font-family:var(--mono);font-size:11px;color:var(--text3);text-align:right;line-height:1.8"></div>
   </div>
   <div class="tb-ticker"><div class="ticker-track" id="tickerTrack"></div></div>
   <nav class="tab-nav">
@@ -240,7 +244,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
       </div>
       <div style="display:flex;align-items:center;gap:10px">
         <button id="btnRefreshChart" onclick="manualRefreshChart()" class="seg-btn" style="border-color:var(--blue2);color:var(--blue2)">🔄 ACTUALIZAR</button>
-        <div id="priceTag" style="font-family:var(--mono);font-size:13px"></div>
+        <button onclick="fitChart()" class="seg-btn" style="border-color:var(--text3);color:var(--text2)">⊡ AJUSTAR ZOOM</button>
+        <div id="priceTag" style="font-family:var(--mono);font-size:15px"></div>
       </div>
     </div>
     <div class="ind-bar">
@@ -257,61 +262,59 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
       <button class="ind-btn" id="ib-macd" onclick="toggleInd('macd',this,'on-purple')">MACD</button>
     </div>
     <div class="chart-wrap">
-      <canvas id="priceCanvas" height="500"></canvas>
-      <div class="ohlc-display" id="ohlcDisplay"></div>
+      <div class="chart-box">
+        <div class="chart-asset-label" id="chartAssetLabel"></div>
+        <div id="lwChart"></div>
+        <div class="ohlc-display" id="ohlcDisplay"></div>
+        <div class="chart-zoom-hint">🖱 scroll = zoom · arrastrar = pan</div>
+      </div>
     </div>
     <div class="event-row">
-      <span style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-right:6px">EVENTOS:</span>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-right:6px">EVENTOS:</span>
       <span class="ev-chip ev-war">🔴 GUERRA/CONFLICTO</span>
       <span class="ev-chip ev-opec">🟡 OPEC+ DECISIÓN</span>
       <span class="ev-chip ev-eia">🔵 EIA INVENTARIOS</span>
       <span class="ev-chip ev-geo">🟢 GEO-SUPPLY</span>
-      <span style="margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--text3)">★ Hover sobre las velas para ver OHLCV</span>
+      <span style="margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text3)">★ Hover sobre las velas para ver OHLCV</span>
     </div>
   </section>
 
   <!-- ═══ TAB: NOTICIAS ═══ -->
   <section id="tab-news" class="tab-section">
-    <div class="news-main">
-      <div class="news-hdr">
-        <span class="news-title">NEWS FEED — TIEMPO REAL</span>
-        <div style="display:flex;align-items:center;font-family:var(--mono);font-size:10px;color:var(--text3)">
-          <span class="live-dot"></span>LIVE · <span id="newsCount">0</span> ITEMS
-        </div>
-      </div>
-      <div class="news-filters">
+    <div class="np-ticker" id="npTicker"></div>
+    <div class="np-breaking" id="npBreaking" style="display:none"></div>
+    <div class="np-body">
+      <div class="np-filters-bar">
         <div class="nf-row">
           <span class="nf-lbl">FUENTE</span>
-          <button class="nf-btn on" onclick="filterNews('src','all',this)">ALL</button>
-          <button class="nf-btn" onclick="filterNews('src','bloomberg',this)">BLG</button>
-          <button class="nf-btn" onclick="filterNews('src','reuters',this)">RTR</button>
+          <button class="nf-btn on" onclick="filterNews('src','all',this)">TODAS</button>
+          <button class="nf-btn" onclick="filterNews('src','bloomberg',this)">BLOOMBERG</button>
+          <button class="nf-btn" onclick="filterNews('src','reuters',this)">REUTERS</button>
           <button class="nf-btn" onclick="filterNews('src','eia',this)">EIA</button>
           <button class="nf-btn" onclick="filterNews('src','opec',this)">OPEC</button>
           <button class="nf-btn" onclick="filterNews('src','ft',this)">FT</button>
-          <button class="nf-btn" onclick="filterNews('src','platts',this)">PLTS</button>
         </div>
         <div class="nf-row">
           <span class="nf-lbl">CATEGORÍA</span>
-          <button class="nf-btn on" onclick="filterNews('cat','all',this)">ALL</button>
+          <button class="nf-btn on" onclick="filterNews('cat','all',this)">TODAS</button>
           <button class="nf-btn" onclick="filterNews('cat','geo',this)">GEOPOLÍTICA</button>
           <button class="nf-btn" onclick="filterNews('cat','opec',this)">OPEC+</button>
-          <button class="nf-btn" onclick="filterNews('cat','inv',this)">INVENTARIOS</button>
           <button class="nf-btn" onclick="filterNews('cat','prod',this)">PRODUCCIÓN</button>
-          <button class="nf-btn" onclick="filterNews('cat','hormuz',this)">HORMUZ</button>
         </div>
         <div class="nf-row">
           <span class="nf-lbl">IMPACTO</span>
-          <button class="nf-btn on" onclick="filterNews('imp','all',this)">ALL</button>
-          <button class="nf-btn nf-high" onclick="filterNews('imp','high',this)">🔴 ALTO</button>
-          <button class="nf-btn nf-med" onclick="filterNews('imp','med',this)">🟡 MEDIO</button>
-          <button class="nf-btn nf-low" onclick="filterNews('imp','low',this)">🟢 BAJO</button>
+          <button class="nf-btn on" onclick="filterNews('imp','all',this)">TODOS</button>
+          <button class="nf-btn nf-high" onclick="filterNews('imp','high',this)">ALTO</button>
+          <button class="nf-btn nf-med" onclick="filterNews('imp','med',this)">MEDIO</button>
+          <button class="nf-btn nf-low" onclick="filterNews('imp','low',this)">BAJO</button>
         </div>
       </div>
-      <div class="news-list" id="newsList"></div>
-    </div>
-    <div class="news-sidebar">
-      <div class="ns-section"><div class="ns-title">COTIZACIONES CLAVE</div><div id="priceSidebar"></div></div>
-      <div class="ns-section"><div class="ns-title">MÉTRICAS DE MERCADO</div><div id="metricsSidebar"></div></div>
+      <div class="np-grid">
+        <div class="np-featured" id="npFeatured"></div>
+        <div class="np-side-list" id="npSideList"></div>
+      </div>
+      <div class="np-cards-title">MÁS NOTICIAS DE PETRÓLEO Y ENERGÍA</div>
+      <div class="np-cards" id="npCards"></div>
     </div>
   </section>
 
@@ -320,13 +323,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
     <div class="map-hdr">
       <span class="map-hdr-title">🌍 MAPA DE PRODUCCIÓN GLOBAL — RUTAS & ALMACENAMIENTO</span>
       <div style="display:flex;gap:10px;align-items:center">
-        <div style="display:flex;gap:10px;font-family:var(--mono);font-size:9px">
+        <div style="display:flex;gap:10px;font-family:var(--mono);font-size:11px">
           <span style="color:var(--green)">● ESTABLE</span><span style="color:var(--yellow)">● TENSIÓN</span>
           <span style="color:var(--red)">● CONFLICTO</span><span style="color:var(--purple)">● SANCIONADO</span>
         </div>
         <div class="map-toggle">
           <button class="mt-btn active" id="mt-map" onclick="setMapView('map')">🗺 MAPA</button>
           <button class="mt-btn" id="mt-list" onclick="setMapView('list')">☰ LISTADO</button>
+        </div>
+        <div class="map-toggle">
+          <button class="mt-btn" id="mt-reserves" onclick="toggleReservesLayer()">⬡ RESERVAS</button>
         </div>
       </div>
     </div>
@@ -343,7 +349,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
       </div>
       <div class="map-sidebar">
         <div class="ms-section"><div class="ms-title">NIVELES DE ALMACENAMIENTO</div><div id="storageCards"></div></div>
-        <div class="ms-section"><div class="ms-title">RUTAS DE TANQUEROS</div><div id="tankerRoutes"></div></div>
+        <div class="ms-section"><div class="ms-title">RESERVAS PROBADAS (ANUAL — NO EN VIVO)</div><div id="reservesCards"></div></div>
       </div>
     </div>
   </section>
@@ -353,16 +359,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
     <div class="analysis-left">
       <div class="panel-hdr">
         <span>📋 DIGEST ÚLTIMAS 24H</span>
-        <span id="aiStatus" style="font-size:9px;color:var(--text3)">IA: DESACTIVADA</span>
+        <span id="aiStatus" style="font-size:11px;color:var(--text3)">AUTO-ANÁLISIS: ESPERANDO</span>
       </div>
       <div class="digest-list" id="digestList"></div>
       <div class="sentiment-row" id="sentimentRow"></div>
     </div>
     <div class="analysis-right">
-      <div class="panel-hdr"><span>📈 PROYECCIONES DE ANALISTAS — BRENT USD/bbl</span></div>
+      <div class="panel-hdr"><span>📈 PROYECCIONES — EIA STEO (oficial, mensual) + research manual</span></div>
       <div style="flex:1;overflow-y:auto">
         <table class="proj-table">
-          <thead><tr><th>FUENTE</th><th>ANALISTA</th><th>Q3'25</th><th>Q4'25</th><th>H1'26</th><th>SESGO</th><th>FECHA</th></tr></thead>
+          <thead><tr><th>FUENTE</th><th>PERÍODO</th><th>WTI</th><th>BRENT</th><th>TIPO</th><th>ACTUALIZADO</th></tr></thead>
           <tbody id="projTableBody"></tbody>
         </table>
       </div>
@@ -371,13 +377,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 </div>
 </div>
 
+<script src="https://unpkg.com/lightweight-charts@5.2.0/dist/lightweight-charts.standalone.production.js"></script>
 <script>
 
 const S = {
   tab:'charts', asset:'brent', tf:'1D',
   ind:{sma20:false,sma50:false,sma200:false,ema20:false,bb:false,volume:true,rsi:false,macd:false},
   newsFilter:{src:'all',cat:'all',imp:'all'},
-  mapView:'map', hover:-1,
+  mapView:'map', hover:-1, showReserves:false,
   prices:{brent:74.38,wti:70.81,coil:71.42,ng:2.847,heatoil:2.118,rbob:2.264},
   changes:{brent:+0.57,wti:-0.46,coil:+0.25,ng:+1.10,heatoil:0,rbob:-0.40},
   chartData:null, liveActive:false
@@ -385,24 +392,21 @@ const S = {
 
 /* ── DATOS SIMULADOS ──────────────────────── */
 const SEEDS={brent:{b:74.38,v:.9},wti:{b:70.81,v:.85},coil:{b:71.42,v:.88},ng:{b:2.847,v:.06},spread:{b:3.57,v:.15}};
-const TF_CFG={'1H':{n:60,v:.18,d:0},'4H':{n:64,v:.28,d:0},'1D':{n:48,v:.35,d:-.001},'1W':{n:56,v:.55,d:-.002},'1M':{n:30,v:.9,d:.01},'3M':{n:65,v:1.1,d:.02},'6M':{n:130,v:1.4,d:.03},'1Y':{n:52,v:2.0,d:.05},'5Y':{n:60,v:3.5,d:.12}};
-function genOHLC(base,n,vol,drift=0){
+const TF_CFG={'1H':{n:60,v:.18,d:0,step:3600},'4H':{n:64,v:.28,d:0,step:14400},'1D':{n:48,v:.35,d:-.001,step:1800},'1W':{n:56,v:.55,d:-.002,step:86400},'1M':{n:30,v:.9,d:.01,step:86400},'3M':{n:65,v:1.1,d:.02,step:86400},'6M':{n:130,v:1.4,d:.03,step:86400},'1Y':{n:52,v:2.0,d:.05,step:604800},'5Y':{n:60,v:3.5,d:.12,step:2592000}};
+function genOHLC(base,n,vol,drift,stepSec){
   const d=[];let last=base;
+  const startSec=Math.floor(Date.now()/1000)-n*stepSec;
   for(let i=0;i<n;i++){const o=last,h=o+Math.random()*vol*1.5,l=o-Math.random()*vol*1.2,c=o+(Math.random()-.48)*vol+drift;
-    last=c;d.push({o:+o.toFixed(2),h:+Math.max(h,o,c).toFixed(2),l:+Math.min(l,o,c).toFixed(2),c:+c.toFixed(2),v:Math.floor(60000+Math.random()*140000)});}
+    last=c;d.push({time:startSec+i*stepSec,open:+o.toFixed(2),high:+Math.max(h,o,c).toFixed(2),low:+Math.min(l,o,c).toFixed(2),close:+c.toFixed(2),volume:Math.floor(60000+Math.random()*140000)});}
   return d;
-}
-function genLabels(tf,n){
-  const l=[];const now=new Date();
-  if(tf==='1H'||tf==='4H'){for(let i=n-1;i>=0;i--){const d=new Date(now-i*(tf==='1H'?3600000:14400000));l.push(`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`);}}
-  else if(tf==='1D'){for(let i=n-1;i>=0;i--){const d=new Date(now-i*1800000);l.push(`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`);}}
-  else{for(let i=n-1;i>=0;i--){const d=new Date(now-i*86400000);l.push(`${d.getDate()}/${d.getMonth()+1}`);}}
-  return l;
 }
 function buildSimData(){
   const cfg=TF_CFG[S.tf]||TF_CFG['1D'],seed=SEEDS[S.asset]||SEEDS.brent;
-  const ohlc=genOHLC(seed.b,cfg.n,seed.v,cfg.d),labels=genLabels(S.tf,cfg.n);
-  return{ohlc,labels,closes:ohlc.map(d=>d.c),volumes:ohlc.map(d=>d.v)};
+  return{ohlc:genOHLC(seed.b,cfg.n,seed.v,cfg.d,cfg.step)};
+}
+function sortDedupeOhlc(ohlc){
+  const seen=new Set();
+  return ohlc.filter(d=>{if(seen.has(d.time))return false;seen.add(d.time);return true;}).sort((a,b)=>a.time-b.time);
 }
 
 /* ── MATH ─────────────────────────────────── */
@@ -413,91 +417,106 @@ function calcRSI(closes,p=14){const r=new Array(closes.length).fill(null);if(clo
 function calcMACD(closes){const fast=emaArr(closes,12),slow=emaArr(closes,26);const macd=closes.map((_,i)=>fast[i]!==null&&slow[i]!==null?+(fast[i]-slow[i]).toFixed(4):null);const valid=macd.filter(v=>v!==null);const offset=macd.length-valid.length;const sig=new Array(offset).fill(null).concat(emaArr(valid,9));const hist=macd.map((v,i)=>v!==null&&sig[i]!==null?+(v-sig[i]).toFixed(4):null);return{macd,sig,hist};}
 
 /* ── CHART RENDERER ───────────────────────── */
+/* ── LIGHTWEIGHT CHARTS (TradingView) ─────── */
+const ASSET_NAMES={brent:'BRENT ICE — Futuros Continuos',wti:'WTI NYMEX — Futuros Continuos',coil:'BRENT-WTI COIL — Spread Sintético',ng:'NATURAL GAS — Henry Hub',spread:'BRENT-WTI — Spread ($/bbl)'};
+let lwChart=null,lwCandleSeries=null;
 function renderChart(){
-  const canvas=document.getElementById('priceCanvas');if(!canvas)return;
-  const dpr=window.devicePixelRatio||1,rect=canvas.getBoundingClientRect();
-  canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;
-  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
-  const W=rect.width,H=rect.height;
+  const container=document.getElementById('lwChart');if(!container)return;
   if(!S.chartData)S.chartData=buildSimData();
-  const{ohlc,labels,closes,volumes}=S.chartData;
-  const PAD={t:12,r:68,b:22,l:4},dW=W-PAD.l-PAD.r,totH=H-PAD.t-PAD.b;
-  const subs=[];
-  if(S.ind.volume)subs.push({k:'volume',ratio:.16});
-  if(S.ind.rsi)subs.push({k:'rsi',ratio:.20});
-  if(S.ind.macd)subs.push({k:'macd',ratio:.20});
-  const subR=subs.reduce((s,p)=>s+p.ratio,0),mainH=totH*(1-subR);
-  ctx.fillStyle='#060810';ctx.fillRect(0,0,W,H);
-  drawMainZone(ctx,ohlc,labels,closes,{x:PAD.l,y:PAD.t,w:dW,h:mainH},PAD,W);
-  let sy=PAD.t+mainH;
-  for(const p of subs){
-    const ph=totH*p.ratio,pz={x:PAD.l,y:sy+3,w:dW,h:ph-4};
-    ctx.strokeStyle='#1f2235';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(PAD.l,sy+1);ctx.lineTo(PAD.l+dW,sy+1);ctx.stroke();
-    ctx.fillStyle='#4a5070';ctx.font='8px JetBrains Mono';ctx.textAlign='left';
-    ctx.fillText({volume:'VOLUMEN',rsi:'RSI (14)',macd:'MACD (12,26,9)'}[p.k],PAD.l+2,sy+10);
-    if(p.k==='volume')drawVolumeZone(ctx,volumes,ohlc,pz,PAD);
-    if(p.k==='rsi')drawRSIZone(ctx,calcRSI(closes),pz,PAD);
-    if(p.k==='macd'){const m=calcMACD(closes);drawMACDZone(ctx,m,pz,PAD);}
-    sy+=ph;
-  }
-}
-function drawMainZone(ctx,ohlc,labels,closes,z,PAD,W){
-  const{x,y,w,h}=z;
-  let maxP=Math.max(...ohlc.map(d=>d.h)),minP=Math.min(...ohlc.map(d=>d.l));
-  const rng=maxP-minP;maxP+=rng*.06;minP-=rng*.06;
-  const toY=p=>y+h-((p-minP)/(maxP-minP))*h,n=ohlc.length,cellW=w/n;
-  const candleW=Math.max(1,cellW*.7),toX=i=>x+i*cellW+cellW*.5;
-  for(let i=0;i<=8;i++){const p=minP+(i/8)*(maxP-minP),yy=toY(p);ctx.strokeStyle='rgba(255,255,255,.025)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,yy);ctx.lineTo(x+w,yy);ctx.stroke();ctx.fillStyle='#4a5070';ctx.font='9px JetBrains Mono';ctx.textAlign='left';ctx.fillText('$'+p.toFixed(2),x+w+4,yy+3);}
-  if(S.ind.bb){const bb=calcBB(closes);ctx.fillStyle='rgba(255,109,0,.04)';ctx.beginPath();let s=false;bb.upper.forEach((v,i)=>{if(v===null)return;if(!s){ctx.moveTo(toX(i),toY(v));s=true;}else ctx.lineTo(toX(i),toY(v));});for(let i=bb.lower.length-1;i>=0;i--){if(bb.lower[i]===null)continue;ctx.lineTo(toX(i),toY(bb.lower[i]));}ctx.closePath();ctx.fill();[bb.upper,bb.lower].forEach(arr=>{ctx.strokeStyle='rgba(255,109,0,.45)';ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.beginPath();let s=false;arr.forEach((v,i)=>{if(v===null)return;if(!s){ctx.moveTo(toX(i),toY(v));s=true;}else ctx.lineTo(toX(i),toY(v));});ctx.stroke();ctx.setLineDash([]);});}
-  ohlc.forEach((d,i)=>{
-    const bull=d.c>=d.o,col=bull?'#00e676':'#ff4060',cx=toX(i);
-    ctx.strokeStyle=col;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,toY(d.h));ctx.lineTo(cx,toY(d.l));ctx.stroke();
-    const bt=toY(Math.max(d.o,d.c)),bb2=toY(Math.min(d.o,d.c)),bh=Math.max(1,bb2-bt),bx=cx-candleW/2;
-    if(bull){ctx.strokeRect(bx,bt,candleW,bh);ctx.fillStyle='rgba(0,230,118,.15)';ctx.fillRect(bx,bt,candleW,bh);}
-    else{ctx.fillStyle=col;ctx.fillRect(bx,bt,candleW,bh);}
-  });
-  [{k:'sma20',data:smaArr(closes,20),col:'#ffd600',lw:1.2},{k:'sma50',data:smaArr(closes,Math.min(50,closes.length)),col:'#82aaff',lw:1.3},{k:'sma200',data:smaArr(closes,Math.min(200,closes.length)),col:'#b388ff',lw:1.5},{k:'ema20',data:emaArr(closes,20),col:'#ff9100',lw:1.2}].forEach(ov=>{
-    if(!S.ind[ov.k])return;ctx.strokeStyle=ov.col;ctx.lineWidth=ov.lw;ctx.beginPath();let st=false;
-    ov.data.forEach((v,i)=>{if(v===null)return;if(!st){ctx.moveTo(toX(i),toY(v));st=true;}else ctx.lineTo(toX(i),toY(v));});ctx.stroke();
-  });
-  if(S.hover>=0&&S.hover<ohlc.length){
-    const hx=toX(S.hover);ctx.strokeStyle='rgba(255,255,255,.12)';ctx.lineWidth=1;ctx.setLineDash([3,4]);
-    ctx.beginPath();ctx.moveTo(hx,y);ctx.lineTo(hx,y+h);ctx.stroke();
-    const hy=toY(ohlc[S.hover].c);ctx.beginPath();ctx.moveTo(x,hy);ctx.lineTo(x+w,hy);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='#1f2235';ctx.fillRect(x+w,hy-8,PAD.r-2,16);ctx.fillStyle='#e2e4f0';ctx.font='9px JetBrains Mono';ctx.textAlign='left';ctx.fillText('$'+ohlc[S.hover].c.toFixed(2),x+w+3,hy+3);
-    const d=ohlc[S.hover],bull=d.c>=d.o;
-    document.getElementById('ohlcDisplay').innerHTML=`<div class="ohlc-item"><span class="ohlc-lbl">O</span><span class="ohlc-val">$${d.o}</span></div><div class="ohlc-item"><span class="ohlc-lbl">H</span><span class="ohlc-val" style="color:var(--green)">$${d.h}</span></div><div class="ohlc-item"><span class="ohlc-lbl">L</span><span class="ohlc-val" style="color:var(--red)">$${d.l}</span></div><div class="ohlc-item"><span class="ohlc-lbl">C</span><span class="ohlc-val" style="color:${bull?'var(--green)':'var(--red)'}">$${d.c}</span></div><div class="ohlc-item"><span class="ohlc-lbl">VOL</span><span class="ohlc-val">${(d.v/1000).toFixed(0)}K</span></div><div class="ohlc-item"><span class="ohlc-lbl">LBL</span><span class="ohlc-val" style="color:var(--text3)">${labels[S.hover]}</span></div>`;
-  } else document.getElementById('ohlcDisplay').innerHTML='';
-  const step=Math.ceil(n/Math.min(12,n));ctx.fillStyle='#4a5070';ctx.font='9px JetBrains Mono';ctx.textAlign='center';
-  for(let i=0;i<n;i+=step)ctx.fillText(labels[i],toX(i),y+h+14);
-}
-function drawVolumeZone(ctx,volumes,ohlc,z,PAD){
-  const{x,y,w,h}=z,maxV=Math.max(...volumes),n=volumes.length,cellW=w/n,barW=Math.max(1,cellW*.7);
-  volumes.forEach((v,i)=>{const bh=(v/maxV)*h*.9,bx=x+i*cellW+cellW*.5-barW/2,bull=ohlc[i].c>=ohlc[i].o;ctx.fillStyle=bull?'rgba(0,230,118,.4)':'rgba(255,64,96,.4)';ctx.fillRect(bx,y+h-bh,barW,bh);if(S.hover===i){ctx.fillStyle=bull?'rgba(0,230,118,.7)':'rgba(255,64,96,.7)';ctx.fillRect(bx,y+h-bh,barW,bh);}});
-  ctx.fillStyle='#4a5070';ctx.font='9px JetBrains Mono';ctx.textAlign='left';ctx.fillText((Math.max(...volumes)/1000).toFixed(0)+'K',z.x+z.w+4,z.y+10);
-}
-function drawRSIZone(ctx,rsi,z,PAD){
-  const{x,y,w,h}=z,n=rsi.length,cellW=w/n,toX=i=>x+i*cellW+cellW*.5,toY=v=>y+h-((v)/100)*h;
-  ctx.fillStyle='rgba(255,64,96,.06)';ctx.fillRect(x,toY(70),w,h-toY(70));
-  ctx.fillStyle='rgba(0,230,118,.06)';ctx.fillRect(x,y,w,toY(70)-toY(100)+toY(30));
-  [70,50,30].forEach(lvl=>{ctx.strokeStyle=lvl===50?'rgba(255,255,255,.06)':'rgba(255,255,255,.12)';ctx.lineWidth=1;ctx.setLineDash(lvl===50?[]:[3,4]);ctx.beginPath();ctx.moveTo(x,toY(lvl));ctx.lineTo(x+w,toY(lvl));ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#4a5070';ctx.font='8px JetBrains Mono';ctx.textAlign='left';ctx.fillText(lvl,x+w+4,toY(lvl)+3);});
-  ctx.strokeStyle='#00e676';ctx.lineWidth=1.5;ctx.beginPath();let st=false;rsi.forEach((v,i)=>{if(v===null)return;if(!st){ctx.moveTo(toX(i),toY(v));st=true;}else ctx.lineTo(toX(i),toY(v));});ctx.stroke();
-  const last=rsi.filter(v=>v!==null).pop();if(last){ctx.fillStyle='#1f2235';ctx.fillRect(x+w,toY(last)-8,PAD.r-2,16);ctx.fillStyle=last>70?'#ff4060':last<30?'#00e676':'#9099b8';ctx.font='9px JetBrains Mono';ctx.textAlign='left';ctx.fillText(last.toFixed(1),x+w+3,toY(last)+3);}
-}
-function drawMACDZone(ctx,{macd,sig,hist},z,PAD){
-  const{x,y,w,h}=z,n=macd.length,vals=[...hist,...macd,...sig].filter(v=>v!==null),maxV=Math.max(...vals.map(Math.abs))*1.1,midY=y+h/2;
-  const toY=v=>midY-(v/maxV)*(h/2),cellW=w/n,toX=i=>x+i*cellW+cellW*.5,bW=Math.max(1,cellW*.65);
-  ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,midY);ctx.lineTo(x+w,midY);ctx.stroke();
-  hist.forEach((v,i)=>{if(v===null)return;const top=toY(v),bot=midY;ctx.fillStyle=v>=0?'rgba(0,230,118,.5)':'rgba(255,64,96,.5)';ctx.fillRect(toX(i)-bW/2,Math.min(top,bot),bW,Math.abs(top-bot)||1);});
-  [[macd,'#82aaff',1.5],[sig,'#ffc300',1]].forEach(([arr,col,lw])=>{ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.beginPath();let st=false;arr.forEach((v,i)=>{if(v===null)return;if(!st){ctx.moveTo(toX(i),toY(v));st=true;}else ctx.lineTo(toX(i),toY(v));});ctx.stroke();});
-}
+  const{ohlc}=S.chartData;
+  const closes=ohlc.map(d=>d.close);
 
-/* ── MOUSE EVENTS ─────────────────────────── */
-function initChartMouse(){
-  const canvas=document.getElementById('priceCanvas');
-  canvas.onmousemove=e=>{if(!S.chartData)return;const rect=canvas.getBoundingClientRect(),mouseX=e.clientX-rect.left,dW=rect.width-72,n=S.chartData.ohlc.length,idx=Math.max(0,Math.min(n-1,Math.floor((mouseX-4)/(dW/n))));if(idx!==S.hover){S.hover=idx;renderChart();}};
-  canvas.onmouseleave=()=>{if(S.hover!==-1){S.hover=-1;renderChart();}};
+  const lbl=document.getElementById('chartAssetLabel');
+  if(lbl)lbl.textContent=ASSET_NAMES[S.asset]||S.asset.toUpperCase();
+
+  if(lwChart){lwChart.remove();lwChart=null;}
+  lwChart=LightweightCharts.createChart(container,{
+    layout:{background:{type:'solid',color:'#060810'},textColor:'#9099b8',fontFamily:'JetBrains Mono, monospace',fontSize:10,
+      panes:{separatorColor:'#1f2235',separatorHoverColor:'#2a2d40'}},
+    grid:{vertLines:{color:'rgba(255,255,255,.04)'},horzLines:{color:'rgba(255,255,255,.04)'}},
+    rightPriceScale:{borderColor:'#1f2235'},
+    timeScale:{borderColor:'#1f2235',timeVisible:true,secondsVisible:false},
+    crosshair:{mode:LightweightCharts.CrosshairMode.Normal,
+      vertLine:{color:'rgba(255,255,255,.15)',width:1,style:LightweightCharts.LineStyle.Dashed},
+      horzLine:{color:'rgba(255,255,255,.15)',width:1,style:LightweightCharts.LineStyle.Dashed}},
+    autoSize:true,
+    handleScroll:true,
+    handleScale:true,
+  });
+
+  lwCandleSeries=lwChart.addSeries(LightweightCharts.CandlestickSeries,{
+    upColor:'#00e676',downColor:'#ff4060',borderVisible:false,wickUpColor:'#00e676',wickDownColor:'#ff4060'
+  });
+  lwCandleSeries.setData(ohlc.map(d=>({time:d.time,open:d.open,high:d.high,low:d.low,close:d.close})));
+
+  // Línea de precio en vivo — conecta visualmente el ticker con el gráfico
+  const livePrice=S.prices[S.asset];
+  if(typeof livePrice==='number'){
+    lwCandleSeries.createPriceLine({
+      price:livePrice,color:'#ffd600',lineWidth:1,lineStyle:LightweightCharts.LineStyle.Dotted,
+      axisLabelVisible:true,title:'EN VIVO'
+    });
+  }
+
+  // Overlays sobre el panel principal (pane 0)
+  [
+    {k:'sma20',data:smaArr(closes,20),color:'#ffd600'},
+    {k:'sma50',data:smaArr(closes,Math.min(50,closes.length)),color:'#82aaff'},
+    {k:'sma200',data:smaArr(closes,Math.min(200,closes.length)),color:'#b388ff'},
+    {k:'ema20',data:emaArr(closes,20),color:'#ff9100'},
+  ].forEach(ov=>{
+    if(!S.ind[ov.k])return;
+    const s=lwChart.addSeries(LightweightCharts.LineSeries,{color:ov.color,lineWidth:1,priceLineVisible:false,lastValueVisible:false});
+    s.setData(ov.data.map((v,i)=>v===null?null:{time:ohlc[i].time,value:v}).filter(Boolean));
+  });
+  if(S.ind.bb){
+    const bb=calcBB(closes);
+    [bb.upper,bb.lower].forEach(arr=>{
+      const s=lwChart.addSeries(LightweightCharts.LineSeries,{color:'rgba(255,109,0,.55)',lineWidth:1,lineStyle:LightweightCharts.LineStyle.Dashed,priceLineVisible:false,lastValueVisible:false});
+      s.setData(arr.map((v,i)=>v===null?null:{time:ohlc[i].time,value:v}).filter(Boolean));
+    });
+  }
+
+  // Sub-paneles independientes (pane 1, 2, 3...) — se crean solos al asignar paneIndex
+  let paneIdx=1;
+  if(S.ind.volume){
+    const vol=lwChart.addSeries(LightweightCharts.HistogramSeries,{priceFormat:{type:'volume'}},paneIdx);
+    vol.setData(ohlc.map(d=>({time:d.time,value:d.volume,color:d.close>=d.open?'rgba(0,230,118,.5)':'rgba(255,64,96,.5)'})));
+    paneIdx++;
+  }
+  if(S.ind.rsi){
+    const rsiVals=calcRSI(closes);
+    const rsi=lwChart.addSeries(LightweightCharts.LineSeries,{color:'#00e676',lineWidth:1.5,priceLineVisible:false,lastValueVisible:true},paneIdx);
+    rsi.setData(rsiVals.map((v,i)=>v===null?null:{time:ohlc[i].time,value:v}).filter(Boolean));
+    rsi.createPriceLine({price:70,color:'rgba(255,64,96,.4)',lineWidth:1,lineStyle:LightweightCharts.LineStyle.Dashed,axisLabelVisible:true,title:'70'});
+    rsi.createPriceLine({price:30,color:'rgba(0,230,118,.4)',lineWidth:1,lineStyle:LightweightCharts.LineStyle.Dashed,axisLabelVisible:true,title:'30'});
+    paneIdx++;
+  }
+  if(S.ind.macd){
+    const m=calcMACD(closes);
+    const hist=lwChart.addSeries(LightweightCharts.HistogramSeries,{},paneIdx);
+    hist.setData(m.hist.map((v,i)=>v===null?null:{time:ohlc[i].time,value:v,color:v>=0?'rgba(0,230,118,.5)':'rgba(255,64,96,.5)'}).filter(Boolean));
+    const macdLine=lwChart.addSeries(LightweightCharts.LineSeries,{color:'#82aaff',lineWidth:1.3,priceLineVisible:false,lastValueVisible:false},paneIdx);
+    macdLine.setData(m.macd.map((v,i)=>v===null?null:{time:ohlc[i].time,value:v}).filter(Boolean));
+    const sigLine=lwChart.addSeries(LightweightCharts.LineSeries,{color:'#ffc300',lineWidth:1,priceLineVisible:false,lastValueVisible:false},paneIdx);
+    sigLine.setData(m.sig.map((v,i)=>v===null?null:{time:ohlc[i].time,value:v}).filter(Boolean));
+    paneIdx++;
+  }
+
+  // Crosshair → readout OHLCV (reemplaza el viejo hover de canvas)
+  lwChart.subscribeCrosshairMove(param=>{
+    const box=document.getElementById('ohlcDisplay');if(!box)return;
+    const d=param.time&&param.seriesData?param.seriesData.get(lwCandleSeries):null;
+    if(!d){box.innerHTML='';return;}
+    const bull=d.close>=d.open;
+    const dt=new Date(param.time*1000);
+    const fecha=`${String(dt.getUTCDate()).padStart(2,'0')}/${String(dt.getUTCMonth()+1).padStart(2,'0')} ${String(dt.getUTCHours()).padStart(2,'0')}:${String(dt.getUTCMinutes()).padStart(2,'0')}`;
+    box.innerHTML=`<div class="ohlc-item"><span class="ohlc-lbl">O</span><span class="ohlc-val">$${d.open.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">H</span><span class="ohlc-val" style="color:var(--green)">$${d.high.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">L</span><span class="ohlc-val" style="color:var(--red)">$${d.low.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">C</span><span class="ohlc-val" style="color:${bull?'var(--green)':'var(--red)'}">$${d.close.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">LBL</span><span class="ohlc-val" style="color:var(--text3)">${fecha}</span></div>`;
+  });
+
+  lwChart.timeScale().fitContent();
 }
+function fitChart(){if(lwChart)lwChart.timeScale().fitContent();}
 
 /* ═══════════════════════════════════════════════
    API 1 — YAHOO FINANCE (precios y velas reales)
@@ -534,15 +553,16 @@ async function loadRealCandles(){  const symKey=YAHOO_SYM_MAP[S.asset];if(!symKe
     const url = `/api/prices-yahoo?mode=candles&symbol=${symKey}&interval=${interval}&range=${range}`;
     const r=await fetch(url);const d=await r.json();
     if(d.values&&d.values.length>0){
-      const candles=[...d.values].reverse();
-      S.chartData={
-        ohlc:candles.map(b=>({o:parseFloat(b.open),h:parseFloat(b.high),l:parseFloat(b.low),c:parseFloat(b.close),v:parseInt(b.volume||50000)})),
-        labels:candles.map(b=>b.datetime.length>10?b.datetime.slice(5,16):b.datetime.slice(5,10)),
-        closes:candles.map(b=>parseFloat(b.close)),
-        volumes:candles.map(b=>parseInt(b.volume||50000))
-      };
+      // Yahoo ya devuelve orden ascendente (más viejo→más nuevo) — NO revertir.
+      // (Acá había un bug heredado de TwelveData, que sí devolvía descendente.)
+      const ohlc=sortDedupeOhlc(d.values.map(b=>({
+        time:Math.floor(new Date(b.datetime.replace(' ','T')+'Z').getTime()/1000),
+        open:parseFloat(b.open),high:parseFloat(b.high),low:parseFloat(b.low),close:parseFloat(b.close),
+        volume:parseInt(b.volume||50000)
+      })));
+      S.chartData={ohlc};
       renderChart();
-      console.log(`[YahooFinance] Velas reales cargadas: ${candles.length} barras ${interval}/${range} para ${symKey}`);
+      console.log(`[YahooFinance] Velas reales cargadas: ${ohlc.length} barras ${interval}/${range} para ${symKey}`);
     }
   }catch(e){console.warn('[YahooFinance OHLCV Error]',e);}
 }
@@ -585,17 +605,19 @@ async function fetchGNews(){  try{
       const srcColors={'Reuters':'#ff9100','Bloomberg':'#2979ff','CNBC':'#00e676','Financial Times':'#ff5252'};
       d.articles.forEach((a,i)=>{
         const srcName=a.source?.name||'GNEWS';
+        const pubDate=new Date(a.publishedAt);
         NEWS.unshift({
           id:Date.now()+i,
-          ts:new Date(a.publishedAt).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',hour12:false}),
+          realTime:pubDate.getTime(), // timestamp real completo — para filtrar por 24h de verdad
+          ts:pubDate.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',hour12:false}),
           src:'gnews',srcL:srcName.substring(0,12).toUpperCase(),
           srcColor:srcColors[srcName]||'#9099b8',
           impact:Math.random()>.6?'high':'med',
           cat:a.title.toLowerCase().includes('opec')?'opec':a.title.toLowerCase().includes('iran')||a.title.toLowerCase().includes('hormuz')?'geo':'prod',
-          hl:a.title,hi:false,chg:'',url:a.url
+          hl:a.title,hi:false,chg:'',url:a.url,image:a.image||null,desc:a.description||''
         });
       });
-      if(NEWS.length>60)NEWS.splice(60);
+      dedupeNews();if(NEWS.length>60)NEWS.splice(60);
       if(S.tab==='news')renderNews();
       addStatusChip('GNews ✓');
       console.log(`[GNews] ${d.articles.length} noticias cargadas`);
@@ -616,14 +638,16 @@ async function fetchNewsAPI(){  try{
     const r=await fetch(url);const d=await r.json();
     if(d.articles){
       d.articles.forEach((a,i)=>{
+        const pubDate=new Date(a.publishedAt);
         NEWS.unshift({
           id:Date.now()+1000+i,
-          ts:new Date(a.publishedAt).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',hour12:false}),
+          realTime:pubDate.getTime(),
+          ts:pubDate.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',hour12:false}),
           src:'newsapi',srcL:(a.source?.name||'NEWS').substring(0,12).toUpperCase(),
-          srcColor:'#ff9100',impact:'med',cat:'prod',hl:a.title,hi:false,chg:'',url:a.url
+          srcColor:'#ff9100',impact:'med',cat:'prod',hl:a.title,hi:false,chg:'',url:a.url,image:a.urlToImage||null,desc:a.description||''
         });
       });
-      if(NEWS.length>60)NEWS.splice(60);
+      dedupeNews();if(NEWS.length>60)NEWS.splice(60);
       if(S.tab==='news')renderNews();
       addStatusChip('NewsAPI ✓');
       console.log(`[NewsAPI] ${d.articles.length} noticias cargadas`);
@@ -686,33 +710,36 @@ async function fetchWorldBank(){
    ⚠️  SOLO USAR EN LOCAL — expone key en navegador
    Para producción: usar backend proxy (backend-guide.md)
 ═══════════════════════════════════════════════ */
-async function fetchAISummary(){  const headlines=NEWS.slice(0,8).map(n=>n.hl);
-  if(!headlines.length)return;
-  document.getElementById('aiStatus').textContent='IA: ANALIZANDO...';
-  document.getElementById('aiStatus').style.color='var(--yellow)';
-  try{
-    const r = await fetch('/api/ai-analysis', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ headlines: headlines })
-    });
-    const d=await r.json();
-    if(d.content?.[0]?.text){
-      const summary=d.content[0].text;
-      const lines=summary.split('\n').filter(l=>l.trim());
-      const items=lines.map(line=>({t:'IA',imp:'med',text:line,tags:['ia','análisis']}));
-      // Insertar al inicio del digest
-      items.reverse().forEach(item=>DIGEST.unshift(item));
-      if(S.tab==='analysis')renderAnalysis();
-      document.getElementById('aiStatus').textContent='IA: ACTIVA ✓';
-      document.getElementById('aiStatus').style.color='var(--green)';
-      console.log('[Claude AI] Resumen generado');
-    }
-  }catch(e){
-    console.warn('[Anthropic Error]',e);
-    document.getElementById('aiStatus').textContent='IA: ERROR';
-    document.getElementById('aiStatus').style.color='var(--red)';
-  }
+// Resumen automático SIN API — agrupa por categoría/impacto y calcula
+// sesgo de precio contando palabras clave alcistas/bajistas en los
+// titulares ya cargados. No requiere Anthropic ni ningún costo.
+function fetchAISummary(){
+  const noticias=NEWS.slice(0,12);
+  if(!noticias.length)return;
+  const altas=noticias.filter(n=>n.impact==='high');
+  const cats={geo:[],opec:[],inv:[],prod:[],hormuz:[]};
+  noticias.forEach(n=>{if(cats[n.cat])cats[n.cat].push(n);});
+
+  const palabrasBull=['cierre','sanción','recorte','tensión','conflicto','houthi','hormuz','misil','incauta','ataque','reduces','cut'];
+  const palabrasBear=['superávit','surplus','sube producción','aumenta','shale','rigs','inventarios suben','revisada al alza'];
+  let scoreBull=0,scoreBear=0;
+  noticias.forEach(n=>{const t=n.hl.toLowerCase();palabrasBull.forEach(p=>{if(t.includes(p))scoreBull++;});palabrasBear.forEach(p=>{if(t.includes(p))scoreBear++;});});
+  const sesgo=scoreBull>scoreBear?'▲ ALCISTA':scoreBear>scoreBull?'▼ BAJISTA':'— NEUTRAL';
+  const sesgoCls=scoreBull>scoreBear?'high':scoreBear>scoreBull?'low':'med';
+
+  const puntos=[];
+  if(altas.length)puntos.push({t:'RESUMEN',imp:'high',text:`${altas.length} evento(s) de alto impacto: ${altas.map(n=>n.hl.split('—')[0].trim()).join(' / ')}`,tags:['auto','alto-impacto']});
+  const geo=[...cats.geo,...cats.hormuz];
+  if(geo.length)puntos.push({t:'GEO',imp:geo.some(n=>n.impact==='high')?'high':'med',text:`Geopolítica: ${geo.length} noticia(s) activas. ${geo[0]?.hl.split('—')[0].trim()||''}`,tags:['auto','geopolítica']});
+  if(cats.opec.length)puntos.push({t:'OPEC',imp:'med',text:`OPEC+: ${cats.opec.map(n=>n.hl.split('—')[0].trim()).join('. ')}`,tags:['auto','opec']});
+  if(cats.inv.length)puntos.push({t:'INV',imp:cats.inv[0]?.impact||'med',text:`Inventarios: ${cats.inv.map(n=>n.hl.split('—')[0].trim()).join('. ')}`,tags:['auto','inventarios']});
+  if(cats.prod.length)puntos.push({t:'PROD',imp:'low',text:`Producción: ${cats.prod.slice(0,2).map(n=>n.hl.split('—')[0].trim()).join('. ')}`,tags:['auto','producción']});
+  puntos.push({t:'SESGO',imp:sesgoCls,text:`Sesgo de precio consolidado: ${sesgo} (${scoreBull} señales alcistas vs ${scoreBear} bajistas de ${noticias.length} noticias)`,tags:['auto','sesgo']});
+
+  AUTO_SUMMARY_POINTS=puntos.reverse();
+  if(S.tab==='analysis')renderAnalysis();
+  const st=document.getElementById('aiStatus');
+  if(st){st.textContent='AUTO-ANÁLISIS ✓';st.style.color='var(--blue2)';}
 }
 
 /* ── STATUS CHIPS ─────────────────────────── */
@@ -727,45 +754,79 @@ function addStatusChip(txt){
 }
 
 /* ── NEWS DATA & RENDER ───────────────────── */
-const NEWS=[
-  {id:1,ts:'14:32',src:'reuters',srcL:'REUTERS',srcColor:'#ff9100',impact:'high',cat:'geo',hl:'Irán amenaza cierre del Estrecho de Hormuz si EE.UU. amplía sanciones — funcionario IRGC',hi:true,chg:'+1.8%'},
-  {id:2,ts:'14:18',src:'bloomberg',srcL:'BLOOMBERG',srcColor:'#2979ff',impact:'high',cat:'opec',hl:'Arabia Saudita extiende recorte voluntario 1 Mb/d hasta Q4 2025, confirma OPEC+',hi:false,chg:'+0.9%'},
-  {id:3,ts:'13:55',src:'eia',srcL:'EIA',srcColor:'#2979ff',impact:'high',cat:'inv',hl:'EIA: variación semanal crudo -2.147M bbl vs consenso -1.4M. Cushing en mínimo de 8 meses',hi:false,chg:'+1.2%'},
-  {id:4,ts:'13:30',src:'cnbc',srcL:'CNBC',srcColor:'#00e676',impact:'med',cat:'prod',hl:'Producción shale EE.UU. sube a 13.3 Mb/d en mayo — Baker Hughes: rigs +3 a 480',hi:false,chg:'-0.3%'},
-  {id:5,ts:'12:47',src:'ft',srcL:'FT',srcColor:'#ff5252',impact:'med',cat:'geo',hl:'Tanquero ruso desvía ruta por zona de embargo báltico — descuento de Urals se amplía',hi:false,chg:'-0.5%'},
-  {id:6,ts:'12:20',src:'platts',srcL:'S&P PLATTS',srcColor:'#b388ff',impact:'high',cat:'hormuz',hl:'3 tanqueros reportan spoofing GPS cerca del Estrecho de Hormuz — alerta marítima emitida',hi:true,chg:'+2.1%'},
-  {id:7,ts:'11:58',src:'opec',srcL:'OPEC',srcColor:'#ffc300',impact:'med',cat:'opec',hl:'OPEC+ JMMC se reúne el 3 de agosto — revisión de cumplimiento de cuotas en agenda',hi:false,chg:'0.0%'},
-  {id:8,ts:'11:30',src:'reuters',srcL:'REUTERS',srcColor:'#ff9100',impact:'low',cat:'prod',hl:'Noruega: producción llega a 1.92 Mb/d en mayo — Johan Sverdrup supera pronóstico',hi:false,chg:'+0.1%'},
-  {id:9,ts:'10:55',src:'bloomberg',srcL:'BLOOMBERG',srcColor:'#2979ff',impact:'med',cat:'geo',hl:'China impone nuevas restricciones de envío a crudos venezolanos — ban extendido',hi:false,chg:'-0.4%'},
-  {id:10,ts:'10:22',src:'eia',srcL:'EIA',srcColor:'#2979ff',impact:'low',cat:'inv',hl:'EIA STEO: producción crudo EE.UU. revisada al alza a 13.6 Mb/d para 2025',hi:false,chg:'-0.2%'},
-  {id:11,ts:'09:45',src:'ft',srcL:'FT',srcColor:'#ff5252',impact:'high',cat:'geo',hl:'Misil Houthi impacta tanquero en Mar Rojo — riesgo Bab el-Mandeb elevado a CRÍTICO',hi:true,chg:'+1.5%'},
-  {id:12,ts:'09:10',src:'cnbc',srcL:'CNBC',srcColor:'#00e676',impact:'med',cat:'prod',hl:'ExxonMobil Guyana alcanza 650 kbd — tercer FPSO avant de plazo previsto',hi:false,chg:'-0.3%'},
-  {id:13,ts:'08:30',src:'platts',srcL:'S&P PLATTS',srcColor:'#b388ff',impact:'low',cat:'opec',hl:'UAE OSP octubre: Murban $74.75/bbl, +$1.10 vs septiembre — señal de demanda asiática',hi:false,chg:'+0.2%'},
-  {id:14,ts:'08:00',src:'reuters',srcL:'REUTERS',srcColor:'#ff9100',impact:'med',cat:'hormuz',hl:'Irán incauta tanquero de bandera Marshall Islands en el Golfo — 3ro en 2 meses',hi:true,chg:'+1.9%'},
-  {id:15,ts:'07:15',src:'bloomberg',srcL:'BLOOMBERG',srcColor:'#2979ff',impact:'low',cat:'prod',hl:'IEA: superávit global de oferta de 0.6 Mb/d en H2 2025 — perspectiva bajista de demanda',hi:false,chg:'-0.8%'},
-];
+// NOTA: este array arrancaba con 15 titulares 100% inventados (escenarios
+// ficticios de Hormuz/OPEC) que nunca se borraban — convivían para siempre
+// con las noticias reales de GNews/NewsAPI. Eso es lo que generaba la queja
+// de "noticias de hace más de 6 días": esos ítems no tenían fecha real,
+// solo una hora del día inventada. Ahora arranca vacío; se llena 100% con
+// artículos reales en cuanto responde fetchGNews()/fetchNewsAPI().
+const NEWS=[];
+// Evita duplicados cuando el mismo artículo aparece en dos ciclos de polling
+function dedupeNews(){
+  const seen=new Set();
+  for(let i=0;i<NEWS.length;i++){
+    const key=NEWS[i].url||NEWS[i].hl;
+    if(seen.has(key)){NEWS.splice(i,1);i--;}
+    else seen.add(key);
+  }
+}
+function renderTicker(){
+  document.getElementById('npTicker').innerHTML=TICKERS.map(t=>{
+    const price=S.prices[t.key],chg=S.changes[t.key]||0;
+    const col=chg>0?'#00e676':chg<0?'#ff5252':'#9099a8';
+    return`<div class="np-ticker-item"><div class="np-ticker-name">${t.sym}</div><div class="np-ticker-price">${price?'$'+price:'—'}</div><div class="np-ticker-chg" style="color:${col}">${chg>0?'▲':chg<0?'▼':'—'} ${Math.abs(chg).toFixed(2)}%</div></div>`;
+  }).join('');
+}
 function renderNews(){
+  renderTicker();
   const f=S.newsFilter;
   const filtered=NEWS.filter(n=>(f.src==='all'||n.src===f.src||n.srcL.toLowerCase().includes(f.src))&&(f.cat==='all'||n.cat===f.cat)&&(f.imp==='all'||n.impact===f.imp));
-  document.getElementById('newsCount').textContent=filtered.length;
-  document.getElementById('newsList').innerHTML=filtered.map(n=>`
-    <div class="news-item${n.hi?' hi':''}" ${n.url?`onclick="window.open('${n.url}','_blank')"`:''}>
-      <div class="ni-meta"><span class="ni-time">${n.ts}</span><span class="ni-src" style="color:${n.srcColor||'#9099b8'}">${n.srcL}</span><span class="ni-impact impact-${n.impact}">${n.impact.toUpperCase()}</span></div>
-      <div class="ni-headline">${n.hl}</div>
-      ${n.chg?`<div class="ni-chg" style="color:${n.chg.startsWith('+')?'var(--green)':n.chg.startsWith('-')?'var(--red)':'var(--text3)'}">${n.chg}</div>`:''}
+
+  const breaking=filtered.find(n=>n.impact==='high');
+  const brEl=document.getElementById('npBreaking');
+  if(breaking){
+    brEl.style.display='flex';
+    brEl.innerHTML=`<span class="np-breaking-tag">ÚLTIMO MOMENTO</span><span>${breaking.hl}</span>`;
+    brEl.onclick=breaking.url?()=>window.open(breaking.url,'_blank'):null;
+    brEl.style.cursor=breaking.url?'pointer':'default';
+  }else brEl.style.display='none';
+
+  if(filtered.length===0){
+    document.getElementById('npFeatured').innerHTML=`<div class="np-empty">Cargando noticias en vivo (GNews)...</div>`;
+    document.getElementById('npSideList').innerHTML='';
+    document.getElementById('npCards').innerHTML='';
+    return;
+  }
+
+  const cardImg=n=>n.image?`<img class="np-card-img" src="${n.image}" loading="lazy" onerror="this.style.display='none'">`:`<div class="np-card-img">${n.srcL}</div>`;
+
+  const top=filtered[0];
+  document.getElementById('npFeatured').innerHTML=`
+    ${top.image?`<img class="np-featured-img" src="${top.image}" loading="lazy" onerror="this.style.display='none'">`:`<div class="np-featured-img">${top.srcL}</div>`}
+    <div class="np-featured-src">${top.srcL} · ${top.ts}</div>
+    <div class="np-featured-title">${top.hl}</div>
+    ${top.desc?`<div class="np-featured-desc">${top.desc}</div>`:''}`;
+  document.getElementById('npFeatured').onclick=top.url?()=>window.open(top.url,'_blank'):null;
+
+  const side=filtered.slice(1,6);
+  document.getElementById('npSideList').innerHTML=`<div class="np-side-hdr">MÁS LEÍDAS</div>`+side.map((n,i)=>`
+    <div class="np-side-item" ${n.url?`onclick="window.open('${n.url}','_blank')"`:''}>
+      <div class="np-side-num">${i+1}</div>
+      <div class="np-side-title">${n.hl}</div>
+    </div>`).join('');
+
+  const cards=filtered.slice(6,14);
+  document.getElementById('npCards').innerHTML=cards.map(n=>`
+    <div class="np-card" ${n.url?`onclick="window.open('${n.url}','_blank')"`:''}>
+      ${cardImg(n)}
+      <div class="np-card-src">${n.srcL} · ${n.ts}</div>
+      <div class="np-card-title">${n.hl}</div>
     </div>`).join('');
 }
 function filterNews(type,val,btn){
   S.newsFilter[type]=val;
-  btn.closest('.nf-row').querySelectorAll('.nf-btn').forEach(b=>b.classList.remove('on','nf-high','nf-med','nf-low'));
+  btn.closest('.nf-row').querySelectorAll('.nf-btn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');renderNews();
-}
-function renderNewsSidebar(){
-  document.getElementById('priceSidebar').innerHTML=[{name:'BRENT ICE',key:'brent'},{name:'WTI NYMEX',key:'wti'},{name:'NAT GAS',key:'ng'},{name:'RBOB GAS',key:'rbob'}].map(p=>{
-    const price=S.prices[p.key],chg=S.changes[p.key]||0;
-    return`<div class="price-card"><div class="pc-name">${p.name}</div><div class="pc-price" style="color:${chg>0?'var(--green)':chg<0?'var(--red)':'var(--text)'}">$${price}</div><div class="pc-chg" style="color:${chg>0?'var(--green)':chg<0?'var(--red)':'var(--text2)'}">${chg>0?'▲':'▼'} ${Math.abs(chg).toFixed(2)}%</div></div>`;
-  }).join('');
-  document.getElementById('metricsSidebar').innerHTML=[{l:'Brent-WTI Spread',v:'+$3.57'},{l:'Cushing Stocks',v:'22.3 Mbl ▼'},{l:'OECD Days Cover',v:'61.3 days'},{l:'Refinery Util. USA',v:'91.4%'},{l:'Baker Hughes Rigs',v:'480 +3'},{l:'OPEC+ Compliance',v:'92.4%'}].map(m=>`<div class="metric-mini"><span class="mm-lbl">${m.l}</span><span class="mm-val">${m.v}</span></div>`).join('');
 }
 
 /* ── MAP DATA & RENDER ────────────────────── */
@@ -792,17 +853,38 @@ const STORAGE_DATA=[
   {hub:'ARA Región (Europa)',abbr:'ARA',level:61.2,cap:120,fill:51.0,chg:+0.8,col:'#ffc300'},
   {hub:'Singapore Hub',abbr:'SGP',level:43.8,cap:90,fill:48.7,chg:-1.2,col:'#00e676'},
 ];
-const TANKER_ROUTES=[
-  {from:'Golfo Pérsico',to:'China / Asia',type:'VLCC',count:47,status:'normal',transit:'18–22 días'},
-  {from:'US Gulf Coast',to:'Europa NW',type:'Suezmax',count:23,status:'normal',transit:'8–12 días'},
-  {from:'África Occidental',to:'Asia',type:'VLCC',count:18,status:'normal',transit:'20–25 días'},
-  {from:'Mar del Norte',to:'Med / Asia',type:'Aframax',count:31,status:'normal',transit:'5–15 días'},
-  {from:'Rusia (Báltico)',to:'India / Asia',type:'Aframax',count:12,status:'restricted',transit:'12–18 días'},
-  {from:'Mar Rojo / Golfo Adén',to:'Europa (Cape)',type:'Mixed',count:8,status:'diverted',transit:'+25–35 días'},
+// ── RESERVAS PROBADAS DE PETRÓLEO ──────────────────────────────
+// Dato REAL pero NO en vivo: las reservas probadas se actualizan una
+// vez al año (estudios geológicos), nunca más seguido. No existe una API
+// gratuita verificable que devuelva esto en vivo, así que en vez de
+// arriesgar otro bug de parámetros mal adivinados (como pasó con EIA
+// duoarea), uso cifras reales publicadas, referencia ~2024.
+// Fuentes: Energy Institute Statistical Review of World Energy 2024,
+// OPEC Annual Statistical Bulletin 2024. Unidad: miles de millones de bbl.
+const RESERVES_DATA=[
+  {wb_code:'VEN',reserves:303},{wb_code:'SAU',reserves:267},{wb_code:'IRN',reserves:209},
+  {wb_code:'CAN',reserves:170},{wb_code:'IRQ',reserves:145},{wb_code:'KWT',reserves:101},
+  {wb_code:'ARE',reserves:111},{wb_code:'RUS',reserves:80},{wb_code:'LBY',reserves:48},
+  {wb_code:'USA',reserves:47},{wb_code:'NGA',reserves:37},{wb_code:'KAZ',reserves:30},
+  {wb_code:'BRA',reserves:13},{wb_code:'MEX',reserves:6},{wb_code:'NOR',reserves:8},
 ];
+// Une RESERVES_DATA con las coordenadas/flag/nombre que ya tiene PROD_DATA
+function getReservesGeo(){
+  return RESERVES_DATA.map(r=>{
+    const p=PROD_DATA.find(x=>x.wb_code===r.wb_code);
+    if(!p)return null;
+    return{...r,country:p.country,flag:p.flag,lon:p.lon,lat:p.lat};
+  }).filter(Boolean);
+}
+// NOTA: el array TANKER_ROUTES y las rutas dibujadas en el mapa fueron
+// retirados — no existe forma gratuita y honesta de mostrar tránsito de
+// buques en vivo (ver respuesta de Claude sobre AIS). Si en el futuro se
+// consigue un proxy real (ej. volúmenes EIA import/export), se reincorpora.
 function renderMapSidebar(){
   document.getElementById('storageCards').innerHTML=STORAGE_DATA.map(s=>`<div class="storage-card"><div class="sc-hub">${s.hub}</div><div class="sc-fill-bar"><div class="sc-fill-inner" style="width:${s.fill}%;background:${s.col}"></div></div><div class="sc-stats"><span>${s.level} Mbl</span><span style="color:${s.col}">${s.fill.toFixed(1)}% lleno</span><span style="color:${s.chg<0?'var(--red)':'var(--green)'}">Δ${s.chg>0?'+':''}${s.chg} Mbl</span></div></div>`).join('');
-  document.getElementById('tankerRoutes').innerHTML=TANKER_ROUTES.map(r=>`<div class="tanker-row"><div class="tr-route">🛢 ${r.from} → ${r.to}</div><div class="tr-meta"><span>${r.type}</span><span>${r.count} buques</span><span class="tr-status-${r.status}">${r.status==='normal'?'✓ NORMAL':r.status==='diverted'?'⚠ DESVIADO':'⚡ RESTRINGIDO'}</span><span>⏱ ${r.transit}</span></div></div>`).join('');
+  const geo=getReservesGeo().sort((a,b)=>b.reserves-a.reserves);
+  const maxR=Math.max(...geo.map(r=>r.reserves));
+  document.getElementById('reservesCards').innerHTML=geo.map(r=>`<div class="storage-card"><div class="sc-hub">${r.flag} ${r.country}</div><div class="sc-fill-bar"><div class="sc-fill-inner" style="width:${(r.reserves/maxR*100).toFixed(0)}%;background:#b388ff"></div></div><div class="sc-stats"><span>${r.reserves} mil M bbl</span><span style="color:var(--text3)">dato anual</span></div></div>`).join('');
 }
 function renderProdTable(){
   const statusCls={stable:'status-stable',tension:'status-tension',conflict:'status-conflict',sanction:'status-sanction'};
@@ -810,6 +892,46 @@ function renderProdTable(){
   const barCols={stable:'#00e676',tension:'#ffc300',conflict:'#ff4060',sanction:'#b388ff'};
   document.getElementById('prodTableBody').innerHTML=PROD_DATA.map(p=>`<tr><td>${p.flag} ${p.country}</td><td><strong>${p.prod}</strong> Mb/d<div class="prod-bar-bg"><div class="prod-bar-fill" style="width:${(p.prod/p.cap*100).toFixed(0)}%;background:${barCols[p.status]}"></div></div></td><td>${p.cap} Mb/d</td><td><span style="color:${barCols[p.status]}">${p.pct}%</span></td><td style="color:var(--text3)">${p.company}</td><td class="${statusCls[p.status]}">${statusLbl[p.status]}</td></tr>`).join('');
 }
+/* ── FRONTERAS POLÍTICAS REALES ───────────────────────────
+   GeoJSON público (Natural Earth, dominio público) con el polígono
+   de cada país, indexado por código ISO3 — el mismo código que ya
+   usa PROD_DATA.wb_code. Se carga una sola vez y se cachea. ── */
+let WORLD_GEOJSON=null,worldGeoLoading=false;
+async function loadWorldGeoJSON(){
+  if(WORLD_GEOJSON||worldGeoLoading)return;
+  worldGeoLoading=true;
+  try{
+    const r=await fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json');
+    WORLD_GEOJSON=await r.json();
+    console.log(`[Mapa] Fronteras reales cargadas: ${WORLD_GEOJSON.features.length} países`);
+    if(S.tab==='map'&&S.mapView==='map')renderMapCanvas();
+  }catch(e){console.warn('[Mapa] Error cargando fronteras reales — se muestra solo grilla',e);}
+  worldGeoLoading=false;
+}
+function drawCountryBorders(ctx,lonToX,latToY){
+  if(!WORLD_GEOJSON)return;
+  const statusByCode={};
+  PROD_DATA.forEach(p=>{statusByCode[p.wb_code]=p.status;});
+  const statusFill={stable:'rgba(0,230,118,.07)',tension:'rgba(255,195,0,.08)',conflict:'rgba(255,64,96,.09)',sanction:'rgba(179,136,255,.08)'};
+  WORLD_GEOJSON.features.forEach(f=>{
+    const st=statusByCode[f.id];
+    const fill=st?statusFill[st]:'rgba(255,255,255,.02)';
+    const polys=f.geometry.type==='Polygon'?[f.geometry.coordinates]:f.geometry.type==='MultiPolygon'?f.geometry.coordinates:[];
+    polys.forEach(rings=>{
+      rings.forEach((ring,ringIdx)=>{
+        ctx.beginPath();
+        ring.forEach(([lon,lat],i)=>{
+          const x=lonToX(lon),y=latToY(lat);
+          if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+        });
+        ctx.closePath();
+        if(ringIdx===0){ctx.fillStyle=fill;ctx.fill();}
+        ctx.strokeStyle='rgba(130,170,255,.22)';ctx.lineWidth=.6;ctx.stroke();
+      });
+    });
+  });
+}
+
 function renderMapCanvas(){
   const canvas=document.getElementById('mapCanvas');if(!canvas)return;
   const wrap=document.getElementById('mapView');
@@ -820,8 +942,16 @@ function renderMapCanvas(){
   ctx.strokeStyle='rgba(41,121,255,.06)';ctx.lineWidth=.5;
   for(let lon=-180;lon<=180;lon+=30){ctx.beginPath();ctx.moveTo(lonToX(lon),0);ctx.lineTo(lonToX(lon),H);ctx.stroke();}
   for(let lat=-90;lat<=90;lat+=30){ctx.beginPath();ctx.moveTo(0,latToY(lat));ctx.lineTo(W,latToY(lat));ctx.stroke();}
-  const routes=[{x1:lonToX(50),y1:latToY(26),x2:lonToX(104),y2:latToY(22),col:'rgba(130,170,255,.25)'},{x1:lonToX(-90),y1:latToY(29),x2:lonToX(5),y2:latToY(52),col:'rgba(0,230,118,.2)'},{x1:lonToX(50),y1:latToY(26),x2:lonToX(78),y2:latToY(20),col:'rgba(255,195,0,.2)'},{x1:lonToX(3),y1:latToY(55),x2:lonToX(26),y2:latToY(60),col:'rgba(255,64,96,.2)'}];
-  routes.forEach(r=>{const mx=(r.x1+r.x2)/2,my=Math.min(r.y1,r.y2)-40;ctx.strokeStyle=r.col;ctx.lineWidth=1.5;ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(r.x1,r.y1);ctx.quadraticCurveTo(mx,my,r.x2,r.y2);ctx.stroke();});ctx.setLineDash([]);
+  if(WORLD_GEOJSON)drawCountryBorders(ctx,lonToX,latToY);
+  else loadWorldGeoJSON();
+  if(S.showReserves){
+    const geo=getReservesGeo(),maxR=Math.max(...geo.map(r=>r.reserves));
+    geo.forEach(r=>{
+      const px=lonToX(r.lon),py=latToY(r.lat),rad=6+(r.reserves/maxR)*16;
+      ctx.strokeStyle='#b388ff';ctx.lineWidth=2;ctx.setLineDash([2,2]);
+      ctx.beginPath();ctx.arc(px,py,rad,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+    });
+  }
   PROD_DATA.forEach(p=>{
     const px=lonToX(p.lon),py=latToY(p.lat),r=Math.sqrt(p.prod)*4+3;
     const col={stable:'#00e676',tension:'#ffc300',conflict:'#ff4060',sanction:'#b388ff'}[p.status];
@@ -835,9 +965,14 @@ function renderMapCanvas(){
   });
   canvas.onmousemove=e=>{
     const rect=canvas.getBoundingClientRect(),mx=(e.clientX-rect.left)*(W/rect.width),my=(e.clientY-rect.top)*(H/rect.height);
-    const tip=document.getElementById('mapTooltip');let hit=null;
+    const tip=document.getElementById('mapTooltip');let hit=null,hitReserve=null;
     PROD_DATA.forEach(p=>{const px=lonToX(p.lon),py=latToY(p.lat),r=Math.sqrt(p.prod)*4+3;if(Math.hypot(mx-px,my-py)<r+10)hit=p;});
+    if(S.showReserves&&!hit){
+      const geo=getReservesGeo(),maxR=Math.max(...geo.map(r=>r.reserves));
+      geo.forEach(r=>{const px=lonToX(r.lon),py=latToY(r.lat),rad=6+(r.reserves/maxR)*16;if(Math.hypot(mx-px,my-py)<rad+8)hitReserve=r;});
+    }
     if(hit){const col={stable:'#00e676',tension:'#ffc300',conflict:'#ff4060',sanction:'#b388ff'}[hit.status];tip.innerHTML=`<div class="mt-country">${hit.flag} ${hit.country}</div><div class="mt-row"><span class="mt-lbl">Producción</span><span class="mt-val">${hit.prod} Mb/d</span></div><div class="mt-row"><span class="mt-lbl">Capacidad</span><span class="mt-val">${hit.cap} Mb/d</span></div><div class="mt-row"><span class="mt-lbl">Utilización</span><span class="mt-val" style="color:${col}">${hit.pct}%</span></div><div class="mt-row"><span class="mt-lbl">Compañía</span><span class="mt-val">${hit.company}</span></div>`;tip.style.left=Math.min(e.offsetX+10,canvas.clientWidth-230)+'px';tip.style.top=Math.max(e.offsetY-20,5)+'px';tip.classList.add('show');}
+    else if(hitReserve){tip.innerHTML=`<div class="mt-country">${hitReserve.flag} ${hitReserve.country}</div><div class="mt-row"><span class="mt-lbl">Reservas probadas</span><span class="mt-val" style="color:#b388ff">${hitReserve.reserves} mil M bbl</span></div><div class="mt-row"><span class="mt-lbl">Periodicidad</span><span class="mt-val" style="color:var(--text3)">Anual, no en vivo</span></div>`;tip.style.left=Math.min(e.offsetX+10,canvas.clientWidth-230)+'px';tip.style.top=Math.max(e.offsetY-20,5)+'px';tip.classList.add('show');}
     else tip.classList.remove('show');
   };
   canvas.onmouseleave=()=>document.getElementById('mapTooltip').classList.remove('show');
@@ -850,36 +985,56 @@ function setMapView(v){
   document.getElementById('mt-list').classList.toggle('active',v==='list');
   if(v==='map')setTimeout(renderMapCanvas,50);
 }
+function toggleReservesLayer(){
+  S.showReserves=!S.showReserves;
+  document.getElementById('mt-reserves').classList.toggle('active',S.showReserves);
+  renderMapCanvas();
+}
 
 /* ── ANALYSIS DATA & RENDER ───────────────── */
-const DIGEST=[
-  {t:'14:32',imp:'high',text:'IRGC amenaza cierre del Estrecho de Hormuz ante expansión de sanciones — Brent +1.8%',tags:['geo','hormuz']},
-  {t:'12:20',imp:'high',text:'GPS spoofing en 3 tanqueros cerca del Estrecho de Hormuz — alerta de seguridad marítima emitida',tags:['geo','tanker']},
-  {t:'11:15',imp:'high',text:'Houthi lanza misil contra tanquero en Bab el-Mandeb — riesgo elevado a CRÍTICO',tags:['geo','red-sea']},
-  {t:'10:48',imp:'med',text:'Arabia Saudita extiende recorte voluntario de 1 Mb/d hasta Q4 2025 — OPEC+ confirma',tags:['opec']},
-  {t:'09:15',imp:'high',text:'EIA: inventarios crudos -2.147M bbl (consenso -1.4M) — Cushing en mínimo de 8 meses',tags:['inv','eia']},
-  {t:'08:30',imp:'med',text:'Producción shale EE.UU. sube a 13.3 Mb/d en mayo — Baker Hughes: rigs +3 a 480',tags:['prod','usa']},
-  {t:'07:00',imp:'low',text:'China: restricciones de envío a crudos venezolanos — ban de buques de terceros extendido',tags:['geo','china']},
-  {t:'06:45',imp:'med',text:'Noruega: producción alcanza 1.92 Mb/d en mayo, por encima de pronóstico (Johan Sverdrup)',tags:['prod','norway']},
-  {t:'05:30',imp:'low',text:'EIA STEO: producción crudo EE.UU. revisada al alza a 13.6 Mb/d para 2025',tags:['eia','usa']},
-  {t:'04:15',imp:'med',text:'Tanquero ruso desvía ruta por zona de embargo en el Báltico — descuento de precios se amplía',tags:['russia','sanction']},
-];
-const PROJECTIONS=[
-  {src:'Goldman Sachs',analyst:'Daan Struyven',q3:78,q4:82,h126:80,bias:'bullish',date:'10-Jun-25'},
-  {src:'JPMorgan',analyst:'Natasha Kaneva',q3:76,q4:80,h126:78,bias:'bullish',date:'08-Jun-25'},
-  {src:'Citigroup',analyst:'Ed Morse',q3:72,q4:75,h126:73,bias:'neutral',date:'05-Jun-25'},
-  {src:'Morgan Stanley',analyst:'Martijn Rats',q3:68,q4:72,h126:70,bias:'bearish',date:'09-Jun-25'},
-  {src:'IEA',analyst:'Official Forecast',q3:75,q4:77,h126:76,bias:'neutral',date:'11-Jun-25'},
-  {src:'EIA STEO',analyst:'US Gov. Official',q3:74,q4:78,h126:75,bias:'neutral',date:'10-Jun-25'},
-  {src:'OPEC MOMR',analyst:'OPEC Sec. Gen.',q3:80,q4:85,h126:82,bias:'bullish',date:'07-Jun-25'},
-  {src:'Bank of America',analyst:'Francisco Blanch',q3:77,q4:81,h126:79,bias:'bullish',date:'06-Jun-25'},
-  {src:'Barclays',analyst:'Amarpreet Singh',q3:71,q4:74,h126:73,bias:'neutral',date:'04-Jun-25'},
-  {src:'Fitch Solutions',analyst:'Energy Research',q3:69,q4:72,h126:70,bias:'bearish',date:'03-Jun-25'},
+// El DIGEST ya NO es un array fijo — antes tenía 10 ítems inventados con
+// horarios falsos que nunca se borraban (causa real de "noticias de hace
+// 6 días"). Ahora se reconstruye en cada render: arriba van los puntos de
+// auto-análisis (AUTO_SUMMARY_POINTS, se reemplazan enteros en cada corrida,
+// no se acumulan), abajo el NEWS real de las últimas 24h según su fecha real.
+let AUTO_SUMMARY_POINTS=[];
+function buildDigest(){
+  const now=Date.now();
+  const ultimas24h=NEWS.filter(n=>n.realTime&&(now-n.realTime)<24*60*60*1000)
+    .map(n=>({t:n.ts,imp:n.impact,text:n.hl,tags:[n.cat]}));
+  return[...AUTO_SUMMARY_POINTS,...ultimas24h];
+}
+// ── PROYECCIONES REALES (EIA STEO) ──────────────────────────────
+// STEO_DATA se llena con fetchEIASTEO() — pronóstico oficial mensual,
+// real, gratis. Reemplaza la tabla de bancos que era 100% ficticia.
+let STEO_DATA={wti:[],brent:[]};
+async function fetchEIASTEO(){
+  try{
+    const r=await fetch('/api/eia-steo');
+    const d=await r.json();
+    if(d.wti&&d.brent){
+      STEO_DATA=d;
+      if(S.tab==='analysis')renderAnalysis();
+      console.log(`[EIA STEO] ${d.wti.length} meses WTI, ${d.brent.length} meses Brent`);
+    }
+  }catch(e){console.warn('[EIA STEO Error]',e);}
+}
+// MANUAL_PROJECTIONS — si tenés un informe de research de un banco/IEA/OPEC
+// específico, agregalo acá con este formato exacto y se suma a la tabla:
+// {src:'Goldman Sachs', period:'Q3-2026', wti:68, brent:72, tipo:'Research banco', date:'17-Jun-26'}
+const MANUAL_PROJECTIONS=[
 ];
 function renderAnalysis(){
-  document.getElementById('digestList').innerHTML=DIGEST.map(d=>`<div class="digest-item"><div class="di-time">${d.t}</div><div class="di-body"><span class="di-impact impact-${d.imp}">${d.imp.toUpperCase()}</span><div class="di-text">${d.text}</div><div class="di-tags">${d.tags.map(t=>`<span class="di-tag">${t}</span>`).join('')}</div></div></div>`).join('');
+  const digest=buildDigest();
+  document.getElementById('digestList').innerHTML=digest.length?digest.map(d=>`<div class="digest-item"><div class="di-time">${d.t}</div><div class="di-body"><span class="di-impact impact-${d.imp}">${d.imp.toUpperCase()}</span><div class="di-text">${d.text}</div><div class="di-tags">${d.tags.map(t=>`<span class="di-tag">${t}</span>`).join('')}</div></div></div>`).join(''):`<div class="digest-item" style="color:var(--text3);text-align:center;padding:24px 10px">Esperando noticias reales de las últimas 24h (GNews)...</div>`;
+
   const bm={bullish:'bias-bull',bearish:'bias-bear',neutral:'bias-neu'},bi={bullish:'▲ ALCISTA',bearish:'▼ BAJISTA',neutral:'— NEUTRAL'};
-  document.getElementById('projTableBody').innerHTML=PROJECTIONS.map(p=>`<tr><td><strong>${p.src}</strong></td><td style="color:var(--text3)">${p.analyst}</td><td style="color:var(--yellow)">$${p.q3}</td><td style="color:var(--yellow)">$${p.q4}</td><td style="color:var(--blue2)">$${p.h126}</td><td class="${bm[p.bias]}">${bi[p.bias]}</td><td style="color:var(--text3)">${p.date}</td></tr>`).join('');
+  const steoRows=STEO_DATA.wti.slice(-6).map((w,i)=>{
+    const b=STEO_DATA.brent[STEO_DATA.brent.length-6+i];
+    return{src:'EIA STEO',period:w.period,wti:w.value,brent:b?b.value:null,tipo:'Oficial (gob. EE.UU.)',date:'mensual'};
+  });
+  const allRows=[...steoRows,...MANUAL_PROJECTIONS];
+  document.getElementById('projTableBody').innerHTML=allRows.length?allRows.map(p=>`<tr><td><strong>${p.src}</strong></td><td style="color:var(--text3)">${p.period}</td><td style="color:var(--yellow)">${p.wti?'$'+p.wti.toFixed(2):'—'}</td><td style="color:var(--blue2)">${p.brent?'$'+p.brent.toFixed(2):'—'}</td><td style="color:var(--text2)">${p.tipo}</td><td style="color:var(--text3)">${p.date}</td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:18px">Cargando EIA STEO...</td></tr>`;
   document.getElementById('sentimentRow').innerHTML=[{label:'SENTIMIENTO GLOBAL',value:62,desc:'LEV. ALCISTA',col:'#00e676'},{label:'TENSIÓN GEOPOLÍTICA',value:78,desc:'ALTA',col:'#ff4060'},{label:'SESGO OFERTA/DEMANDA',value:54,desc:'EQUILIBRADO',col:'#ffc300'}].map(s=>`<div class="sent-card"><div class="sent-label">${s.label}</div><svg class="sent-gauge" viewBox="0 0 60 60"><circle cx="30" cy="30" r="24" fill="none" stroke="#1f2235" stroke-width="6"/><circle cx="30" cy="30" r="24" fill="none" stroke="${s.col}" stroke-width="6" stroke-dasharray="${(s.value/100)*150.8} 150.8" stroke-dashoffset="37.7" stroke-linecap="round" transform="rotate(-90 30 30)"/></svg><div class="sent-value" style="color:${s.col}">${s.value}</div><div class="sent-desc">${s.desc}</div></div>`).join('');
 }
 
@@ -906,7 +1061,7 @@ function renderBgMap(){
 /* ── TICKER & CLOCKS ──────────────────────── */
 const TICKERS=[{sym:'BRENT ICE',key:'brent'},{sym:'WTI NYMEX',key:'wti'},{sym:'COIL FUT',key:'coil'},{sym:'NAT GAS',key:'ng'},{sym:'HEATING OIL',key:'heatoil'},{sym:'RBOB GAS',key:'rbob'}];
 function buildTicker(){
-  let html='';for(let rep=0;rep<2;rep++){TICKERS.forEach(t=>{const p=S.prices[t.key],c=S.changes[t.key]||0,dir=c>0?'up':c<0?'dn':'flat';html+=`<span class="ticker-item" id="tk-${t.key}-${rep}"><span class="ti-name">${t.sym}</span><span class="ti-price price-${dir}">$${p}</span><span class="ti-price price-${dir}" style="font-size:10px"> ${c>0?'▲':c<0?'▼':'—'}${Math.abs(c).toFixed(2)}%</span></span><span style="color:#1f2235;padding:0 4px">|</span>`;});}
+  let html='';for(let rep=0;rep<2;rep++){TICKERS.forEach(t=>{const p=S.prices[t.key],c=S.changes[t.key]||0,dir=c>0?'up':c<0?'dn':'flat';html+=`<span class="ticker-item" id="tk-${t.key}-${rep}"><span class="ti-name">${t.sym}</span><span class="ti-price price-${dir}">$${p}</span><span class="ti-price price-${dir}" style="font-size:12px"> ${c>0?'▲':c<0?'▼':'—'}${Math.abs(c).toFixed(2)}%</span></span><span style="color:#1f2235;padding:0 4px">|</span>`;});}
   document.getElementById('tickerTrack').innerHTML=html;
 }
 function updateTicker(){
@@ -918,7 +1073,7 @@ function updateTicker(){
     for(let rep=0;rep<2;rep++){const el=document.getElementById(`tk-${t.key}-${rep}`);if(!el)return;const sp=el.querySelectorAll('.ti-price');sp[0].className=`ti-price price-${dir}`;sp[0].textContent=`$${S.prices[t.key]}`;sp[1].className=`ti-price price-${dir}`;sp[1].style.fontSize='10px';sp[1].textContent=` ${pct>0?'▲':pct<0?'▼':'—'}${Math.abs(pct).toFixed(2)}%`;}
   });
   const a=S.asset,p=S.prices[a]||S.prices.brent,c=S.changes[a]||0;
-  const el=document.getElementById('priceTag');if(el)el.innerHTML=`<span style="color:${c>0?'var(--green)':c<0?'var(--red)':'var(--text)'}">$${p} <span style="font-size:11px">${c>0?'▲':'▼'} ${c>0?'+':''}${c.toFixed(2)}%</span></span>`;
+  const el=document.getElementById('priceTag');if(el)el.innerHTML=`<span style="color:${c>0?'var(--green)':c<0?'var(--red)':'var(--text)'}">$${p} <span style="font-size:13px">${c>0?'▲':'▼'} ${c>0?'+':''}${c.toFixed(2)}%</span></span>`;
 }
 function updateClocks(){
   [['clk-ny','st-ny','America/New_York'],['clk-ldn','st-ldn','Europe/London'],['clk-dxb','st-dxb','Asia/Dubai'],['clk-sgp','st-sgp','Asia/Singapore'],['clk-bue','st-bue','America/Argentina/Buenos_Aires']].forEach(([ci,si,zone])=>{
@@ -935,9 +1090,9 @@ function switchTab(tab){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('tbn-'+tab).classList.add('active');
-  if(tab==='charts'){S.chartData=null;setTimeout(()=>{renderChart();initChartMouse();},50);loadRealCandles();fetchAlphaVantage();}
+  if(tab==='charts'){S.chartData=null;setTimeout(()=>{renderChart();},50);loadRealCandles();fetchAlphaVantage();}
   if(tab==='map'){setTimeout(()=>{renderMapCanvas();renderProdTable();renderMapSidebar();setMapView(S.mapView);},50);}
-  if(tab==='news'){renderNews();renderNewsSidebar();}
+  if(tab==='news'){renderNews();}
   if(tab==='analysis'){renderAnalysis();if(NEWS.length>3)fetchAISummary();}
 }
 function selAsset(a,btn){
@@ -956,17 +1111,9 @@ function toggleInd(ind,btn,onCls){
   S.hover=-1;renderChart();
 }
 
-/* ── NEWS SIMULATION ──────────────────────── */
-function startSim(){
-  setInterval(()=>{
-    if(Math.random()>.75){
-      const t=['OPEC+ cumplimiento actualizado — producción grupal en {x} Mb/d','Brent técnico: RSI {x} — territorio {dir}','API crude stocks: {x}M bbl','Baker Hughes rigs: {x}','Flete VLCC AG-China: {x} $/mt'];
-      const txt=t[Math.floor(Math.random()*t.length)].replace('{x}',+(Math.random()*10).toFixed(1)).replace('{dir}',Math.random()>.5?'sobrecomprado':'sobrevendido').replace('{x}',Math.floor(Math.random()*5-2));
-      NEWS.unshift({id:Date.now(),ts:new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',hour12:false}),src:'platts',srcL:'S&P PLATTS',srcColor:'#b388ff',impact:['low','med','high'][Math.floor(Math.random()*3)],cat:['prod','inv','opec','geo'][Math.floor(Math.random()*4)],hl:txt,hi:false,chg:''});
-      if(NEWS.length>60)NEWS.pop();if(S.tab==='news')renderNews();
-    }
-  },12000);
-}
+/* ── (startSim eliminado — generaba titulares 100% inventados
+   disfrazados de noticias reales de S&P Platts cada 12s. No
+   debería haber existido en una página que muestra datos en vivo.) ── */
 
 /* ── INIT ─────────────────────────────────── */
 document.addEventListener('DOMContentLoaded',()=>{
@@ -978,7 +1125,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Actualizar noticias cada 10 minutos si hay key
   setInterval(fetchGNews,600000);
   setInterval(fetchNewsAPI,600000);
-  startSim();
   renderBgMap();
   // Llamadas iniciales a APIs
   fetchTwelveDataPrices();
@@ -987,13 +1133,17 @@ document.addEventListener('DOMContentLoaded',()=>{
   fetchNewsAPI();
   fetchWorldBank();
   fetchAlphaVantage();
+  fetchEIASTEO();
   setTimeout(fetchAISummary, 15000);
+  setInterval(fetchAISummary, 600000);
   setInterval(fetchEIAInventories, 3600000);
   setInterval(fetchAlphaVantage, 3600000);
+  setInterval(fetchEIASTEO, 3600000);
   // Tab inicial
   switchTab('charts');
   window.addEventListener('resize',()=>{
-    if(S.tab==='charts')renderChart();
+    // El gráfico (Lightweight Charts) se autoajusta solo via autoSize:true
+    // — NO llamamos renderChart() aquí, eso destruiría el zoom/pan del usuario.
     if(S.tab==='map')renderMapCanvas();
   });
 });
