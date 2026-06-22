@@ -1,17 +1,34 @@
 // ══════════════════════════════════════════════════════════════
-// api/news-newsapi.js (Vercel Serverless Function)
-// Proxy para NewsAPI — noticias de Reuters, Bloomberg, etc.
+// api/eia-data.js (Vercel Serverless Function)
+// Proxy para EIA API v2 — usa el endpoint /v2/seriesid/{ID} que
+// traduce automáticamente IDs legacy de la API v1 (formato
+// "PET.XXXXX.W"). Evita tener que adivinar facets manualmente
+// (duoarea, productId, etc.) — la causa de un bug anterior donde
+// el delta de inventarios salía sin sentido por escopear mal el
+// área geográfica.
 //
-// GET /api/news-newsapi?q=crude+oil+OPEC+Brent+WTI
-//
-// ⚠️  La key se envía como header 'X-Api-Key', no como query param.
+// GET /api/eia-data?series=crude_stocks
+// GET /api/eia-data?series=cushing_stocks&length=8
 //
 // Variable de entorno requerida:
-//   NEWSAPI_API_KEY → Vercel → Project Settings → Environment Variables
+//   EIA_API_KEY → Vercel → Project Settings → Environment Variables
 // ══════════════════════════════════════════════════════════════
 
-const TIMEOUT_MS   = 10_000;
-const ALLOWED_SORT = new Set(['publishedAt', 'relevancy', 'popularity']);
+const TIMEOUT_MS = 10_000;
+
+// Whitelist: clave interna → ID legacy real de EIA (verificado).
+// MEJORA 6: se agregaron gasolina y Cushing además del crudo
+// nacional que ya existía. SPR y utilización de refinerías NO se
+// incluyen porque no pude verificar con certeza sus IDs legacy
+// exactos sin acceso de prueba en vivo — agregarlos a ciegas podría
+// repetir el bug de facets mal adivinados que ya tuvimos. Si me
+// pasás el ID confirmado (ej. desde eia.gov/opendata/browser),
+// lo sumo en la próxima vuelta.
+const SERIES_WHITELIST = {
+  crude_stocks:    'PET.WCRSTUS1.W',              // Existencias de crudo (excl. SPR), EE.UU., semanal
+  gasoline_stocks: 'PET.WGTSTUS1.W',              // Existencias de gasolina terminada, EE.UU., semanal
+  cushing_stocks:  'PET.W_EPC0_SAX_YCUOK_MBBL.W', // Existencias en Cushing, OK, semanal
+};
 
 function setCors(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -22,7 +39,7 @@ function setCors(res) {
 function sendError(res, statusCode, message, details = null) {
   const body = { error: true, message };
   if (details) body.details = details;
-  console.error(`[news-newsapi.js] ERROR ${statusCode}: ${message}`, details || '');
+  console.error(`[eia-data.js] ERROR ${statusCode}: ${message}`, details || '');
   return res.status(statusCode).json(body);
 }
 
@@ -40,78 +57,63 @@ export default async function handler(req, res) {
     return sendError(res, 405, 'Método no permitido. Usá GET.');
   }
 
-  const RAW_KEY = process.env.NEWSAPI_API_KEY;
-  if (!RAW_KEY) {
-    return sendError(res, 503, 'API key de NewsAPI no configurada en el servidor.');
+  const API_KEY = process.env.EIA_API_KEY;
+  if (!API_KEY) {
+    return sendError(res, 503, 'API key de EIA no configurada en el servidor.');
   }
-  // Si pegaste la key con comillas o espacios desde algún lado, esto lo limpia
-  // — pero si el 401 persiste después de este fix, el problema NO es el código:
-  // es que la key en Vercel está vacía, vencida, o mal copiada. Revisá
-  // newsapi.org/account para confirmar que la key está activa.
-  const API_KEY = RAW_KEY.trim().replace(/^["']|["']$/g, '');
 
-  const params   = req.query || {};
-  const query    = params.q        || 'crude oil OPEC Brent WTI';
-  const sortBy   = ALLOWED_SORT.has(params.sortBy) ? params.sortBy : 'publishedAt';
-  const language = params.language || 'en';
-  const rawSize  = parseInt(params.pageSize, 10);
-  const pageSize = isNaN(rawSize) ? 10 : Math.min(Math.max(rawSize, 1), 100);
+  const params = req.query || {};
+  const seriesKey = params.series || 'crude_stocks';
+  const rawLen = parseInt(params.length, 10);
+  const length = isNaN(rawLen) ? 8 : Math.min(Math.max(rawLen, 1), 52);
 
-  console.log(`[news-newsapi.js] q="${query}" sortBy=${sortBy} pageSize=${pageSize}`);
+  const legacyId = SERIES_WHITELIST[seriesKey];
+  if (!legacyId) {
+    return sendError(res, 400,
+      `Serie no permitida: "${seriesKey}". Valores válidos: ${Object.keys(SERIES_WHITELIST).join(', ')}`
+    );
+  }
 
-  const url = new URL('https://newsapi.org/v2/everything');
-  url.searchParams.set('q',        query);
-  url.searchParams.set('sortBy',   sortBy);
-  url.searchParams.set('pageSize', pageSize.toString());
-  url.searchParams.set('language', language);
+  console.log(`[eia-data.js] series=${seriesKey} (${legacyId}) length=${length}`);
+
+  const url = `https://api.eia.gov/v2/seriesid/${legacyId}?api_key=${API_KEY}&sort[0][column]=period&sort[0][direction]=desc&length=${length}`;
 
   const controller = new AbortController();
-  const timer      = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
   try {
-    const response = await fetch(url.toString(), {
+    const response = await fetch(url, {
       signal: controller.signal,
-      headers: {
-        'User-Agent': 'TerminalPetroleo/1.0',
-        'X-Api-Key':  API_KEY, // ← así se autentica NewsAPI
-      },
+      headers: { 'User-Agent': 'TerminalPetroleo/1.0' },
     });
     clearTimeout(timer);
 
-    if (response.status === 429) {
-      return sendError(res, 429, 'Rate limit de NewsAPI alcanzado. Reintentá más tarde.');
-    }
-    if (response.status === 401) {
-      return sendError(res, 401,
-        'NewsAPI rechazó la API key (401). El código envía la key correctamente vía header X-Api-Key — ' +
-        'si esto persiste, el problema es la key en sí: revisá que NEWSAPI_API_KEY en Vercel → Settings → ' +
-        'Environment Variables tenga el valor correcto, sin comillas ni espacios, y que la key esté activa ' +
-        'en newsapi.org/account (las keys gratuitas pueden expirar o quedar inactivas).'
-      );
+    if (response.status === 403) {
+      return sendError(res, 403, 'EIA rechazó la API key. Verificá que sea válida.');
     }
     if (!response.ok) {
-      return sendError(res, 502, `NewsAPI respondió con status ${response.status}.`);
+      return sendError(res, 502, `EIA respondió con status ${response.status}.`);
     }
 
     const data = await response.json();
 
-    if (data.status === 'error') {
-      return sendError(res, 502, 'NewsAPI devolvió un error.', { code: data.code, message: data.message });
+    if (!data.response || !data.response.data || !Array.isArray(data.response.data)) {
+      return sendError(res, 502, 'EIA no devolvió datos en el formato esperado.', { keys: Object.keys(data) });
     }
 
-    if (!data.articles || !Array.isArray(data.articles)) {
-      return sendError(res, 502, 'NewsAPI no devolvió artículos.', { keys: Object.keys(data) });
+    if (data.response.data.length === 0) {
+      return sendError(res, 502, 'EIA devolvió un array de datos vacío.', { seriesKey, legacyId });
     }
 
-    console.log(`[news-newsapi.js] OK: ${data.articles.length} artículos`);
+    console.log(`[eia-data.js] OK: ${data.response.data.length} registros de ${seriesKey}. Último período: ${data.response.data[0].period}`);
 
     return sendOk(res, data);
 
   } catch (err) {
     clearTimeout(timer);
     if (err.name === 'AbortError') {
-      return sendError(res, 504, `NewsAPI no respondió en ${TIMEOUT_MS / 1000} segundos (timeout).`);
+      return sendError(res, 504, `EIA no respondió en ${TIMEOUT_MS / 1000} segundos (timeout).`);
     }
-    return sendError(res, 502, 'Error de red al conectar con NewsAPI.', err.message);
+    return sendError(res, 502, 'Error de red al conectar con EIA.', err.message);
   }
 }
