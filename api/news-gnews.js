@@ -38,10 +38,11 @@ export default async function handler(req, res) {
     return sendError(res, 405, 'Método no permitido. Usá GET.');
   }
 
-  const API_KEY = process.env.GNEWS_API_KEY;
-  if (!API_KEY) {
+  const RAW_KEY = process.env.GNEWS_API_KEY;
+  if (!RAW_KEY) {
     return sendError(res, 503, 'API key de GNews no configurada en el servidor.');
   }
+  const API_KEY = RAW_KEY.trim().replace(/^["']|["']$/g, '');
 
   const params = req.query || {};
   const query  = params.q    || 'crude oil OPEC Brent WTI petroleum';
@@ -55,7 +56,10 @@ export default async function handler(req, res) {
   url.searchParams.set('q',     query);
   url.searchParams.set('lang',  lang);
   url.searchParams.set('max',   max.toString());
-  url.searchParams.set('token', API_KEY);
+  // ⚠️ FIX BUG 1: GNews migró su parámetro de auth de "token" (legacy,
+  // documentado en tutoriales viejos) a "apikey" (docs.gnews.io actuales).
+  // Usar "token" hoy devuelve 403 como si la key fuera inválida.
+  url.searchParams.set('apikey', API_KEY);
 
   const controller = new AbortController();
   const timer      = setTimeout(() => controller.abort(), TIMEOUT_MS);
