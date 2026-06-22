@@ -26,7 +26,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 #topBar{position:sticky;top:0;z-index:100;background:rgba(6,8,16,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border2)}
 .tb-row1{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;border-bottom:1px solid var(--border)}
 .tb-brand{display:flex;align-items:center;gap:10px}
-.tb-logo{background:var(--orange);color:#000;font-family:var(--mono);font-weight:700;font-size:13px;padding:3px 9px;letter-spacing:2px}
+.tb-logo{display:flex;align-items:center;justify-content:center;width:28px;height:28px;flex-shrink:0}
 .tb-title{font-family:'Archivo Black',var(--sans);font-size:17px;color:var(--text);letter-spacing:.5px;text-transform:uppercase}
 .data-badge{font-size:11px;font-family:var(--mono);padding:1px 7px;letter-spacing:1px;border:1px solid}
 .badge-sim{background:#1a1200;border-color:var(--yellow);color:var(--yellow)}
@@ -75,6 +75,69 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .ohlc-item{display:flex;gap:4px}
 .ohlc-lbl{color:var(--text3)}.ohlc-val{font-weight:600}
 .event-row{display:flex;gap:5px;padding:5px 12px;flex-wrap:wrap;border-top:1px solid var(--border);background:var(--panel2)}
+.crack-section{border-top:1px solid var(--border2)}
+
+/* 1.4 Curva de futuros */
+.curve-controls{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:8px 12px;background:var(--panel2);border-bottom:1px solid var(--border)}
+.curve-shape-gauge{display:flex;align-items:center;gap:10px;font-family:var(--mono)}
+.curve-shape-label{font-size:13px;font-weight:700;padding:4px 12px;border-radius:3px}
+.curve-shape-label.contango{background:rgba(255,64,96,.12);color:var(--red)}
+.curve-shape-label.backwardation{background:rgba(0,230,118,.12);color:var(--green)}
+.curve-shape-label.flat{background:rgba(255,195,0,.12);color:var(--yellow)}
+.curve-body{display:flex;gap:14px;padding:14px;flex-wrap:wrap}
+.curve-chart-box{flex:1;min-width:320px;background:#060810;border:1px solid var(--border2)}
+.curve-sidebar{width:280px;flex-shrink:0;display:flex;flex-direction:column;gap:4px}
+.curve-spreads-table{font-family:var(--mono);font-size:12px;padding:6px 0}
+.cs-row{display:flex;justify-content:space-between;padding:5px 10px;border-bottom:1px solid var(--border)}
+.curve-contracts-list{font-family:var(--mono);font-size:11px;max-height:220px;overflow-y:auto}
+.cc-row{display:flex;justify-content:space-between;padding:3px 10px;color:var(--text2)}
+.curve-todo-note{font-size:10px;color:var(--text3);line-height:1.5;padding:10px;margin-top:8px;border:1px dashed var(--border2);border-radius:4px}
+@media (max-width:760px){.curve-body{flex-direction:column}.curve-sidebar{width:100%}}
+
+/* 4.2 Dashboard Home */
+.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px}
+.dash-card{background:var(--panel2);border:1px solid var(--border2);border-radius:5px;padding:14px;display:flex;flex-direction:column;gap:6px;cursor:pointer;transition:border-color .15s}
+.dash-card:hover{border-color:var(--orange)}
+.dash-card-title{font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:.5px}
+.dash-card-value{font-family:var(--mono);font-size:24px;font-weight:700}
+.dash-card-sub{font-family:var(--mono);font-size:12px}
+.dash-card-spark{width:100%;height:32px}
+.dash-note{font-size:11px;color:var(--text3);line-height:1.6;padding:0 16px 16px;font-family:var(--mono)}
+@media (max-width:700px){.dash-grid{grid-template-columns:1fr}}
+
+/* MACRO: calendario + correlaciones + heatmap */
+.macro-section{border-bottom:1px solid var(--border2);padding-bottom:6px}
+.calendar-list{padding:8px 14px}
+.cal-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)}
+.cal-imp{width:6px;height:34px;border-radius:2px;flex-shrink:0}
+.cal-imp.alta{background:var(--red)}
+.cal-imp.media{background:var(--yellow)}
+.cal-imp.baja{background:var(--green)}
+.cal-body{flex:1}
+.cal-title{font-size:13px;color:var(--text)}
+.cal-meta{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:2px}
+.cal-countdown{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--orange);text-align:right;min-width:110px}
+.correl-heatmap{display:flex;flex-direction:column;gap:6px;padding:12px 14px}
+.correl-row{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px}
+.correl-name{width:140px;flex-shrink:0;color:var(--text2)}
+.correl-bar-wrap{flex:1;height:18px;background:var(--panel3);border-radius:3px;position:relative;overflow:hidden}
+.correl-bar{position:absolute;top:0;height:100%;border-radius:3px}
+.correl-val{width:46px;text-align:right;font-weight:700}
+.perf-heatmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;padding:12px 14px}
+.perf-cell{padding:10px 8px;border-radius:4px;text-align:center;font-family:var(--mono)}
+.perf-cell-name{font-size:10px;opacity:.85}
+.perf-cell-val{font-size:15px;font-weight:700;margin-top:2px}
+.crack-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;padding:10px 14px}
+.crack-card{background:var(--panel2);border:1px solid var(--border2);border-radius:4px;padding:10px}
+.crack-card-name{font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:4px}
+.crack-card-value{font-family:var(--mono);font-size:18px;font-weight:700}
+.crack-card-chg{font-family:var(--mono);font-size:11px;margin-top:2px}
+.crack-card-interp{font-size:10px;margin-top:6px;padding:2px 6px;border-radius:3px;display:inline-block}
+.crack-spark{width:100%;height:30px;margin-top:6px}
+.spread-stats-card{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;padding:10px 14px;font-family:var(--mono)}
+.ss-stat{background:var(--panel2);border:1px solid var(--border2);border-radius:4px;padding:8px 10px}
+.ss-stat-lbl{font-size:10px;color:var(--text3)}
+.ss-stat-val{font-size:16px;font-weight:700;margin-top:2px}
 .ev-chip{display:flex;align-items:center;gap:4px;font-size:11px;font-family:var(--mono);padding:2px 7px;border:1px solid transparent;letter-spacing:.3px}
 .ev-war{background:#140306;border-color:#500;color:var(--red2)}
 .ev-opec{background:#141000;border-color:#554400;color:var(--yellow)}
@@ -124,15 +187,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .mt-btn{background:none;border:none;border-right:1px solid var(--border2);color:var(--text3);font-family:var(--mono);font-size:12px;padding:4px 12px;cursor:pointer;transition:all .12s}
 .mt-btn:last-child{border-right:none}
 .mt-btn.active{background:rgba(41,121,255,.15);color:var(--blue2)}
-.map-body{flex:1;display:grid;grid-template-columns:1fr 320px}
-#mapView{position:relative;overflow:hidden;background:#030508}
-#mapCanvas{display:block;width:100%;height:100%;min-height:420px}
+.map-body{flex:1;display:flex;flex-direction:column;align-items:center;padding:14px;overflow-y:auto;gap:14px}
+#mapView{position:relative;overflow:hidden;background:#030508;width:100%;max-width:920px;aspect-ratio:4/3;border:1px solid var(--border2);flex-shrink:0}
+#mapCanvas{display:block;width:100%;height:100%}
 .map-tooltip{position:absolute;background:var(--panel2);border:1px solid var(--border2);padding:10px 12px;font-family:var(--mono);font-size:12px;max-width:220px;pointer-events:none;z-index:10;display:none}
 .map-tooltip.show{display:block}
 .mt-country{font-size:14px;font-weight:700;color:var(--yellow);margin-bottom:6px}
 .mt-row{display:flex;justify-content:space-between;gap:16px;margin-bottom:3px}
 .mt-lbl{color:var(--text3)}.mt-val{color:var(--text)}
-#listView{display:none;overflow-y:auto}
+#listView{display:none;overflow-y:auto;width:100%;max-width:920px}
 .prod-table{width:100%;font-family:var(--mono);font-size:12px;border-collapse:collapse}
 .prod-table th{padding:7px 10px;background:var(--panel2);color:var(--text3);font-weight:500;text-align:left;font-size:11px;letter-spacing:.8px;border-bottom:1px solid var(--border2);position:sticky;top:0}
 .prod-table td{padding:6px 10px;border-bottom:1px solid var(--border)}
@@ -140,8 +203,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .status-stable{color:var(--green)}.status-tension{color:var(--yellow)}.status-conflict{color:var(--red)}.status-sanction{color:var(--purple)}
 .prod-bar-bg{height:4px;background:var(--border);margin-top:3px;border-radius:2px}
 .prod-bar-fill{height:100%;border-radius:2px}
-.map-sidebar{border-left:1px solid var(--border2);display:flex;flex-direction:column;overflow-y:auto}
+.map-sidebar{display:grid;grid-template-columns:1fr 1fr;width:100%;max-width:920px;border:1px solid var(--border2)}
 .ms-section{padding:10px 12px;border-bottom:1px solid var(--border2)}
+.ms-section:first-child{border-right:1px solid var(--border2)}
 .ms-title{font-family:var(--mono);font-size:12px;color:var(--text3);letter-spacing:1px;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
 .storage-card{background:var(--panel2);border:1px solid var(--border);padding:8px 10px;margin-bottom:5px}
 .sc-hub{font-family:var(--mono);font-size:12px;color:var(--text2);margin-bottom:4px}
@@ -182,7 +246,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .sent-desc{font-family:var(--mono);font-size:11px;color:var(--text3);margin-top:2px}
 @media(max-width:1100px){
   .np-grid{grid-template-columns:1fr}.np-cards{grid-template-columns:repeat(2,1fr)}
-  .map-body{grid-template-columns:1fr}.map-sidebar{display:none}
+  .map-sidebar{grid-template-columns:1fr}.ms-section:first-child{border-right:none}
   #tab-analysis.active{grid-template-columns:1fr}.analysis-right{display:none}
 }
 @media(max-width:780px){.tb-clocks{display:none}.tab-btn span{display:none}}
@@ -196,7 +260,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 <div id="topBar">
   <div class="tb-row1">
     <div class="tb-brand">
-      <div class="tb-logo">⛽</div>
+      <div class="tb-logo" aria-label="Terminal de Petróleo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C12 2 5 11.5 5 16C5 19.866 8.134 23 12 23C15.866 23 19 19.866 19 16C19 11.5 12 2 12 2Z" fill="var(--orange)"/>
+          <ellipse cx="9.5" cy="15" rx="1.6" ry="2.4" fill="#000" opacity=".25"/>
+        </svg>
+      </div>
       <div class="tb-title">TERMINAL DE PETRÓLEO</div>
       <span class="data-badge badge-sim" id="dataBadge">SIMULADO</span>
     </div>
@@ -207,18 +276,39 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
       <div class="tb-clock"><span class="tc-city">SINGAPORE</span><span class="tc-time" id="clk-sgp">--:--</span><span class="tc-status" id="st-sgp"></span></div>
       <div class="tb-clock"><span class="tc-city">BUE. AIRES</span><span class="tc-time" id="clk-bue">--:--</span><span class="tc-status" id="st-bue"></span></div>
     </div>
-    <div id="apiStatus" style="font-family:var(--mono);font-size:11px;color:var(--text3);text-align:right;line-height:1.8"></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="text-align:right">
+        <div id="apiStatus" style="font-family:var(--mono);font-size:11px;color:var(--text3);line-height:1.8"></div>
+        <div id="lastUpdate" style="font-family:var(--mono);font-size:10px;color:var(--text3)">Última actualización: --:--:--</div>
+      </div>
+      <button id="btnGlobalRefresh" onclick="globalRefresh()" title="Actualizar todos los datos" style="background:var(--panel3);border:1px solid var(--border2);color:var(--text2);font-size:14px;padding:5px 9px;cursor:pointer;border-radius:3px">🔄</button>
+    </div>
   </div>
   <div class="tb-ticker"><div class="ticker-track" id="tickerTrack"></div></div>
   <nav class="tab-nav">
+    <button class="tab-btn" id="tbn-dashboard" onclick="switchTab('dashboard')"><span class="tab-icon">🏠</span><span>DASHBOARD</span></button>
     <button class="tab-btn" id="tbn-charts" onclick="switchTab('charts')"><span class="tab-icon">📊</span><span>PRECIOS</span></button>
     <button class="tab-btn" id="tbn-news" onclick="switchTab('news')"><span class="tab-icon">📰</span><span>NOTICIAS</span></button>
     <button class="tab-btn" id="tbn-map" onclick="switchTab('map')"><span class="tab-icon">🗺</span><span>MAPA GLOBAL</span></button>
     <button class="tab-btn" id="tbn-analysis" onclick="switchTab('analysis')"><span class="tab-icon">🔍</span><span>ANÁLISIS 24H</span></button>
+    <button class="tab-btn" id="tbn-curve" onclick="switchTab('curve')"><span class="tab-icon">📐</span><span>CURVA</span></button>
+    <button class="tab-btn" id="tbn-macro" onclick="switchTab('macro')"><span class="tab-icon">🌐</span><span>MACRO</span></button>
   </nav>
 </div>
 
 <div id="mainContent">
+  <!-- ═══ TAB: DASHBOARD (4.2) ═══ -->
+  <section id="tab-dashboard" class="tab-section">
+    <div class="dash-grid" id="dashGrid"></div>
+    <div class="dash-note">
+      Nota: el mockup original pedía 2 celdas de "correlación con DXY" y
+      "próximo evento del calendario económico" — esos son Sprint 2
+      (correlaciones macro, calendario), todavía no implementados. Se
+      reemplazaron por KPIs reales que sí están disponibles hoy (curva de
+      futuros y reservas) en vez de mostrar un placeholder vacío.
+    </div>
+  </section>
+
   <!-- ═══ TAB: PRECIOS ═══ -->
   <section id="tab-charts" class="tab-section">
     <div class="chart-controls">
@@ -276,6 +366,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
       <span class="ev-chip ev-eia">🔵 EIA INVENTARIOS</span>
       <span class="ev-chip ev-geo">🟢 GEO-SUPPLY</span>
       <span style="margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text3)">★ Hover sobre las velas para ver OHLCV</span>
+    </div>
+    <!-- 1.2 CRACK SPREADS — calculado con datos reales de Yahoo (RBOB/HO/WTI) -->
+    <div class="crack-section">
+      <div class="panel-hdr"><span>⚙ CRACK SPREADS (margen de refinería, real)</span></div>
+      <div id="crackCards" class="crack-cards"></div>
+    </div>
+    <!-- 1.3 Z-SCORE / PERCENTIL del spread Brent-WTI (solo visible con asset=spread) -->
+    <div class="crack-section" id="spreadStatsSection" style="display:none">
+      <div class="panel-hdr"><span>📐 ESTADÍSTICA DEL SPREAD BRENT-WTI (252 ruedas reales)</span></div>
+      <div id="spreadStatsCard" class="spread-stats-card"></div>
     </div>
   </section>
 
@@ -374,6 +474,52 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
       </div>
     </div>
   </section>
+
+  <!-- ═══ TAB: CURVA DE FUTUROS (1.4) ═══ -->
+  <section id="tab-curve" class="tab-section">
+    <div class="curve-controls">
+      <div class="seg-group" id="curveUnderlyingSel">
+        <button class="seg-btn active" onclick="selCurveUnderlying('wti',this)">WTI</button>
+        <button class="seg-btn" onclick="selCurveUnderlying('brent',this)">BRENT</button>
+      </div>
+      <div id="curveShapeGauge" class="curve-shape-gauge"></div>
+    </div>
+    <div class="curve-body">
+      <div class="curve-chart-box">
+        <svg id="curveSvg" viewBox="0 0 700 320" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+      <div class="curve-sidebar">
+        <div class="panel-hdr"><span>TIME SPREADS (M1 − Mn)</span></div>
+        <div id="curveSpreadsTable" class="curve-spreads-table"></div>
+        <div class="panel-hdr" style="margin-top:6px"><span>CONTRATOS (Yahoo Finance, real)</span></div>
+        <div id="curveContractsList" class="curve-contracts-list"></div>
+        <div class="curve-todo-note">
+          TODO (no implementado esta vuelta): overlay histórico de cómo
+          era esta misma curva hace 1 semana / 1 mes. Es técnicamente
+          real y posible, pero requeriría ~24 llamadas extra a Yahoo
+          por carga (historial de cada contrato individual) — quedó
+          afuera para no volver la pestaña lenta. Avisame si querés que
+          lo sume en otra vuelta como carga separada "on demand".
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ TAB: MACRO (2.1 + 2.2 + 2.3) ═══ -->
+  <section id="tab-macro" class="tab-section">
+    <div class="macro-section">
+      <div class="panel-hdr"><span>📅 CALENDARIO ECONÓMICO Y DE PETRÓLEO</span></div>
+      <div id="calendarList" class="calendar-list"></div>
+    </div>
+    <div class="macro-section">
+      <div class="panel-hdr"><span>🔗 CORRELACIÓN 30D — BRENT vs MACRO (retornos diarios, real)</span></div>
+      <div id="correlHeatmap" class="correl-heatmap"></div>
+    </div>
+    <div class="macro-section">
+      <div class="panel-hdr"><span>🌡 HEATMAP DE PERFORMANCE — % DEL DÍA (real)</span></div>
+      <div id="perfHeatmap" class="perf-heatmap"></div>
+    </div>
+  </section>
 </div>
 </div>
 
@@ -384,7 +530,7 @@ const S = {
   tab:'charts', asset:'brent', tf:'1D',
   ind:{sma20:false,sma50:false,sma200:false,ema20:false,bb:false,volume:true,rsi:false,macd:false},
   newsFilter:{src:'all',cat:'all',imp:'all'},
-  mapView:'map', hover:-1, showReserves:false,
+  mapView:'map', hover:-1, showReserves:false, curveUnderlying:'wti',
   prices:{brent:74.38,wti:70.81,coil:71.42,ng:2.847,heatoil:2.118,rbob:2.264},
   changes:{brent:+0.57,wti:-0.46,coil:+0.25,ng:+1.10,heatoil:0,rbob:-0.40},
   chartData:null, liveActive:false
@@ -402,7 +548,7 @@ function genOHLC(base,n,vol,drift,stepSec){
 }
 function buildSimData(){
   const cfg=TF_CFG[S.tf]||TF_CFG['1D'],seed=SEEDS[S.asset]||SEEDS.brent;
-  return{ohlc:genOHLC(seed.b,cfg.n,seed.v,cfg.d,cfg.step)};
+  return{ohlc:genOHLC(seed.b,cfg.n,seed.v,cfg.d,cfg.step),_sim:true};
 }
 function sortDedupeOhlc(ohlc){
   const seen=new Set();
@@ -416,12 +562,47 @@ function calcBB(closes){const sm=smaArr(closes,20);return{sm,upper:closes.map((_
 function calcRSI(closes,p=14){const r=new Array(closes.length).fill(null);if(closes.length<p+1)return r;let g=0,l=0;for(let i=1;i<=p;i++){const d=closes[i]-closes[i-1];if(d>0)g+=d;else l+=Math.abs(d);}let ag=g/p,al=l/p;r[p]=100-100/(1+ag/(al||.001));for(let i=p+1;i<closes.length;i++){const d=closes[i]-closes[i-1];ag=(ag*(p-1)+(d>0?d:0))/p;al=(al*(p-1)+(d<0?Math.abs(d):0))/p;r[i]=100-100/(1+ag/(al||.001));}return r;}
 function calcMACD(closes){const fast=emaArr(closes,12),slow=emaArr(closes,26);const macd=closes.map((_,i)=>fast[i]!==null&&slow[i]!==null?+(fast[i]-slow[i]).toFixed(4):null);const valid=macd.filter(v=>v!==null);const offset=macd.length-valid.length;const sig=new Array(offset).fill(null).concat(emaArr(valid,9));const hist=macd.map((v,i)=>v!==null&&sig[i]!==null?+(v-sig[i]).toFixed(4):null);return{macd,sig,hist};}
 
+/* ── MEJORA 3: EVENTOS DOCUMENTADOS ───────────
+   17 eventos reales con fecha exacta verificable (no son los ~30 que
+   pediste — preferí un set más chico pero 100% verificado en vez de
+   completar el número inventando fechas). Viven en data/events.json,
+   se cargan por fetch — no hay nada hardcodeado en este archivo.
+   Si me pasás más eventos con su fecha exacta, los agrego a ese JSON.
+   type: 'conflict' (🔴 guerra/conflicto), 'opec' (🟡 decisión OPEC+),
+   'sanction' (🟣 sanciones/cambio geopolítico de oferta),
+   'supply' (🔵 shock de oferta/demanda no geopolítico). ── */
+let EVENTS=[];
+async function loadEvents(){
+  try{
+    const r=await fetch('/data/events.json');
+    if(r.ok)EVENTS=await r.json();
+    console.log(`[Eventos] ${EVENTS.length} eventos reales cargados de data/events.json`);
+  }catch(e){console.warn('[Eventos] no se pudo cargar data/events.json — el chart queda sin markers',e);}
+}
+const EVENT_STYLE={
+  conflict:{color:'#ff4060',shape:'circle',emoji:'🔴'},
+  opec:{color:'#ffc300',shape:'square',emoji:'🟡'},
+  sanction:{color:'#b388ff',shape:'square',emoji:'🟣'},
+  supply:{color:'#2979ff',shape:'circle',emoji:'🔵'},
+};
+let seriesMarkersPlugin=null;
+
 /* ── CHART RENDERER ───────────────────────── */
 /* ── LIGHTWEIGHT CHARTS (TradingView) ─────── */
-const ASSET_NAMES={brent:'BRENT ICE — Futuros Continuos',wti:'WTI NYMEX — Futuros Continuos',coil:'BRENT-WTI COIL — Spread Sintético',ng:'NATURAL GAS — Henry Hub',spread:'BRENT-WTI — Spread ($/bbl)'};
+const ASSET_NAMES={brent:'BRENT ICE — Futuros Continuos',wti:'WTI NYMEX — Futuros Continuos',coil:'WTI NYMEX (=COIL, sin spread propio verificado)',ng:'NATURAL GAS — Henry Hub',spread:'BRENT-WTI — Spread real ($/bbl)'};
 let lwChart=null,lwCandleSeries=null;
 function renderChart(){
   const container=document.getElementById('lwChart');if(!container)return;
+  // B3 fix (causa real): para "spread" nunca se debe usar el placeholder
+  // simulado (buildSimData/SEEDS), porque esa línea es una extrapolación
+  // ficticia que sube siempre — exactamente la queja del bug. Si todavía
+  // no llegó el cálculo real (brent.close-wti.close), se muestra un
+  // estado de carga explícito en vez de una línea falsa.
+  if(S.asset==='spread'&&(!S.chartData||S.chartData._sim)){
+    if(lwChart){lwChart.remove();lwChart=null;}
+    container.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text3);font-family:var(--mono);font-size:12px">Calculando spread real Brent-WTI (Yahoo Finance)...</div>';
+    return;
+  }
   if(!S.chartData)S.chartData=buildSimData();
   const{ohlc}=S.chartData;
   const closes=ohlc.map(d=>d.close);
@@ -444,10 +625,19 @@ function renderChart(){
     handleScale:true,
   });
 
-  lwCandleSeries=lwChart.addSeries(LightweightCharts.CandlestickSeries,{
-    upColor:'#00e676',downColor:'#ff4060',borderVisible:false,wickUpColor:'#00e676',wickDownColor:'#ff4060'
-  });
-  lwCandleSeries.setData(ohlc.map(d=>({time:d.time,open:d.open,high:d.high,low:d.low,close:d.close})));
+  const isSpread=S.asset==='spread';
+  if(isSpread){
+    // BUG 4 fix: el spread es una serie CALCULADA (brent.close - wti.close),
+    // no tiene OHLC real propio — se grafica como línea, no velas, para no
+    // sugerir que hay un mercado de "velas de spread" que no existe.
+    lwCandleSeries=lwChart.addSeries(LightweightCharts.LineSeries,{color:'#ffd600',lineWidth:2});
+    lwCandleSeries.setData(ohlc.map(d=>({time:d.time,value:d.close})));
+  }else{
+    lwCandleSeries=lwChart.addSeries(LightweightCharts.CandlestickSeries,{
+      upColor:'#00e676',downColor:'#ff4060',borderVisible:false,wickUpColor:'#00e676',wickDownColor:'#ff4060'
+    });
+    lwCandleSeries.setData(ohlc.map(d=>({time:d.time,open:d.open,high:d.high,low:d.low,close:d.close})));
+  }
 
   // Línea de precio en vivo — conecta visualmente el ticker con el gráfico
   const livePrice=S.prices[S.asset];
@@ -503,6 +693,22 @@ function renderChart(){
     paneIdx++;
   }
 
+  // MEJORA 3: marcadores de eventos reales — solo sobre velas (no en la
+  // línea de spread, no tiene sentido ahí) y solo los que caen dentro del
+  // rango de fechas que el gráfico está mostrando.
+  if(seriesMarkersPlugin){seriesMarkersPlugin.setMarkers([]);seriesMarkersPlugin=null;}
+  if(!isSpread&&ohlc.length>0){
+    const minT=ohlc[0].time,maxT=ohlc[ohlc.length-1].time;
+    const visible=EVENTS.filter(e=>e.time>=minT&&e.time<=maxT);
+    if(visible.length>0){
+      const markers=visible.map(e=>{
+        const st=EVENT_STYLE[e.type];
+        return{time:e.time,position:'aboveBar',color:st.color,shape:st.shape,text:st.emoji};
+      });
+      seriesMarkersPlugin=LightweightCharts.createSeriesMarkers(lwCandleSeries,markers);
+    }
+  }
+
   // Crosshair → readout OHLCV (reemplaza el viejo hover de canvas)
   lwChart.subscribeCrosshairMove(param=>{
     const box=document.getElementById('ohlcDisplay');if(!box)return;
@@ -511,7 +717,11 @@ function renderChart(){
     const bull=d.close>=d.open;
     const dt=new Date(param.time*1000);
     const fecha=`${String(dt.getUTCDate()).padStart(2,'0')}/${String(dt.getUTCMonth()+1).padStart(2,'0')} ${String(dt.getUTCHours()).padStart(2,'0')}:${String(dt.getUTCMinutes()).padStart(2,'0')}`;
-    box.innerHTML=`<div class="ohlc-item"><span class="ohlc-lbl">O</span><span class="ohlc-val">$${d.open.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">H</span><span class="ohlc-val" style="color:var(--green)">$${d.high.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">L</span><span class="ohlc-val" style="color:var(--red)">$${d.low.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">C</span><span class="ohlc-val" style="color:${bull?'var(--green)':'var(--red)'}">$${d.close.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">LBL</span><span class="ohlc-val" style="color:var(--text3)">${fecha}</span></div>`;
+    // MEJORA 3: si el crosshair está sobre (o muy cerca de) la fecha de un
+    // evento, muestra su descripción debajo del readout OHLC.
+    const ev=EVENTS.find(e=>Math.abs(e.time-param.time)<86400*2);
+    const evHtml=ev?`<div class="ohlc-item" style="max-width:260px;white-space:normal"><span class="ohlc-lbl">${EVENT_STYLE[ev.type].emoji}</span><span class="ohlc-val" style="color:var(--text2);font-weight:400">${ev.title}: ${ev.desc}</span></div>`:'';
+    box.innerHTML=`<div class="ohlc-item"><span class="ohlc-lbl">O</span><span class="ohlc-val">$${d.open.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">H</span><span class="ohlc-val" style="color:var(--green)">$${d.high.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">L</span><span class="ohlc-val" style="color:var(--red)">$${d.low.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">C</span><span class="ohlc-val" style="color:${bull?'var(--green)':'var(--red)'}">$${d.close.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">LBL</span><span class="ohlc-val" style="color:var(--text3)">${fecha}</span></div>${evHtml}`;
   });
 
   lwChart.timeScale().fitContent();
@@ -525,45 +735,552 @@ function fitChart(){if(lwChart)lwChart.timeScale().fitContent();}
 ═══════════════════════════════════════════════ */
 const YAHOO_SYM_MAP={brent:'brent',wti:'wti',ng:'ng',coil:'wti'};
 const YAHOO_TF_MAP={
-  '1H':{interval:'1h',range:'5d'},
-  '4H':{interval:'1h',range:'1mo'},
-  '1D':{interval:'1d',range:'3mo'},
-  '1W':{interval:'1wk',range:'1y'},
-  '1M':{interval:'1mo',range:'5y'},
-  '3M':{interval:'1mo',range:'5y'},
-  '6M':{interval:'1mo',range:'5y'},
-  '1Y':{interval:'1mo',range:'5y'},
-  '5Y':{interval:'1mo',range:'max'},
+  '1H':  {interval:'1h',  range:'5d'},
+  '4H':  {interval:'1h',  range:'1mo'}, // se resamplea x4 en el frontend, ver resampleOHLC()
+  '1D':  {interval:'1d',  range:'3mo'},
+  '1W':  {interval:'1wk', range:'2y'},
+  '1M':  {interval:'1mo', range:'5y'},
+  '3M':  {interval:'1d',  range:'3mo'},
+  '6M':  {interval:'1d',  range:'6mo'},
+  '1Y':  {interval:'1d',  range:'1y'},
+  '5Y':  {interval:'1wk', range:'5y'},
 };
+// BUG 3 fix: agrupa N barras consecutivas en una sola (ej. 4 velas de 1h → 1 de 4h).
+// Yahoo Finance no tiene intervalo "4h" nativo, así que se resamplea acá.
+function resampleOHLC(bars,factor){
+  const out=[];
+  for(let i=0;i<bars.length;i+=factor){
+    const chunk=bars.slice(i,i+factor);
+    if(chunk.length===0)continue;
+    out.push({
+      time:chunk[0].time,
+      open:chunk[0].open,
+      high:Math.max(...chunk.map(b=>b.high)),
+      low:Math.min(...chunk.map(b=>b.low)),
+      close:chunk[chunk.length-1].close,
+      volume:chunk.reduce((s,b)=>s+(b.volume||0),0),
+    });
+  }
+  return out;
+}
 async function fetchTwelveDataPrices(){  try{
     const url = `/api/prices-yahoo?mode=spot`;
     const r=await fetch(url);const d=await r.json();
-    if(d.brent?.price){S.prices.brent=d.brent.price;S.prices.coil=+(S.prices.brent-2.96).toFixed(2);}
-    if(d.wti?.price)S.prices.wti=d.wti.price;
+    if(d.brent?.price)S.prices.brent=d.brent.price;
+    // "coil" se trata como WTI directo — no hay fuente real verificada para
+    // un offset propio de "COIL futures", así que NO se inventa uno (antes
+    // había un -2.96 fijo sin respaldo real, se sacó).
+    if(d.wti?.price){S.prices.wti=d.wti.price;S.prices.coil=d.wti.price;}
     if(d.ng?.price)S.prices.ng=d.ng.price;
     if(d.heatoil?.price)S.prices.heatoil=d.heatoil.price;
     if(d.rbob?.price)S.prices.rbob=d.rbob.price;
     setBadgeLive('Yahoo Finance ✓');
+    renderCrackCards(); // 1.2: recalcular con precios spot reales nuevos
     console.log('[YahooFinance] Precios actualizados:',S.prices,d._warnings?`(avisos: ${d._warnings.join(' | ')})`:'');
   }catch(e){console.warn('[YahooFinance Error]',e);}
 }
-async function loadRealCandles(){  const symKey=YAHOO_SYM_MAP[S.asset];if(!symKey)return;
+/* ═══════════════════════════════════════════════
+   1.2 — CRACK SPREADS (margen de refinería)
+   100% calculado con precios reales de Yahoo ya en S.prices
+   (RBOB y Heating Oil vienen en USD/galón, ×42 para pasar a USD/bbl,
+   son las fórmulas estándar de la industria, sin modificar).
+═══════════════════════════════════════════════ */
+let CRACK_HISTORY=[]; // [{time, c321}] — últimos ~30 días reales, para el sparkline
+function computeCrackSpreads(){
+  const rbob=S.prices.rbob,ho=S.prices.heatoil,wti=S.prices.wti;
+  if(typeof rbob!=='number'||typeof ho!=='number'||typeof wti!=='number')return null;
+  const c321=+((2*rbob*42+1*ho*42)-3*wti).toFixed(2);
+  const c532=+((3*rbob*42+2*ho*42)-5*wti).toFixed(2);
+  const gasCrack=+((rbob*42)-wti).toFixed(2);
+  const hoCrack=+((ho*42)-wti).toFixed(2);
+  return{c321,c532,gasCrack,hoCrack};
+}
+function interpretCrack(v){
+  if(v>15)return{txt:'Margen saludable',col:'var(--green)'};
+  if(v>5)return{txt:'Estrechado',col:'var(--yellow)'};
+  return{txt:'Negativo / pérdida',col:'var(--red)'};
+}
+function sparklineSvg(values){
+  if(values.length<2)return'';
+  const min=Math.min(...values),max=Math.max(...values),range=max-min||1;
+  const w=100,h=30;
+  const pts=values.map((v,i)=>`${(i/(values.length-1)*w).toFixed(1)},${(h-((v-min)/range)*h).toFixed(1)}`).join(' ');
+  const col=values[values.length-1]>=values[0]?'#00e676':'#ff4060';
+  return`<svg class="crack-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.5"/></svg>`;
+}
+async function fetchCrackHistory(){
+  try{
+    const[wtiBars,rbobBars,hoBars]=await Promise.all([
+      fetchYahooCandles('wti','1d','1mo'),
+      fetchYahooCandles('rbob','1d','1mo'),
+      fetchYahooCandles('heatoil','1d','1mo'),
+    ]);
+    if(wtiBars.length===0||rbobBars.length===0||hoBars.length===0){console.warn('[Crack] faltan series para el histórico');return;}
+    const rbobByTime=new Map(rbobBars.map(b=>[b.time,b]));
+    const hoByTime=new Map(hoBars.map(b=>[b.time,b]));
+    const hist=[];
+    for(const w of wtiBars){
+      const r=rbobByTime.get(w.time),h=hoByTime.get(w.time);
+      if(!r||!h)continue; // solo días con las 3 series reales presentes
+      hist.push({time:w.time,c321:+((2*r.close*42+1*h.close*42)-3*w.close).toFixed(2)});
+    }
+    CRACK_HISTORY=hist;
+    console.log(`[Crack] Histórico real de ${hist.length} días cargado`);
+    renderCrackCards();
+  }catch(e){console.warn('[Crack History Error]',e);}
+}
+function renderCrackCards(){
+  const el=document.getElementById('crackCards');if(!el)return;
+  const c=computeCrackSpreads();
+  if(!c){el.innerHTML=`<div style="color:var(--text3);font-family:var(--mono);font-size:12px;padding:8px">Esperando precios reales de WTI/RBOB/Heating Oil...</div>`;return;}
+  const sparkVals=CRACK_HISTORY.map(h=>h.c321);
+  const dayChg=sparkVals.length>=2?+(((sparkVals[sparkVals.length-1]-sparkVals[sparkVals.length-2])/Math.abs(sparkVals[sparkVals.length-2]||1))*100).toFixed(1):null;
+  const cards=[
+    {name:'CRACK 3:2:1',val:c.c321,spark:sparkVals,chg:dayChg},
+    {name:'CRACK 5:3:2',val:c.c532,spark:null,chg:null},
+    {name:'GASOLINE CRACK',val:c.gasCrack,spark:null,chg:null},
+    {name:'HEATING OIL / DIESEL CRACK',val:c.hoCrack,spark:null,chg:null},
+  ];
+  el.innerHTML=cards.map(card=>{
+    const interp=interpretCrack(card.val);
+    return`<div class="crack-card"><div class="crack-card-name">${card.name}</div><div class="crack-card-value" style="color:${card.val>=0?'var(--text)':'var(--red)'}">$${card.val.toFixed(2)}/bbl</div>${card.chg!==null?`<div class="crack-card-chg" style="color:${card.chg>=0?'var(--green)':'var(--red)'}">${card.chg>=0?'+':''}${card.chg}% d/d</div>`:''}<div class="crack-card-interp" style="background:${interp.col}22;color:${interp.col}">${interp.txt}</div>${card.spark?sparklineSvg(card.spark):''}</div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════
+   1.3 — Z-SCORE Y PERCENTIL DEL SPREAD BRENT-WTI
+   Usa 1 año de velas DIARIAS reales (independiente del timeframe
+   que el usuario tenga elegido en el chart), Brent.close-WTI.close
+   día a día, exactamente igual al cálculo de BUG4.
+═══════════════════════════════════════════════ */
+async function fetchSpreadStats(){
+  const el=document.getElementById('spreadStatsCard');
+  if(!el)return;
+  el.innerHTML=`<div style="color:var(--text3);font-family:var(--mono);font-size:12px;grid-column:1/-1">Calculando estadística real (1 año de velas diarias)...</div>`;
+  try{
+    const[brentBars,wtiBars]=await Promise.all([
+      fetchYahooCandles('brent','1d','1y'),
+      fetchYahooCandles('wti','1d','1y'),
+    ]);
+    if(brentBars.length===0||wtiBars.length===0){el.innerHTML=`<div style="color:var(--text3);font-family:var(--mono);font-size:12px;grid-column:1/-1">No se pudo calcular — Yahoo no devolvió datos de Brent o WTI.</div>`;return;}
+    const wtiByTime=new Map(wtiBars.map(b=>[b.time,b]));
+    const series=[];
+    for(const b of brentBars){
+      const w=wtiByTime.get(b.time);
+      if(!w)continue;
+      series.push(+(b.close-w.close).toFixed(3));
+    }
+    if(series.length<20){el.innerHTML=`<div style="color:var(--text3);font-family:var(--mono);font-size:12px;grid-column:1/-1">Muy pocos días en común entre Brent y WTI para una estadística confiable.</div>`;return;}
+    const mean=series.reduce((s,v)=>s+v,0)/series.length;
+    const variance=series.reduce((s,v)=>s+(v-mean)**2,0)/series.length;
+    const std=Math.sqrt(variance);
+    const current=series[series.length-1];
+    const z=std>0?+((current-mean)/std).toFixed(2):0;
+    const below=series.filter(v=>v<current).length;
+    const percentile=Math.round((below/series.length)*100);
+    const absZ=Math.abs(z);
+    const interp=absZ<1?{txt:'NORMAL',col:'var(--green)'}:absZ<2?{txt:'ELEVADO',col:'var(--yellow)'}:{txt:'EXTREMO',col:'var(--red)'};
+    el.innerHTML=`
+      <div class="ss-stat"><div class="ss-stat-lbl">SPREAD ACTUAL</div><div class="ss-stat-val">$${current.toFixed(2)}</div></div>
+      <div class="ss-stat"><div class="ss-stat-lbl">PROMEDIO (1Y)</div><div class="ss-stat-val">$${mean.toFixed(2)}</div></div>
+      <div class="ss-stat"><div class="ss-stat-lbl">DESVÍO ESTÁNDAR</div><div class="ss-stat-val">$${std.toFixed(2)}</div></div>
+      <div class="ss-stat"><div class="ss-stat-lbl">Z-SCORE</div><div class="ss-stat-val" style="color:${interp.col}">${z>0?'+':''}${z}</div></div>
+      <div class="ss-stat"><div class="ss-stat-lbl">PERCENTIL HISTÓRICO</div><div class="ss-stat-val">${percentile}%</div></div>
+      <div class="ss-stat"><div class="ss-stat-lbl">INTERPRETACIÓN</div><div class="ss-stat-val" style="color:${interp.col}">${interp.txt}</div></div>
+    `;
+    console.log(`[Z-Score] spread=${current} mean=${mean.toFixed(2)} std=${std.toFixed(2)} z=${z} (n=${series.length} días reales)`);
+  }catch(e){console.warn('[Spread Stats Error]',e);el.innerHTML=`<div style="color:var(--text3);font-family:var(--mono);font-size:12px;grid-column:1/-1">Error calculando la estadística.</div>`;}
+}
+
+/* ═══════════════════════════════════════════════
+   1.4 — CURVA DE FUTUROS (contango/backwardation)
+   Datos reales de api/forward-curve.js (Yahoo Finance, contratos con
+   vencimiento real). Nada simulado: si Yahoo no da suficientes
+   contratos, se muestra el error tal cual, no se completa con nada.
+═══════════════════════════════════════════════ */
+let CURVE_DATA=null;
+async function fetchFuturesCurve(){
+  const svg=document.getElementById('curveSvg');
+  if(svg)svg.innerHTML='<text x="350" y="160" text-anchor="middle" fill="#5a6178" font-family="monospace" font-size="13">Cargando curva real de Yahoo Finance...</text>';
+  try{
+    const r=await fetch(`/api/forward-curve?underlying=${S.curveUnderlying}&count=12`);
+    const d=await r.json();
+    if(d.error){
+      if(svg)svg.innerHTML=`<text x="350" y="160" text-anchor="middle" fill="#ff4060" font-family="monospace" font-size="12">${d.message}</text>`;
+      document.getElementById('curveSpreadsTable').innerHTML='';
+      document.getElementById('curveContractsList').innerHTML='';
+      document.getElementById('curveShapeGauge').innerHTML='';
+      return;
+    }
+    CURVE_DATA=d;
+    renderCurve();
+    console.log(`[Forward Curve] ${S.curveUnderlying}: ${d.curve.length} contratos reales, ${d.shape} (${d.diffPct}%)`);
+  }catch(e){
+    console.warn('[Forward Curve Error]',e);
+    if(svg)svg.innerHTML='<text x="350" y="160" text-anchor="middle" fill="#ff4060" font-family="monospace" font-size="12">Error de red consultando la curva.</text>';
+  }
+}
+function selCurveUnderlying(u,btn){
+  S.curveUnderlying=u;
+  document.querySelectorAll('#curveUnderlyingSel .seg-btn').forEach(b=>b.className='seg-btn');btn.className='seg-btn active';
+  fetchFuturesCurve();
+  savePrefs();
+}
+function renderCurve(){
+  const d=CURVE_DATA;if(!d)return;
+  const shapeCls=d.shape.toLowerCase();
+  const shapeTxt=d.shape==='CONTANGO'?'CONTANGO (bearish)':d.shape==='BACKWARDATION'?'BACKWARDATION (bullish)':'PLANA';
+  document.getElementById('curveShapeGauge').innerHTML=`<span class="curve-shape-label ${shapeCls}">${shapeTxt}</span><span style="color:var(--text2)">M1→M${d.curve.length}: ${d.diffPct>0?'+':''}${d.diffPct}%</span>${d.rollYieldPct!==null?`<span style="color:var(--text3)">Roll yield anualizado: ${d.rollYieldPct>0?'+':''}${d.rollYieldPct}%</span>`:''}`;
+
+  // Tabla de time spreads
+  const sp=d.spreads;
+  const rows=[['M1−M2',sp.m1m2],['M1−M3',sp.m1m3],['M1−M6',sp.m1m6],['M1−M12',sp.m1m12]];
+  document.getElementById('curveSpreadsTable').innerHTML=rows.map(([lbl,v])=>`<div class="cs-row"><span style="color:var(--text2)">${lbl}</span><span style="color:${v===null?'var(--text3)':v>=0?'var(--green)':'var(--red)'}">${v===null?'— (sin dato)':'$'+v.toFixed(2)}</span></div>`).join('');
+
+  // Lista de contratos reales
+  document.getElementById('curveContractsList').innerHTML=`<div class="cc-row"><span>SPOT</span><span>$${d.spot.toFixed(2)}</span></div>`+d.curve.map(c=>`<div class="cc-row"><span>${c.label} (${c.month})</span><span>$${c.price.toFixed(2)}</span></div>`).join('');
+
+  // SVG: eje X = contratos, eje Y = precio
+  const svg=document.getElementById('curveSvg');
+  const pts=[{label:'SPOT',price:d.spot},...d.curve.map(c=>({label:c.label,price:c.price}))];
+  const W=700,H=320,padL=50,padR=20,padT=20,padB=30;
+  const prices=pts.map(p=>p.price);
+  const min=Math.min(...prices),max=Math.max(...prices);
+  const range=(max-min)||1;
+  const x=i=>padL+(i/(pts.length-1))*(W-padL-padR);
+  const y=v=>padT+(1-((v-min)/range))*(H-padT-padB);
+  let path='';
+  pts.forEach((p,i)=>{path+=(i===0?'M':'L')+x(i).toFixed(1)+','+y(p.price).toFixed(1)+' ';});
+  const gridLines=[];
+  for(let i=0;i<=4;i++){const v=min+range*i/4;gridLines.push(`<line x1="${padL}" y1="${y(v).toFixed(1)}" x2="${W-padR}" y2="${y(v).toFixed(1)}" stroke="#1a1d2e" stroke-width="1"/><text x="6" y="${(y(v)+4).toFixed(1)}" fill="#5a6178" font-family="monospace" font-size="10">$${v.toFixed(1)}</text>`);}
+  const dots=pts.map((p,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(p.price).toFixed(1)}" r="3.5" fill="${i===0?'#ffd600':'#2979ff'}"/><text x="${x(i).toFixed(1)}" y="${H-padB+16}" fill="#9099b8" font-family="monospace" font-size="9" text-anchor="middle">${p.label}</text>`).join('');
+  svg.innerHTML=`${gridLines.join('')}<path d="${path}" fill="none" stroke="#2979ff" stroke-width="2"/>${dots}`;
+}
+
+/* ═══════════════════════════════════════════════
+   4.2 — DASHBOARD HOME
+   Grid 3x3 de KPIs, TODO real. Dos celdas del mockup original
+   (correlación DXY, próximo evento del calendario) son Sprint 2 —
+   todavía no implementado — así que se reemplazaron por KPIs reales
+   que sí existen hoy (curva de futuros, reservas) en vez de mostrar
+   un placeholder vacío o un número inventado.
+═══════════════════════════════════════════════ */
+let DASH_SPARKLINES={};
+async function fetchDashboardSparkline(symKey){
+  try{
+    const bars=await fetchYahooCandles(symKey,'1d','1mo');
+    DASH_SPARKLINES[symKey]=bars.map(b=>b.close);
+  }catch(e){console.warn(`[Dashboard] sparkline ${symKey} error`,e);}
+}
+async function loadDashboard(){
+  // Dispara lo que todavía no esté cargado (lazy — solo al abrir el tab)
+  const jobs=[fetchDashboardSparkline('brent'),fetchDashboardSparkline('wti'),fetchDashboardSparkline('ng')];
+  if(CRACK_HISTORY.length===0)jobs.push(fetchCrackHistory());
+  if(!CURVE_DATA)jobs.push(fetchFuturesCurve());
+  await Promise.all(jobs);
+  renderDashboard();
+}
+function renderDashboard(){
+  const el=document.getElementById('dashGrid');if(!el)return;
+  const priceCard=(name,key)=>{
+    const price=S.prices[key],chg=S.changes[key];
+    const spark=DASH_SPARKLINES[key];
+    const col=typeof chg==='number'?(chg>0?'var(--green)':chg<0?'var(--red)':'var(--text2)'):'var(--text3)';
+    return`<div class="dash-card" onclick="switchTab('charts')"><div class="dash-card-title">${name}</div><div class="dash-card-value">${typeof price==='number'?'$'+price.toFixed(key==='ng'?3:2):'—'}</div><div class="dash-card-sub" style="color:${col}">${typeof chg==='number'?(chg>0?'+':'')+chg.toFixed(2)+'% d/d':'esperando dato real'}</div>${spark&&spark.length>1?sparklineSvg(spark).replace('crack-spark','dash-card-spark'):''}</div>`;
+  };
+
+  const crudeRow=STORAGE_DATA.find(s=>s.seriesKey==='crude_stocks');
+  const eiaCard=crudeRow&&typeof crudeRow.chg==='number'
+    ?`<div class="dash-card" onclick="switchTab('map')"><div class="dash-card-title">EIA CRUDE STOCKS — Δ SEMANA</div><div class="dash-card-value" style="color:${crudeRow.chg<0?'var(--green)':'var(--red)'}">${crudeRow.chg>0?'+':''}${crudeRow.chg} Mbl</div><div class="dash-card-sub" style="color:var(--text3)">${crudeRow.level} Mbl total (EIA real)</div></div>`
+    :`<div class="dash-card"><div class="dash-card-title">EIA CRUDE STOCKS — Δ SEMANA</div><div class="dash-card-value" style="color:var(--text3)">—</div><div class="dash-card-sub" style="color:var(--text3)">esperando EIA</div></div>`;
+
+  const nextSteo=STEO_DATA.wti.length>0?STEO_DATA.wti[STEO_DATA.wti.length-1]:null;
+  const steoCard=nextSteo
+    ?`<div class="dash-card" onclick="switchTab('analysis')"><div class="dash-card-title">EIA STEO — PRÓXIMO MES WTI</div><div class="dash-card-value">$${nextSteo.value.toFixed(2)}</div><div class="dash-card-sub" style="color:var(--text3)">${nextSteo.period} · oficial EIA</div></div>`
+    :`<div class="dash-card"><div class="dash-card-title">EIA STEO — PRÓXIMO MES WTI</div><div class="dash-card-value" style="color:var(--text3)">—</div><div class="dash-card-sub" style="color:var(--text3)">esperando EIA STEO</div></div>`;
+
+  const c=computeCrackSpreads();
+  const crackCard=c
+    ?`<div class="dash-card" onclick="switchTab('charts')"><div class="dash-card-title">CRACK 3:2:1</div><div class="dash-card-value" style="color:${c.c321>0?'var(--text)':'var(--red)'}">$${c.c321.toFixed(2)}/bbl</div><div class="dash-card-sub" style="color:${interpretCrack(c.c321).col}">${interpretCrack(c.c321).txt}</div></div>`
+    :`<div class="dash-card"><div class="dash-card-title">CRACK 3:2:1</div><div class="dash-card-value" style="color:var(--text3)">—</div><div class="dash-card-sub" style="color:var(--text3)">esperando precios</div></div>`;
+
+  const spreadVal=S.prices.spread;
+  const spreadCard=typeof spreadVal==='number'
+    ?`<div class="dash-card" onclick="selAssetFromDash('spread')"><div class="dash-card-title">SPREAD BRENT-WTI</div><div class="dash-card-value">$${spreadVal.toFixed(2)}</div><div class="dash-card-sub" style="color:var(--text3)">ver z-score en Precios</div></div>`
+    :`<div class="dash-card"><div class="dash-card-title">SPREAD BRENT-WTI</div><div class="dash-card-value" style="color:var(--text3)">—</div><div class="dash-card-sub" style="color:var(--text3)">esperando dato real</div></div>`;
+
+  const curveCard=CURVE_DATA
+    ?`<div class="dash-card" onclick="switchTab('curve')"><div class="dash-card-title">CURVA WTI</div><div class="dash-card-value" style="font-size:16px;color:${CURVE_DATA.shape==='CONTANGO'?'var(--red)':CURVE_DATA.shape==='BACKWARDATION'?'var(--green)':'var(--yellow)'}">${CURVE_DATA.shape}</div><div class="dash-card-sub" style="color:var(--text3)">M1→M${CURVE_DATA.curve.length}: ${CURVE_DATA.diffPct>0?'+':''}${CURVE_DATA.diffPct}%</div></div>`
+    :`<div class="dash-card"><div class="dash-card-title">CURVA WTI</div><div class="dash-card-value" style="color:var(--text3)">—</div><div class="dash-card-sub" style="color:var(--text3)">esperando Yahoo</div></div>`;
+
+  const topReserve=[...RESERVES_DATA].sort((a,b)=>b.reserves-a.reserves)[0];
+  const reservesCard=`<div class="dash-card" onclick="switchTab('map')"><div class="dash-card-title">MAYOR RESERVA PROBADA</div><div class="dash-card-value" style="font-size:18px">${topReserve.wb_code}</div><div class="dash-card-sub" style="color:var(--text3)">${topReserve.reserves} mil M bbl · dato anual</div></div>`;
+
+  el.innerHTML=[
+    priceCard('BRENT ICE','brent'),priceCard('WTI NYMEX','wti'),priceCard('NATURAL GAS','ng'),
+    spreadCard,crackCard,curveCard,
+    eiaCard,steoCard,reservesCard,
+  ].join('');
+}
+/* ═══════════════════════════════════════════════
+   4.4 — PERSISTENCIA DE PREFERENCIAS (localStorage)
+   Guarda: tab activo, asset, timeframe, indicadores del chart, filtros
+   de noticias, underlying de la curva. Watchlist (4.5) y alertas (4.3)
+   quedan para otra vuelta — no se tocan acá.
+═══════════════════════════════════════════════ */
+const PREFS_KEY='terminal_petroleo_prefs_v1';
+function savePrefs(){
+  try{
+    localStorage.setItem(PREFS_KEY,JSON.stringify({
+      tab:S.tab,asset:S.asset,tf:S.tf,ind:S.ind,newsFilter:S.newsFilter,curveUnderlying:S.curveUnderlying
+    }));
+  }catch(e){console.warn('[Prefs] no se pudo guardar (localStorage bloqueado/lleno?)',e);}
+}
+function loadPrefs(){
+  try{
+    const raw=localStorage.getItem(PREFS_KEY);
+    return raw?JSON.parse(raw):null;
+  }catch(e){console.warn('[Prefs] error leyendo preferencias guardadas — se ignoran',e);return null;}
+}
+const IND_BTN_CLASS={sma20:'on',sma50:'on',sma200:'on',ema20:'on',bb:'on',volume:'on-blue',rsi:'on-green',macd:'on-purple'};
+// Sincroniza los botones (asset/tf/indicadores) con el S restaurado de
+// localStorage — al cargar la página no hay clicks, así que hay que
+// aplicar las clases .active/.on a mano antes del primer switchTab().
+function restoreUIFromState(){
+  document.querySelectorAll('#assetSel .seg-btn').forEach(b=>{
+    b.className=b.getAttribute('onclick')?.includes(`'${S.asset}'`)?'seg-btn active':'seg-btn';
+  });
+  document.querySelectorAll('#tfSel .seg-btn').forEach(b=>{
+    b.className=b.getAttribute('onclick')?.includes(`'${S.tf}'`)?'seg-btn active':'seg-btn';
+  });
+  Object.keys(S.ind).forEach(ind=>{
+    const btn=document.getElementById('ib-'+ind);
+    if(btn)btn.className=S.ind[ind]?'ind-btn '+IND_BTN_CLASS[ind]:'ind-btn';
+  });
+  if(S.curveUnderlying){
+    document.querySelectorAll('#curveUnderlyingSel .seg-btn').forEach(b=>{
+      b.className=b.getAttribute('onclick')?.includes(`'${S.curveUnderlying}'`)?'seg-btn active':'seg-btn';
+    });
+  }
+  ['src','cat','imp'].forEach(type=>{
+    const val=S.newsFilter[type];
+    document.querySelectorAll('.nf-row .nf-btn').forEach(b=>{
+      const oc=b.getAttribute('onclick')||'';
+      if(oc.includes(`'${type}'`)){b.classList.toggle('on',oc.includes(`'${val}'`));}
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   2.1 — CALENDARIO ECONÓMICO
+   FOMC/OPEC+: fechas reales verificadas en data/calendar.json (fuente:
+   federalreserve.gov, opec.org — 2 de las 9 fechas están marcadas
+   estimated:true porque OPEC todavía no había publicado la fecha
+   exacta al armar este archivo, eso se muestra explícito en la UI).
+   EIA/API/Baker Hughes: recurrencia semanal real y bien conocida de la
+   industria — se calcula el próximo horario, no se inventa una fecha.
+   STEO/MOMR/IEA OMR: solo se sabe "segunda semana del mes", se muestra
+   como aproximado, nunca un día exacto inventado.
+═══════════════════════════════════════════════ */
+// DST de EE.UU. (regla vigente desde 2007): empieza 2do domingo de marzo,
+// termina 1er domingo de noviembre. Válido para cualquier año, no solo 2026.
+function nthSundayOfMonth(year,month,n){ // month: 0-indexed
+  const d=new Date(Date.UTC(year,month,1));
+  const firstSunday=1+((7-d.getUTCDay())%7);
+  return new Date(Date.UTC(year,month,firstSunday+(n-1)*7));
+}
+function usEasternOffsetHours(date){
+  const year=date.getUTCFullYear();
+  const dstStart=nthSundayOfMonth(year,2,2); // 2do domingo de marzo
+  const dstEnd=nthSundayOfMonth(year,10,1);  // 1er domingo de noviembre
+  return(date>=dstStart&&date<dstEnd)?-4:-5; // EDT vs EST
+}
+// Convierte "YYYY-MM-DDTHH:mm:ss" interpretado como hora LOCAL del Este de
+// EE.UU. a un Date real en UTC (haciendo 2 pasadas para el caso límite de
+// fechas cerca de la transición de DST — suficiente para este uso).
+function etStringToUtcDate(etString){
+  const naive=new Date(etString+'Z'); // primera aproximación asumiendo UTC=0
+  const offset=usEasternOffsetHours(naive);
+  return new Date(new Date(etString+'Z').getTime()-offset*3600000);
+}
+function nextWeekday(targetDow,hourET,minuteET){
+  const now=new Date();
+  for(let add=0;add<8;add++){
+    const cand=new Date(now);cand.setUTCDate(now.getUTCDate()+add);
+    if(cand.getUTCDay()!==targetDow)continue;
+    const y=cand.getUTCFullYear(),m=cand.getUTCMonth(),d=cand.getUTCDate();
+    const naive=new Date(Date.UTC(y,m,d,hourET,minuteET,0));
+    const offset=usEasternOffsetHours(naive);
+    const utc=new Date(naive.getTime()-offset*3600000);
+    if(utc>now)return utc;
+  }
+  return null;
+}
+function nextMonthlyApprox(weekNum){
+  // "segunda semana del mes" ≈ día 8-14. Si ya pasó ese rango este mes, el mes que viene.
+  const now=new Date();
+  let y=now.getUTCFullYear(),m=now.getUTCMonth();
+  let approxDay=1+(weekNum-1)*7+3; // mitad de la semana N
+  let cand=new Date(Date.UTC(y,m,approxDay,15,0,0));
+  if(cand<now){m+=1;cand=new Date(Date.UTC(y,m,approxDay,15,0,0));}
+  return cand;
+}
+function fmtCountdown(target){
+  const ms=target-new Date();
+  if(ms<0)return'en curso / pasado';
+  const d=Math.floor(ms/86400000),h=Math.floor((ms%86400000)/3600000),mi=Math.floor((ms%3600000)/60000);
+  if(d>0)return`${d}d ${h}h`;
+  if(h>0)return`${h}h ${mi}m`;
+  return`${mi}m`;
+}
+let CALENDAR_EVENTS=[];
+async function loadCalendarEvents(){
+  const recurring=[
+    {title:'EIA Weekly Petroleum Status Report',importance:'alta',target:nextWeekday(3,10,30),meta:'Todos los miércoles 10:30 ET — recurrencia real de la industria'},
+    {title:'API Stocks (American Petroleum Institute)',importance:'media',target:nextWeekday(2,16,30),meta:'Todos los martes 16:30 ET'},
+    {title:'Baker Hughes Rig Count',importance:'media',target:nextWeekday(5,13,0),meta:'Todos los viernes 13:00 ET'},
+    {title:'EIA STEO (mensual) — aproximado',importance:'media',target:nextMonthlyApprox(2),meta:'≈ 2da semana del mes (no hay día fijo exacto publicado)'},
+    {title:'OPEC MOMR (mensual) — aproximado',importance:'media',target:nextMonthlyApprox(2),meta:'≈ 2da semana del mes (no hay día fijo exacto publicado)'},
+    {title:'IEA Oil Market Report (mensual) — aproximado',importance:'media',target:nextMonthlyApprox(2),meta:'≈ 2da semana del mes (no hay día fijo exacto publicado)'},
+  ].filter(e=>e.target);
+
+  let hardcoded=[];
+  try{
+    const r=await fetch('/data/calendar.json');
+    if(r.ok){
+      const raw=await r.json();
+      hardcoded=raw.map(e=>({
+        title:e.title,importance:e.importance,target:etStringToUtcDate(e.dateET),
+        meta:(e.estimated?'⚠ ESTIMADO — ':'')+e.source,url:e.url
+      }));
+    }
+  }catch(e){console.warn('[Calendario] no se pudo cargar data/calendar.json',e);}
+
+  CALENDAR_EVENTS=[...recurring,...hardcoded]
+    .filter(e=>e.target&&e.target>new Date(Date.now()-2*86400000)) // oculta lo muy viejo
+    .sort((a,b)=>a.target-b.target);
+  renderCalendar();
+}
+function renderCalendar(){
+  const el=document.getElementById('calendarList');if(!el)return;
+  if(CALENDAR_EVENTS.length===0){el.innerHTML='<div style="color:var(--text3);font-family:var(--mono);font-size:12px;padding:10px">Cargando calendario...</div>';return;}
+  el.innerHTML=CALENDAR_EVENTS.slice(0,12).map(e=>`
+    <div class="cal-row" ${e.url?`onclick="window.open('${e.url}','_blank')" style="cursor:pointer"`:''}>
+      <div class="cal-imp ${e.importance}"></div>
+      <div class="cal-body"><div class="cal-title">${e.title}</div><div class="cal-meta">${e.meta}</div></div>
+      <div class="cal-countdown">${fmtCountdown(e.target)}</div>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════════
+   2.2 — CORRELACIONES MACRO (real, api/macro-correlations.js)
+═══════════════════════════════════════════════ */
+async function fetchMacroCorrelations(){
+  const el=document.getElementById('correlHeatmap');
+  if(el)el.innerHTML='<div style="color:var(--text3);font-family:var(--mono);font-size:12px">Calculando correlaciones reales (30 ruedas)...</div>';
+  try{
+    const r=await fetch('/api/macro-correlations');
+    const d=await r.json();
+    if(d.error){if(el)el.innerHTML=`<div style="color:var(--red);font-family:var(--mono);font-size:12px">${d.message}</div>`;return;}
+    MACRO_CORR_DATA=d;
+    renderCorrelHeatmap();
+    renderPerfHeatmap();
+  }catch(e){console.warn('[Macro Correlations Error]',e);if(el)el.innerHTML='<div style="color:var(--red);font-family:var(--mono);font-size:12px">Error de red.</div>';}
+}
+let MACRO_CORR_DATA=null;
+function corrColor(c){
+  // -1 rojo, 0 gris, +1 verde — interpolación simple
+  if(c>=0)return`rgba(0,230,118,${Math.min(Math.abs(c),1)*.8+.1})`;
+  return`rgba(255,64,96,${Math.min(Math.abs(c),1)*.8+.1})`;
+}
+function renderCorrelHeatmap(){
+  const el=document.getElementById('correlHeatmap');if(!el||!MACRO_CORR_DATA)return;
+  el.innerHTML=MACRO_CORR_DATA.pairs.map(p=>{
+    const widthPct=Math.abs(p.corr)*50; // -1..1 → 0..50% desde el centro
+    const fromCenter=p.corr>=0?`left:50%;width:${widthPct}%`:`right:50%;width:${widthPct}%`;
+    return`<div class="correl-row"><span class="correl-name">${p.name}</span><div class="correl-bar-wrap"><div class="correl-bar" style="${fromCenter};background:${corrColor(p.corr)}"></div></div><span class="correl-val" style="color:${p.corr>=0?'var(--green)':'var(--red)'}">${p.corr>=0?'+':''}${p.corr}</span></div>`;
+  }).join('')+`<div style="font-size:10px;color:var(--text3);margin-top:4px">n=${MACRO_CORR_DATA.pairs[0]?.n||'—'} retornos diarios reales · actualizado ${new Date(MACRO_CORR_DATA.asOf).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}</div>`;
+}
+
+/* ═══════════════════════════════════════════════
+   2.3 — HEATMAP DE PERFORMANCE MULTI-ASSET
+   WTI/Brent/NG/RBOB/HO (Yahoo, ya en S.changes) + DXY/Gold/Copper
+   (del mismo fetch de correlaciones, sin pedir nada de nuevo).
+   OPEC Basket/Dubai/WCS/Mars NO están — se decidió no fabricarlos sin
+   fuente verificada (ver README).
+═══════════════════════════════════════════════ */
+function renderPerfHeatmap(){
+  const el=document.getElementById('perfHeatmap');if(!el)return;
+  const cells=[
+    {name:'WTI',v:S.changes.wti},{name:'BRENT',v:S.changes.brent},{name:'NAT GAS',v:S.changes.ng},
+    {name:'RBOB',v:S.changes.rbob},{name:'HEATING OIL',v:S.changes.heatoil},
+  ];
+  if(MACRO_CORR_DATA){
+    MACRO_CORR_DATA.pairs.forEach(p=>{
+      if(typeof p.changePct==='number')cells.push({name:p.name.split(' ')[0],v:p.changePct});
+    });
+  }
+  el.innerHTML=cells.map(c=>{
+    if(typeof c.v!=='number')return`<div class="perf-cell" style="background:var(--panel3)"><div class="perf-cell-name">${c.name}</div><div class="perf-cell-val" style="color:var(--text3)">—</div></div>`;
+    const intensity=Math.min(Math.abs(c.v)/3,1); // ±3% = saturación máxima
+    const bg=c.v>=0?`rgba(0,230,118,${.15+intensity*.5})`:`rgba(255,64,96,${.15+intensity*.5})`;
+    return`<div class="perf-cell" style="background:${bg}"><div class="perf-cell-name">${c.name}</div><div class="perf-cell-val">${c.v>=0?'+':''}${c.v.toFixed(2)}%</div></div>`;
+  }).join('');
+}
+
+function selAssetFromDash(asset){
+  switchTab('charts');
+  setTimeout(()=>{
+    const btn=[...document.querySelectorAll('#assetSel .seg-btn')].find(b=>b.getAttribute('onclick')?.includes(`'${asset}'`));
+    if(btn)selAsset(asset,btn);
+  },60);
+}
+
+async function fetchYahooCandles(symKey,interval,range){
+  const url=`/api/prices-yahoo?mode=candles&symbol=${symKey}&interval=${interval}&range=${range}`;
+  const r=await fetch(url);const d=await r.json();
+  if(!d.values||d.values.length===0)return[];
+  return sortDedupeOhlc(d.values.map(b=>({
+    time:Math.floor(new Date(b.datetime.replace(' ','T')+'Z').getTime()/1000),
+    open:parseFloat(b.open),high:parseFloat(b.high),low:parseFloat(b.low),close:parseFloat(b.close),
+    volume:parseInt(b.volume||50000)
+  })));
+}
+async function loadRealCandles(){
   const{interval,range}=YAHOO_TF_MAP[S.tf]||YAHOO_TF_MAP['1D'];
   try{
-    const url = `/api/prices-yahoo?mode=candles&symbol=${symKey}&interval=${interval}&range=${range}`;
-    const r=await fetch(url);const d=await r.json();
-    if(d.values&&d.values.length>0){
-      // Yahoo ya devuelve orden ascendente (más viejo→más nuevo) — NO revertir.
-      // (Acá había un bug heredado de TwelveData, que sí devolvía descendente.)
-      const ohlc=sortDedupeOhlc(d.values.map(b=>({
-        time:Math.floor(new Date(b.datetime.replace(' ','T')+'Z').getTime()/1000),
-        open:parseFloat(b.open),high:parseFloat(b.high),low:parseFloat(b.low),close:parseFloat(b.close),
-        volume:parseInt(b.volume||50000)
-      })));
-      S.chartData={ohlc};
+    // BUG 4 fix: spread real Brent-WTI — se traen las dos series y se
+    // alinean por timestamp, NO se extrapola ni se inventa una tendencia.
+    if(S.asset==='spread'){
+      const[brentBars,wtiBars]=await Promise.all([
+        fetchYahooCandles('brent',interval,range),
+        fetchYahooCandles('wti',interval,range),
+      ]);
+      if(brentBars.length===0||wtiBars.length===0){console.warn('[Spread] faltan datos de Brent o WTI');return;}
+      const wtiByTime=new Map(wtiBars.map(b=>[b.time,b]));
+      const spreadOhlc=[];
+      for(const b of brentBars){
+        const w=wtiByTime.get(b.time);
+        if(!w)continue; // solo fechas presentes en AMBAS series — sin relleno inventado
+        const diff=+(b.close-w.close).toFixed(3);
+        spreadOhlc.push({time:b.time,open:diff,high:diff,low:diff,close:diff,volume:0});
+      }
+      if(spreadOhlc.length===0){console.warn('[Spread] sin fechas en común entre Brent y WTI');return;}
+      S.chartData={ohlc:sortDedupeOhlc(spreadOhlc)};
+      S.prices.spread=spreadOhlc[spreadOhlc.length-1].close; // último spread real, ya no hardcodeado
       renderChart();
-      console.log(`[YahooFinance] Velas reales cargadas: ${ohlc.length} barras ${interval}/${range} para ${symKey}`);
+      console.log(`[Spread] ${spreadOhlc.length} puntos reales Brent-WTI (${interval}/${range})`);
+      return;
     }
+
+    const symKey=YAHOO_SYM_MAP[S.asset];if(!symKey)return;
+    let ohlc=await fetchYahooCandles(symKey,interval,range);
+    if(ohlc.length===0)return;
+    // BUG 3 fix: Yahoo no tiene "4h" nativo — se pide 1h y se agrupa de 4 en 4.
+    if(S.tf==='4H')ohlc=resampleOHLC(ohlc,4);
+    S.chartData={ohlc};
+    renderChart();
+    console.log(`[YahooFinance] Velas reales cargadas: ${ohlc.length} barras ${interval}/${range} para ${symKey}${S.tf==='4H'?' (resampleado x4)':''}`);
   }catch(e){console.warn('[YahooFinance OHLCV Error]',e);}
 }
 function manualRefreshChart(){
@@ -578,25 +1295,79 @@ function manualRefreshChart(){
    API 2 — EIA (inventarios semanales EE.UU.)
    Se activa si eia no está vacío arriba
 ═══════════════════════════════════════════════ */
-async function fetchEIAInventories(){  try{
-    const url = `/api/eia-data`;
-    const r=await fetch(url);const d=await r.json();
-    if(d.response?.data){
-      const latest=d.response.data[0];
-      const prev=d.response.data[1];
-      const change=latest&&prev?+(latest.value-prev.value).toFixed(1):null;
-      // Actualizar la tarjeta de Cushing en la tabla de storage
-      STORAGE_DATA[1].level=+(latest?.value/1000).toFixed(1)||442.7;
-      if(change!==null){STORAGE_DATA[1].chg=change;console.log(`[EIA] Inventarios crudo: ${latest.value} Mbl (Δ${change})`);}
-      addStatusChip('EIA ✓');
-    }
-  }catch(e){console.warn('[EIA Error]',e);}
+async function fetchEIAInventories(){
+  const results=await Promise.all(STORAGE_DATA.map(async(s)=>{
+    try{
+      const r=await fetch(`/api/eia-data?series=${s.seriesKey}&length=4`);
+      const d=await r.json();
+      if(d.response?.data?.length){
+        return{s,latest:d.response.data[0],prev:d.response.data[1]};
+      }
+    }catch(e){console.warn(`[EIA Error] ${s.seriesKey}`,e);}
+    return{s,latest:null,prev:null};
+  }));
+  let anyOk=false;
+  results.forEach(({s,latest,prev})=>{
+    if(!latest)return;
+    anyOk=true;
+    const levelMbl=+(latest.value/1000).toFixed(1); // EIA da miles de barriles → Mbl
+    s.level=levelMbl;
+    s.fill=+(levelMbl/s.cap*100).toFixed(1);
+    s.chg=prev?+(((latest.value-prev.value)/1000).toFixed(1)):null;
+    console.log(`[EIA] ${s.hub}: ${levelMbl} Mbl (Δ${s.chg ?? '—'})`);
+  });
+  if(anyOk){addStatusChip('EIA ✓');if(S.tab==='map')renderMapSidebar();}
 }
 
 /* ═══════════════════════════════════════════════
    API 3 — GNEWS (noticias petróleo, sin backend)
    Se activa si gnews no está vacío arriba
 ═══════════════════════════════════════════════ */
+let newsAnySourceOk=false;
+// BUG 1 fix: fallback final cuando GNews Y NewsAPI fallan — RSS público,
+// sin key, no depende de ningún rate limit comercial.
+async function fetchNewsRSSFallback(){  try{
+    const r=await fetch('/api/news-rss');const d=await r.json();
+    if(d.articles&&d.articles.length>0){
+      d.articles.forEach((a,i)=>{
+        const pubDate=new Date(a.publishedAt);
+        NEWS.unshift({
+          id:Date.now()+2000+i,
+          realTime:pubDate.getTime(),
+          ts:pubDate.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',hour12:false}),
+          src:'rss',srcL:(a.source?.name||'RSS').substring(0,16).toUpperCase(),
+          srcColor:'#00bcd4',impact:'med',cat:'prod',hl:a.title,hi:false,chg:'',url:a.url,image:null,desc:a.description||''
+        });
+      });
+      dedupeNews();if(NEWS.length>60)NEWS.splice(60);
+      newsAnySourceOk=true;
+      if(S.tab==='news')renderNews();
+      addStatusChip('RSS (fallback) ✓');
+      console.log(`[RSS Fallback] ${d.articles.length} noticias cargadas (${d._fuente||''})`);
+    }
+  }catch(e){console.warn('[RSS Fallback Error]',e);}
+}
+// Orquesta: intenta GNews + NewsAPI en paralelo; si ninguno trajo nada
+// real, recién ahí cae al RSS. Evita gastar el fallback si alguno funcionó.
+async function fetchAllNewsSources(){
+  newsAnySourceOk=false;
+  // B1 fix: NewsAPI se sacó del flujo activo. Su plan gratuito "Developer"
+  // prohíbe explícitamente el uso en producción (solo localhost/testing)
+  // — llamarlo desde Vercel siempre va a dar 401 o, peor, violar sus
+  // términos de servicio. fetchNewsAPI() queda en el código por si en
+  // algún momento pagás un plan que sí permita producción, pero no se
+  // llama acá. Las fuentes reales activas son GNews + RSS multi-fuente.
+  await fetchGNews();
+  if(!newsAnySourceOk&&NEWS.length===0){
+    console.log('[Noticias] GNews sin datos — probando agregador RSS multi-fuente...');
+    if(S.tab==='news')renderNewsLoadingState('Sin noticias disponibles — intentando con feeds alternativos...');
+    await fetchNewsRSSFallback();
+  }
+}
+function renderNewsLoadingState(msg){
+  const el=document.getElementById('npFeatured');
+  if(el)el.innerHTML=`<div class="np-empty">${msg}</div>`;
+}
 async function fetchGNews(){  try{
     const query=encodeURIComponent('crude oil OPEC Brent WTI petroleum');
     const url = `/api/news-gnews?q=${query}&lang=en&max=10`;
@@ -618,6 +1389,7 @@ async function fetchGNews(){  try{
         });
       });
       dedupeNews();if(NEWS.length>60)NEWS.splice(60);
+      newsAnySourceOk=true;
       if(S.tab==='news')renderNews();
       addStatusChip('GNews ✓');
       console.log(`[GNews] ${d.articles.length} noticias cargadas`);
@@ -648,6 +1420,7 @@ async function fetchNewsAPI(){  try{
         });
       });
       dedupeNews();if(NEWS.length>60)NEWS.splice(60);
+      newsAnySourceOk=true;
       if(S.tab==='news')renderNews();
       addStatusChip('NewsAPI ✓');
       console.log(`[NewsAPI] ${d.articles.length} noticias cargadas`);
@@ -668,20 +1441,32 @@ async function fetchAlphaVantage(){  const fn=AV_FN_MAP[S.asset];
   try{
     const url = `/api/prices-alpha?function=${fn}&interval=${interval}`;
     const r=await fetch(url);const d=await r.json();
-    if(d.data&&d.data.length>0){
-      const limit=S.tf==='5Y'?60:S.tf==='1Y'?52:S.tf==='6M'?26:13;
-      const slice=d.data.slice(0,limit).reverse();
-      S.chartData={
-        ohlc:slice.map(b=>({o:parseFloat(b.value),h:parseFloat(b.value)*1.005,l:parseFloat(b.value)*.995,c:parseFloat(b.value),v:80000})),
-        labels:slice.map(b=>b.date.slice(0,7)),
-        closes:slice.map(b=>parseFloat(b.value)),
-        volumes:slice.map(()=>80000)
-      };
-      renderChart();
-      addStatusChip('AlphaVantage ✓');
-      console.log(`[AlphaVantage] ${slice.length} barras ${fn} ${interval}`);
+    // BUG 2 fix: si el backend devolvió un error (403/429/etc.), d.error===true
+    // y d.data no existe — no tocamos S.chartData, así el gráfico se queda
+    // con los datos reales de Yahoo que ya estaban. Silencioso, no rompe nada.
+    if(d.error||!d.data||!Array.isArray(d.data)||d.data.length===0){
+      console.warn('[AlphaVantage] sin datos utilizables, se mantiene el gráfico de Yahoo:',d.message||'');
+      return;
     }
-  }catch(e){console.warn('[AlphaVantage Error]',e);}
+    const limit=S.tf==='5Y'?60:S.tf==='1Y'?52:S.tf==='6M'?26:13;
+    const slice=d.data.slice(0,limit).reverse();
+    // BUG 2 fix: Lightweight Charts espera {time(unix seg), open, high, low, close}
+    // — antes se armaba {o,h,l,c,v} (formato viejo de TwelveData) y rompía
+    // setData() con "Cannot read properties of undefined (reading 'year')".
+    // Alpha Vantage solo da UN valor por período (no OHLC real), así que en
+    // vez de inventar mechas con ±0.5% (dato ficticio), open=high=low=close
+    // — es la representación honesta de "solo tengo el precio de cierre".
+    const ohlc=slice.map(b=>{
+      const v=parseFloat(b.value);
+      const t=Math.floor(new Date(b.date+'T00:00:00Z').getTime()/1000);
+      return{time:t,open:v,high:v,low:v,close:v};
+    }).filter(b=>!isNaN(b.time)&&!isNaN(b.close));
+    if(ohlc.length===0)return;
+    S.chartData={ohlc:sortDedupeOhlc(ohlc)};
+    renderChart();
+    addStatusChip('AlphaVantage ✓');
+    console.log(`[AlphaVantage] ${ohlc.length} barras ${fn} ${interval} (O=H=L=C, AV no da OHLC real)`);
+  }catch(e){console.warn('[AlphaVantage Error] — se mantiene el gráfico de Yahoo',e);}
 }
 
 /* ═══════════════════════════════════════════════
@@ -746,11 +1531,42 @@ function fetchAISummary(){
 function setBadgeLive(src){
   const badge=document.getElementById('dataBadge');
   badge.textContent='LIVE';badge.className='data-badge badge-live';
-  S.liveActive=true;addStatusChip(src);
+  S.liveActive=true;addStatusChip(src);markUpdated();
 }
 function addStatusChip(txt){
   const el=document.getElementById('apiStatus');
   if(!el.textContent.includes(txt))el.textContent+=(el.textContent?'  ':'')+txt;
+  markUpdated();
+}
+// MEJORA 7: timestamp visible de la última vez que llegó CUALQUIER dato real
+function markUpdated(){
+  const el=document.getElementById('lastUpdate');
+  if(!el)return;
+  const now=new Date();
+  el.textContent='Última actualización: '+now.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})+' ART';
+}
+// MEJORA 7: botón de refresh manual global — vuelve a pedir todo lo real
+async function globalRefresh(){
+  const btn=document.getElementById('btnGlobalRefresh');
+  if(btn){btn.disabled=true;btn.textContent='⏳';}
+  try{
+    await Promise.all([
+      fetchTwelveDataPrices(),
+      loadRealCandles(),
+      fetchAlphaVantage(),
+      fetchEIAInventories(),
+      fetchEIASTEO(),
+      fetchManualProjections(),
+      fetchAllNewsSources(),
+      fetchWorldBank(),
+      fetchCrackHistory(),
+      fetchFuturesCurve(),
+      fetchMacroCorrelations(),
+      loadCalendarEvents(),
+    ]);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='🔄';}
+  }
 }
 
 /* ── NEWS DATA & RENDER ───────────────────── */
@@ -792,7 +1608,7 @@ function renderNews(){
   }else brEl.style.display='none';
 
   if(filtered.length===0){
-    document.getElementById('npFeatured').innerHTML=`<div class="np-empty">Cargando noticias en vivo (GNews)...</div>`;
+    document.getElementById('npFeatured').innerHTML=`<div class="np-empty">Buscando noticias en vivo (GNews / NewsAPI)...</div>`;
     document.getElementById('npSideList').innerHTML='';
     document.getElementById('npCards').innerHTML='';
     return;
@@ -826,7 +1642,7 @@ function renderNews(){
 function filterNews(type,val,btn){
   S.newsFilter[type]=val;
   btn.closest('.nf-row').querySelectorAll('.nf-btn').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');renderNews();
+  btn.classList.add('on');renderNews();savePrefs();
 }
 
 /* ── MAP DATA & RENDER ────────────────────── */
@@ -847,11 +1663,15 @@ const PROD_DATA=[
   {country:'Libia',flag:'🇱🇾',prod:1.1,cap:2.0,pct:55,lon:18,lat:27,status:'conflict',company:'NOC',wb_code:'LBY'},
   {country:'Venezuela',flag:'🇻🇪',prod:0.8,cap:3.0,pct:27,lon:-66,lat:8,status:'sanction',company:'PDVSA',wb_code:'VEN'},
 ];
+// Capacidades de referencia (EIA Weekly Petroleum Status Report — valores
+// publicados de capacidad de trabajo, cambian muy lentamente). Los niveles
+// (level/fill/chg) se sobreescriben con datos reales en fetchEIAInventories().
+// ARA (Europa) y Singapore Hub se sacaron: no hay fuente gratuita verificada
+// para esos niveles — mostrar números ahí habría sido inventarlos.
 const STORAGE_DATA=[
-  {hub:'Cushing, OK (EE.UU.)',abbr:'CUSH',level:22.3,cap:90,fill:24.8,chg:-0.8,col:'#ff4060'},
-  {hub:'US Total (EIA)',abbr:'UST',level:442.7,cap:770,fill:57.5,chg:-2.1,col:'#2979ff'},
-  {hub:'ARA Región (Europa)',abbr:'ARA',level:61.2,cap:120,fill:51.0,chg:+0.8,col:'#ffc300'},
-  {hub:'Singapore Hub',abbr:'SGP',level:43.8,cap:90,fill:48.7,chg:-1.2,col:'#00e676'},
+  {hub:'Cushing, OK (EE.UU.)',abbr:'CUSH',level:null,cap:90,fill:null,chg:null,col:'#ff4060',seriesKey:'cushing_stocks'},
+  {hub:'EE.UU. Total (excl. SPR)',abbr:'UST',level:null,cap:770,fill:null,chg:null,col:'#2979ff',seriesKey:'crude_stocks'},
+  {hub:'Gasolina terminada (EE.UU.)',abbr:'GAS',level:null,cap:250,fill:null,chg:null,col:'#ffc300',seriesKey:'gasoline_stocks'},
 ];
 // ── RESERVAS PROBADAS DE PETRÓLEO ──────────────────────────────
 // Dato REAL pero NO en vivo: las reservas probadas se actualizan una
@@ -881,7 +1701,13 @@ function getReservesGeo(){
 // buques en vivo (ver respuesta de Claude sobre AIS). Si en el futuro se
 // consigue un proxy real (ej. volúmenes EIA import/export), se reincorpora.
 function renderMapSidebar(){
-  document.getElementById('storageCards').innerHTML=STORAGE_DATA.map(s=>`<div class="storage-card"><div class="sc-hub">${s.hub}</div><div class="sc-fill-bar"><div class="sc-fill-inner" style="width:${s.fill}%;background:${s.col}"></div></div><div class="sc-stats"><span>${s.level} Mbl</span><span style="color:${s.col}">${s.fill.toFixed(1)}% lleno</span><span style="color:${s.chg<0?'var(--red)':'var(--green)'}">Δ${s.chg>0?'+':''}${s.chg} Mbl</span></div></div>`).join('');
+  document.getElementById('storageCards').innerHTML=STORAGE_DATA.map(s=>{
+    const hasData=s.level!==null&&s.fill!==null;
+    const fillPct=hasData?s.fill:0;
+    const chgTxt=s.chg===null||s.chg===undefined?'—':`${s.chg>0?'+':''}${s.chg} Mbl`;
+    const chgCol=s.chg<0?'var(--red)':s.chg>0?'var(--green)':'var(--text3)';
+    return`<div class="storage-card"><div class="sc-hub">${s.hub}</div><div class="sc-fill-bar"><div class="sc-fill-inner" style="width:${fillPct}%;background:${s.col}"></div></div><div class="sc-stats"><span>${hasData?s.level+' Mbl':'— (cargando EIA)'}</span><span style="color:${s.col}">${hasData?s.fill.toFixed(1)+'% lleno':'—'}</span><span style="color:${chgCol}">Δ${chgTxt}</span></div></div>`;
+  }).join('');
   const geo=getReservesGeo().sort((a,b)=>b.reserves-a.reserves);
   const maxR=Math.max(...geo.map(r=>r.reserves));
   document.getElementById('reservesCards').innerHTML=geo.map(r=>`<div class="storage-card"><div class="sc-hub">${r.flag} ${r.country}</div><div class="sc-fill-bar"><div class="sc-fill-inner" style="width:${(r.reserves/maxR*100).toFixed(0)}%;background:#b388ff"></div></div><div class="sc-stats"><span>${r.reserves} mil M bbl</span><span style="color:var(--text3)">dato anual</span></div></div>`).join('');
@@ -1019,11 +1845,23 @@ async function fetchEIASTEO(){
     }
   }catch(e){console.warn('[EIA STEO Error]',e);}
 }
-// MANUAL_PROJECTIONS — si tenés un informe de research de un banco/IEA/OPEC
-// específico, agregalo acá con este formato exacto y se suma a la tabla:
-// {src:'Goldman Sachs', period:'Q3-2026', wti:68, brent:72, tipo:'Research banco', date:'17-Jun-26'}
-const MANUAL_PROJECTIONS=[
-];
+// MEJORA 4: las proyecciones manuales ya NO se hardcodean en el JS —
+// se cargan desde /data/manual-projections.json (servido como archivo
+// estático por Vercel, sin necesidad de una función /api/). Editá ese
+// archivo para agregar informes de research; ver README.md.
+let MANUAL_PROJECTIONS=[];
+async function fetchManualProjections(){
+  try{
+    const r=await fetch('/data/manual-projections.json');
+    if(!r.ok){console.warn('[Proyecciones manuales] archivo no encontrado o vacío');return;}
+    const d=await r.json();
+    if(Array.isArray(d)){
+      MANUAL_PROJECTIONS=d;
+      if(S.tab==='analysis')renderAnalysis();
+      console.log(`[Proyecciones manuales] ${d.length} filas cargadas de manual-projections.json`);
+    }
+  }catch(e){console.warn('[Proyecciones manuales Error]',e);}
+}
 function renderAnalysis(){
   const digest=buildDigest();
   document.getElementById('digestList').innerHTML=digest.length?digest.map(d=>`<div class="digest-item"><div class="di-time">${d.t}</div><div class="di-body"><span class="di-impact impact-${d.imp}">${d.imp.toUpperCase()}</span><div class="di-text">${d.text}</div><div class="di-tags">${d.tags.map(t=>`<span class="di-tag">${t}</span>`).join('')}</div></div></div>`).join(''):`<div class="digest-item" style="color:var(--text3);text-align:center;padding:24px 10px">Esperando noticias reales de las últimas 24h (GNews)...</div>`;
@@ -1034,7 +1872,7 @@ function renderAnalysis(){
     return{src:'EIA STEO',period:w.period,wti:w.value,brent:b?b.value:null,tipo:'Oficial (gob. EE.UU.)',date:'mensual'};
   });
   const allRows=[...steoRows,...MANUAL_PROJECTIONS];
-  document.getElementById('projTableBody').innerHTML=allRows.length?allRows.map(p=>`<tr><td><strong>${p.src}</strong></td><td style="color:var(--text3)">${p.period}</td><td style="color:var(--yellow)">${p.wti?'$'+p.wti.toFixed(2):'—'}</td><td style="color:var(--blue2)">${p.brent?'$'+p.brent.toFixed(2):'—'}</td><td style="color:var(--text2)">${p.tipo}</td><td style="color:var(--text3)">${p.date}</td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:18px">Cargando EIA STEO...</td></tr>`;
+  document.getElementById('projTableBody').innerHTML=allRows.length?allRows.map(p=>`<tr ${p.url?`onclick="window.open('${p.url}','_blank')" style="cursor:pointer"`:''}><td><strong>${p.src}</strong>${p.analyst?`<br><span style="color:var(--text3);font-size:10px">${p.analyst}</span>`:''}</td><td style="color:var(--text3)">${p.period}</td><td style="color:var(--yellow)">${p.wti?'$'+(+p.wti).toFixed(2):'—'}</td><td style="color:var(--blue2)">${p.brent?'$'+(+p.brent).toFixed(2):'—'}</td><td style="color:var(--text2)">${p.tipo}</td><td style="color:var(--text3)">${p.date}</td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:18px">Cargando EIA STEO...</td></tr>`;
   document.getElementById('sentimentRow').innerHTML=[{label:'SENTIMIENTO GLOBAL',value:62,desc:'LEV. ALCISTA',col:'#00e676'},{label:'TENSIÓN GEOPOLÍTICA',value:78,desc:'ALTA',col:'#ff4060'},{label:'SESGO OFERTA/DEMANDA',value:54,desc:'EQUILIBRADO',col:'#ffc300'}].map(s=>`<div class="sent-card"><div class="sent-label">${s.label}</div><svg class="sent-gauge" viewBox="0 0 60 60"><circle cx="30" cy="30" r="24" fill="none" stroke="#1f2235" stroke-width="6"/><circle cx="30" cy="30" r="24" fill="none" stroke="${s.col}" stroke-width="6" stroke-dasharray="${(s.value/100)*150.8} 150.8" stroke-dashoffset="37.7" stroke-linecap="round" transform="rotate(-90 30 30)"/></svg><div class="sent-value" style="color:${s.col}">${s.value}</div><div class="sent-desc">${s.desc}</div></div>`).join('');
 }
 
@@ -1094,21 +1932,33 @@ function switchTab(tab){
   if(tab==='map'){setTimeout(()=>{renderMapCanvas();renderProdTable();renderMapSidebar();setMapView(S.mapView);},50);}
   if(tab==='news'){renderNews();}
   if(tab==='analysis'){renderAnalysis();if(NEWS.length>3)fetchAISummary();}
+  if(tab==='curve'){fetchFuturesCurve();}
+  if(tab==='dashboard'){loadDashboard();}
+  if(tab==='macro'){loadCalendarEvents();fetchMacroCorrelations();}
+  savePrefs();
 }
 function selAsset(a,btn){
   S.asset=a;S.hover=-1;S.chartData=null;
   document.querySelectorAll('#assetSel .seg-btn').forEach(b=>b.className='seg-btn');btn.className='seg-btn active';
   renderChart();loadRealCandles();fetchAlphaVantage();
+  // 1.3: la sección de estadística del spread solo tiene sentido con asset=spread
+  const statsSec=document.getElementById('spreadStatsSection');
+  if(statsSec){
+    statsSec.style.display=a==='spread'?'block':'none';
+    if(a==='spread')fetchSpreadStats();
+  }
+  savePrefs();
 }
 function selTF(tf,btn){
   S.tf=tf;S.hover=-1;S.chartData=null;
   document.querySelectorAll('#tfSel .seg-btn').forEach(b=>b.className='seg-btn');btn.className='seg-btn active';
   renderChart();loadRealCandles();fetchAlphaVantage();
+  savePrefs();
 }
 function toggleInd(ind,btn,onCls){
   S.ind[ind]=!S.ind[ind];
   if(S.ind[ind])btn.classList.add(onCls);else btn.className='ind-btn';
-  S.hover=-1;renderChart();
+  S.hover=-1;renderChart();savePrefs();
 }
 
 /* ── (startSim eliminado — generaba titulares 100% inventados
@@ -1123,24 +1973,41 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Actualizar precios reales cada 60 segundos si hay key
   setInterval(fetchTwelveDataPrices,60000);
   // Actualizar noticias cada 10 minutos si hay key
-  setInterval(fetchGNews,600000);
-  setInterval(fetchNewsAPI,600000);
+  setInterval(fetchAllNewsSources,600000);
   renderBgMap();
   // Llamadas iniciales a APIs
   fetchTwelveDataPrices();
   fetchEIAInventories();
-  fetchGNews();
-  fetchNewsAPI();
+  fetchAllNewsSources();
   fetchWorldBank();
   fetchAlphaVantage();
   fetchEIASTEO();
+  fetchManualProjections();
   setTimeout(fetchAISummary, 15000);
   setInterval(fetchAISummary, 600000);
   setInterval(fetchEIAInventories, 3600000);
   setInterval(fetchAlphaVantage, 3600000);
   setInterval(fetchEIASTEO, 3600000);
-  // Tab inicial
-  switchTab('charts');
+  loadEvents().then(()=>{if(S.tab==='charts')renderChart();});
+  fetchCrackHistory();
+  setInterval(fetchCrackHistory, 3600000);
+  setInterval(()=>{if(S.tab==='macro')renderCalendar();},30000); // countdown vivo
+  renderCrackCards();
+  // 4.4: restaurar preferencias guardadas (tab, asset, tf, indicadores,
+  // filtros de noticias) si existen; si no, arranca en el Dashboard
+  // (4.2 — "que sea lo primero que vea el usuario").
+  const saved=loadPrefs();
+  if(saved){
+    S.asset=saved.asset||S.asset;
+    S.tf=saved.tf||S.tf;
+    Object.assign(S.ind,saved.ind||{});
+    Object.assign(S.newsFilter,saved.newsFilter||{});
+    S.curveUnderlying=saved.curveUnderlying||S.curveUnderlying;
+    restoreUIFromState();
+    switchTab(saved.tab||'dashboard');
+  }else{
+    switchTab('dashboard');
+  }
   window.addEventListener('resize',()=>{
     // El gráfico (Lightweight Charts) se autoajusta solo via autoSize:true
     // — NO llamamos renderChart() aquí, eso destruiría el zoom/pan del usuario.
