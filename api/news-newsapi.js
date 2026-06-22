@@ -40,10 +40,15 @@ export default async function handler(req, res) {
     return sendError(res, 405, 'Método no permitido. Usá GET.');
   }
 
-  const API_KEY = process.env.NEWSAPI_API_KEY;
-  if (!API_KEY) {
+  const RAW_KEY = process.env.NEWSAPI_API_KEY;
+  if (!RAW_KEY) {
     return sendError(res, 503, 'API key de NewsAPI no configurada en el servidor.');
   }
+  // Si pegaste la key con comillas o espacios desde algún lado, esto lo limpia
+  // — pero si el 401 persiste después de este fix, el problema NO es el código:
+  // es que la key en Vercel está vacía, vencida, o mal copiada. Revisá
+  // newsapi.org/account para confirmar que la key está activa.
+  const API_KEY = RAW_KEY.trim().replace(/^["']|["']$/g, '');
 
   const params   = req.query || {};
   const query    = params.q        || 'crude oil OPEC Brent WTI';
@@ -77,7 +82,12 @@ export default async function handler(req, res) {
       return sendError(res, 429, 'Rate limit de NewsAPI alcanzado. Reintentá más tarde.');
     }
     if (response.status === 401) {
-      return sendError(res, 401, 'NewsAPI rechazó la API key. Verificá que sea válida.');
+      return sendError(res, 401,
+        'NewsAPI rechazó la API key (401). El código envía la key correctamente vía header X-Api-Key — ' +
+        'si esto persiste, el problema es la key en sí: revisá que NEWSAPI_API_KEY en Vercel → Settings → ' +
+        'Environment Variables tenga el valor correcto, sin comillas ni espacios, y que la key esté activa ' +
+        'en newsapi.org/account (las keys gratuitas pueden expirar o quedar inactivas).'
+      );
     }
     if (!response.ok) {
       return sendError(res, 502, `NewsAPI respondió con status ${response.status}.`);
