@@ -1,0 +1,236 @@
+# Terminal de Petróleo — README
+
+## ⚡ Sprint 1 + Bugs B1/B3 (esta vuelta)
+
+Por tamaño del pedido, esta vuelta cubrió **Top 1 (Sprint 1) + Top 2
+(bugs B1/B3)** tal como pediste priorizar. El resto (Sprint 2-5: calendario
+económico, correlaciones macro, COT, técnicos avanzados, dashboard home,
+watchlist, etc.) queda pendiente — avisame y seguimos con Top 3 en
+adelante.
+
+**Nuevo en esta vuelta:**
+- **1.2 Crack Spreads** (tab Precios): 3:2:1, 5:3:2, gasoline crack,
+  heating oil crack — 100% calculado con RBOB/HO/WTI reales de Yahoo,
+  con sparkline de 30 días reales e interpretación (saludable/estrechado/
+  negativo).
+- **1.3 Z-Score y percentil del spread Brent-WTI**: aparece automáticamente
+  al elegir "BRENT-WTI" en Precios. Usa 1 año de velas diarias reales
+  (Brent.close − WTI.close día a día), calcula media, desvío estándar,
+  z-score y percentil histórico real — nada de esto es estimado.
+- **1.4 Forward Curve** (nuevo tab "CURVA"): curva real de contratos WTI
+  y Brent con vencimiento (Yahoo Finance, tickers tipo `CLZ26.NYM`,
+  `BZM26.NYM` — formato CME/ICE estándar, verificado). Gauge de
+  contango/backwardation, roll yield anualizado, tabla de time spreads
+  M1-M2/M1-M3/M1-M6/M1-M12. Nuevo endpoint `api/forward-curve.js`.
+  **TODO explícito**: overlay histórico (cómo era la curva hace 1
+  semana/mes) no se implementó — requeriría ~24 llamadas extra a Yahoo
+  por carga de página, quedó documentado en la UI como pendiente.
+- **B1 (NewsAPI)**: se sacó del flujo activo de producción. Su plan
+  gratuito "Developer" prohíbe explícitamente uso en producción (no es
+  un bug de código, es una restricción de su ToS) — GNews + el agregador
+  RSS (`api/news-rss.js`, ya existente: OilPrice.com + EIA) quedan como
+  únicas fuentes activas. `fetchNewsAPI()` sigue en el código por si en
+  el futuro pagás un plan que sí permita producción.
+- **B3 (spread roto, causa real encontrada)**: el cálculo real del
+  spread ya estaba en el código de la vuelta anterior, pero cuando
+  Yahoo todavía no respondía (o fallaba), el placeholder simulado
+  (`buildSimData`, una línea que siempre crece) se quedaba en pantalla
+  sin que nada lo reemplazara — por eso seguía pareciendo roto. Ahora
+  el asset "spread" nunca muestra ese placeholder: si el dato real
+  todavía no llegó, se ve un mensaje explícito de carga, no una línea
+  inventada.
+
+**Benchmarks adicionales (1.1) — qué se pudo hacer y qué no:**
+No se implementó ninguno de los benchmarks adicionales (OPEC Basket,
+Dubai/Oman, Murban, WCS, Mars, Bonny Light) en esta pasada por quedarse
+sin lugar en el Top 1+2 que pediste priorizar. Adelanto honesto de
+factibilidad para la próxima vuelta:
+- *OPEC Basket*: factible vía scraping de opec.org, pero es HTML que
+  puede cambiar de estructura sin aviso — hay que armarlo con mucho
+  manejo de error y aceptar que puede romperse.
+- *Dubai/Oman*: no encontré una fuente gratuita confiable.
+- *Murban*: no pude confirmar un RSS gratuito real de ICE para esto —
+  hay que verificarlo antes de prometerlo.
+- *WCS y Mars*: los series IDs de EIA que sugeriste (`PET.RCABRT.M`,
+  `PET.RCLC1.D`) no los pude verificar con certeza sin acceso de prueba
+  en vivo — antes de adivinar y arriesgar otro bug de series mal
+  armadas, prefiero confirmarlos primero.
+
+---
+
+## Cómo agregar proyecciones de research manualmente
+
+El archivo `data/manual-projections.json` es un array JSON plano. Cada
+fila que agregues aparece en la tabla de proyecciones de la pestaña
+**Análisis 24H**, junto con las filas oficiales del EIA STEO.
+
+Formato de cada fila:
+
+```json
+{
+  "src": "Goldman Sachs",
+  "analyst": "Daan Struyven",
+  "period": "Q3-2026",
+  "wti": 68.50,
+  "brent": 72.00,
+  "tipo": "Research banco",
+  "date": "15-Jun-26",
+  "url": "https://www.goldmansachs.com/insights/articles/...",
+  "notes": "Texto libre para vos, no se muestra en la tabla."
+}
+```
+
+Reglas:
+
+- **`wti` y `brent`** van en USD/bbl como número. Si el informe no da
+  ese dato, poné `null` (no inventes un número) — la tabla muestra
+  `—` automáticamente.
+- **`tipo`** es texto libre y aparece tal cual en la columna TIPO de
+  la tabla. Usá algo consistente: `"Research banco"`, `"IEA"`,
+  `"OPEC"`, `"Oficial"`, etc.
+- **`url`** es opcional. Si lo poné, la fila de la tabla se vuelve
+  clickeable y abre el informe original en una pestaña nueva.
+- El archivo se lee en cada carga de página y cada vez que tocás el
+  botón 🔄 de refresh global — no hace falta reiniciar nada, solo
+  editar el JSON y subir el cambio al repo (Vercel redeploya solo).
+- El template trae 2 filas de **EJEMPLO** con el `src` diciendo
+  literalmente "EJEMPLO" — borralas o reemplazalas antes de confiar en
+  la tabla, para no terminar mostrando números inventados como si
+  fueran reales.
+
+### Mini-guía: qué pedirle a Claude cuando le pasás un PDF de research
+
+Si le compartís un informe (Goldman, JPMorgan, Morgan Stanley, IEA Oil
+Market Report, OPEC MOMR, etc.) y querés que la cifra termine en esta
+tabla, pedile específicamente:
+
+> "Del PDF que te subí, extraeme: banco/institución, nombre del
+> analista si aparece, el período al que corresponde la proyección
+> (ej. Q3-2026, H2-2026), el precio proyectado de WTI y de Brent en
+> USD/bbl (si solo da uno de los dos, decime cuál falta), y la fecha
+> de publicación del informe. Devolvémelo en el formato JSON de
+> data/manual-projections.json."
+
+Esto evita que la cifra se mezcle con interpretaciones o redondeos no
+intencionales — la idea es que el número que entra al archivo sea el
+que el banco realmente publicó, no una paráfrasis.
+
+---
+
+## Cómo correr el proyecto en local
+
+Necesitás el Vercel CLI:
+
+```bash
+npm i -g vercel
+vercel login
+vercel link        # conectalo al proyecto ya existente en Vercel
+vercel env pull .env.local   # bajate las env vars reales para probar local
+vercel dev          # levanta index.html + todas las funciones /api/ en localhost:3000
+```
+
+Variables de entorno necesarias (ver `.env.example`):
+
+| Variable | Para qué | Plan gratis |
+|---|---|---|
+| `GNEWS_API_KEY` | Noticias (api/news-gnews.js) | 100 req/día |
+| `NEWSAPI_API_KEY` | Noticias (api/news-newsapi.js) | Limitado, ver nota abajo |
+| `ALPHA_VANTAGE_API_KEY` | Histórico largo plazo (api/prices-alpha.js) | 25 req/día |
+| `EIA_API_KEY` | Inventarios + STEO (api/eia-data.js, api/eia-steo.js) | Gratis, sin límite publicado |
+
+`api/prices-yahoo.js` y `api/news-rss.js` **no necesitan key** — son
+proxies a endpoints públicos sin autenticación.
+
+---
+
+## Qué se arregló en esta vuelta (changelog)
+
+**Bugs críticos:**
+- **BUG 1 (noticias 403/401):** GNews cambió su parámetro de auth de
+  `token` (legacy) a `apikey` (docs.gnews.io actuales) — eso causaba el
+  403 aunque la key estuviera bien cargada. Se corrigió. El 401 de
+  NewsAPI casi seguro es la key en sí (vencida, vacía, o mal copiada en
+  Vercel) — el código ya la enviaba correctamente vía header
+  `X-Api-Key`; se agregó sanitización de espacios/comillas y un mensaje
+  de error más claro, pero si persiste hay que revisar la key en
+  newsapi.org/account. Se agregó `api/news-rss.js` como fallback final
+  sin key (OilPrice.com + EIA Today in Energy, RSS públicos).
+- **BUG 2 (TypeError en gráfico):** `fetchAlphaVantage()` armaba los
+  datos en el formato viejo de TwelveData (`{o,h,l,c,v}`) y Lightweight
+  Charts espera `{time,open,high,low,close}`. Corregido. Como Alpha
+  Vantage solo da un valor por período (no OHLC real), ahora
+  open=high=low=close en vez de inventar mechas de ±0.5%. Los 403/429
+  ya no rompen nada — si Alpha Vantage falla, el gráfico se queda con
+  los datos reales de Yahoo.
+- **BUG 3 (timeframes):** `YAHOO_TF_MAP` se ajustó a los rangos que
+  pediste. Se agregó resampleo real de 1h→4h en el frontend (Yahoo no
+  tiene intervalo "4h" nativo).
+- **BUG 4 (spread falso):** el spread Brent-WTI ahora se calcula de
+  verdad: se traen las velas de Brent y WTI por separado, se alinean
+  por fecha, y se grafica `brent.close - wti.close` día a día como
+  línea (no velas, porque no es un instrumento con OHLC propio). "coil"
+  se dejó como WTI directo — el offset de -2.96 que tenía antes era
+  inventado sin fuente real, se sacó.
+
+**Mejoras:**
+- Logo SVG minimalista en vez del emoji ⛽.
+- Mapa Global con aspect-ratio 4:3 centrado (como el gráfico), sidebar
+  de almacenamiento/reservas debajo en vez de al costado.
+- Marcadores de eventos reales en el gráfico (18 eventos verificados
+  con fecha exacta, 2019-2024). Ver nota abajo sobre por qué son 18 y
+  no 30.
+- Proyecciones manuales vía `data/manual-projections.json` (ver arriba).
+- `api/eia-data.js` ahora usa el endpoint `/v2/seriesid/` de EIA, que
+  traduce IDs legacy automáticamente — se agregaron gasolina y Cushing
+  además del crudo nacional.
+- Botón de refresh global 🔄 + timestamp "Última actualización" visible
+  en el topbar.
+
+---
+
+## Lo que NO se pudo hacer gratis (honestidad ante todo)
+
+- **Datos verdaderamente en tiempo real (sin los 15 min de delay de
+  Yahoo):** no hay forma gratuita y legal de lograr esto.
+  - *Investing.com WebSocket sin auth:* es un endpoint no documentado,
+    pensado para la web de Investing, no para terceros. Conectarse
+    ahí implica ingeniería inversa de un protocolo que puede cambiar
+    sin aviso y arriesga que te bloqueen la IP — no lo implementé.
+  - *Stooq.com CSV:* tiene un historial documentado (reportado
+    públicamente desde 2021) de devolver "sin datos" específicamente
+    para tickers de futuros de commodities (ej. `CB.F` para Brent) en
+    su endpoint de descarga automatizada, aunque la página web sí
+    muestre el dato. No es confiable como fallback automatizado para
+    esto — no lo implementé para no agregar una función que falla en
+    silencio.
+  - *TradingEconomics RSS:* no tiene un feed público gratuito real de
+    commodities con la granularidad que necesitarías; es un producto
+    de terminal pago.
+  - Conclusión: Yahoo Finance (delay ~15 min) sigue siendo la mejor
+    opción gratuita real. Si en algún momento querés pagar por datos
+    verdaderamente live, los proveedores serios (Polygon.io, Twelve
+    Data plan pago, Refinitiv) sí lo ofrecen.
+
+- **Niveles de storage en ARA (Europa) y Singapore:** no encontré una
+  API gratuita que los publique. Se sacaron del todo de la UI en vez
+  de dejar números inventados.
+
+- **18 eventos en vez de ~30:** prioricé que cada fecha sea
+  100% verificable antes que completar el número. Si me pasás eventos
+  puntuales con su fecha exacta (geopolíticos, decisiones OPEC+,
+  sorpresas de inventarios EIA), te los agrego al array `EVENTS` en
+  `index.html` con el mismo formato.
+
+- **SPR (Reserva Estratégica) y utilización de refinerías:** no
+  conseguí verificar con certeza el ID legacy exacto de EIA para estas
+  series sin acceso de prueba en vivo a la API. Antes de adivinar y
+  arriesgar otro bug de facets mal armados (como pasó una vez con
+  `duoarea`), preferí dejarlas afuera. Si me confirmás el series ID
+  desde eia.gov/opendata/browser, las agrego.
+
+- **Gauge de "Sentimiento Global / Tensión Geopolítica / Sesgo
+  Oferta-Demanda"** (pestaña Análisis): noté que esos 3 números
+  (62/78/54) siguen siendo estáticos y ficticios — no eran parte de
+  los bugs que pediste arreglar esta vez, así que no los toqué, pero
+  quedan pendientes de una revisión similar a la de NEWS/DIGEST si
+  te interesa.
