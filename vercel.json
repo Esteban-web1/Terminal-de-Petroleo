@@ -13,12 +13,14 @@
     }
   ],
   "functions": {
-    "api/prices-yahoo.js":   { "maxDuration": 10 },
-    "api/prices-alpha.js":   { "maxDuration": 10 },
-    "api/news-gnews.js":     { "maxDuration": 10 },
-    "api/news-newsapi.js":   { "maxDuration": 10 },
-    "api/news-rss.js":       { "maxDuration": 10 },
-    "api/eia-data.js":       { "maxDuration": 10 },
-    "api/eia-steo.js":       { "maxDuration": 10 }
+    "api/prices-yahoo.js":       { "maxDuration": 10 },
+    "api/prices-alpha.js":       { "maxDuration": 10 },
+    "api/news-gnews.js":         { "maxDuration": 10 },
+    "api/news-newsapi.js":       { "maxDuration": 10 },
+    "api/news-rss.js":           { "maxDuration": 10 },
+    "api/eia-data.js":           { "maxDuration": 10 },
+    "api/eia-steo.js":           { "maxDuration": 10 },
+    "api/forward-curve.js":      { "maxDuration": 10 },
+    "api/macro-correlations.js": { "maxDuration": 10 }
   }
 }
