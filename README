@@ -1,5 +1,171 @@
 # Terminal de Petróleo — README
 
+## ⚡ Top 4: BUG 3 (dashboard del mapa) + BUG 4 (análisis dinámico)
+
+**BUG 3 — encontré algo serio sin que me lo pidieras**: los 4
+chokepoints (Hormuz/Suez/Malacca/Bab el-Mandeb) en el mapa tenían
+colores de riesgo **fijos hardcodeados** — Hormuz siempre rojo, Suez
+siempre amarillo, sin importar lo que pasara en el mundo. Ahora
+`computeChokepointRisk()` escanea las noticias reales de las últimas
+48h buscando el nombre del chokepoint + keywords de alto riesgo
+(ataque/houthi/irán/guerra/etc) — rojo si hay señal de alto impacto,
+amarillo si hay mención sin esa señal, verde si no hay nada.
+
+- **Threat Index** arriba del mapa, con el conteo real de noticias
+  de 48h por chokepoint.
+- **Últimos Movimientos**: sidebar a la derecha del mapa, del feed dea
+  noticias real filtrado a geo/OPEC+/alto-impacto, ordenado por fecha,
+  con "hace Xh" calculado de timestamps reales.
+- **KPIs en vivo** debajo del mapa: Brent, WTI, Spread, Crack 3:2:1,
+  Cushing, forma de la curva — los 6 ya eran datos reales que la app
+  tenía en otras pestañas, solo se reusan acá.
+- **Rutas de tanqueros**: investigué MarineTraffic y VesselFinder —
+  ambas requieren registro + API key propia (no hay forma anónima/
+  gratuita real), y EmodNet no cubre Hormuz/Malacca/Golfo Pérsico que
+  son los que importan. `api/tanker-routes.js` devuelve rutas típicas
+  de comercio (Worldscale) con `liveTracking:false` explícito en cada
+  una — el botón dice "RUTAS TÍPICAS", no "en vivo", justamente para
+  no insinuar algo que no es.
+
+**BUG 4**: keywords exactos de tu especificación (BULLISH: cut, supply,
+war, attack, sanctions, Hormuz, embargo; BEARISH: surplus, oversupply,
+shale, weakness, demand drop, recession, China weak). El análisis se
+recalcula cada vez que llega una noticia nueva (no solo cada 5 minutos
+por timer). Top 5 eventos de mayor impacto del día, cruce con el
+calendario para "eventos por seguir hoy", timestamp real visible
+("Análisis del HH:MM:SS — basado en N noticias"). De paso aproveché
+para arreglar los 3 gauges de "Sentimiento Global/Tensión Geopolítica/
+Sesgo Oferta-Demanda" que documenté como estáticos hace dos vueltas
+(62/78/54 fijos) — ahora son: sesgo direccional real, conteo real de
+eventos geopolíticos, conteo real de actividad OPEC+.
+
+**Pendiente**: ninguno de los 8 bugs queda sin tocar — esta era la
+última tanda. Si querés, en otra vuelta puedo profundizar Sprint 2-5
+del pedido anterior (COT, técnicos avanzados, watchlist, etc.) que
+habían quedado pausados.
+
+---
+
+## ⚡ Top 3: BUG 6 (integración brent-spread-monitor)
+
+**Alcance real vs. lo que vi en brent-spread-monitor.vercel.app:** esa
+app tiene un módulo completo de cobertura/P&L (posición hedgeada,
+producción proyectada, nocional, MTM) — eso es **data de tu negocio**,
+no datos de mercado, así que no lo porté: no tengo esa información y
+inventarla habría sido peor que no tenerlo. Lo que sí porté es
+exactamente lo que pediste en el texto del bug: curva de futuros CO1-
+CO12 con comparación histórica, y la matriz de spreads con colores.
+
+**Arquitectura de datos:**
+- `data/brent-history.json` reemplaza el `RAW=[...]`/`DATED_BRENT=[...]`
+  embebido en HTML — arranca **vacío a propósito**. No inventé 30 días
+  de histórico CO1-CO12 porque no hay forma confiable de reconstruir
+  retroactivamente cuál era el "front month" cada día pasado sin
+  haberlo registrado en su momento. Si ya tenés ese histórico en el
+  otro proyecto, pasámelo y lo cargo.
+- `update_prices.py` / `update_dated_brent.py` ahora escriben en ese
+  JSON (clave `co_curve` / `dated_brent`) en vez de hacer regex sobre
+  HTML. Mismos argumentos de CLI, no cambia la experiencia del
+  `workflow_dispatch`.
+- **Tuve que tocar una línea de los `.yml`** (el `git add`): antes
+  apuntaba a `public/index.html`, ahora a `data/brent-history.json` —
+  si no cambiaba eso, el commit automático no iba a subir nada. El
+  resto de cada workflow (inputs, triggers) quedó igual.
+- `api/brent-history.js` sirve ese JSON con 1h de caché (solo cambia
+  cuando corre un workflow manual, no hace falta revalidar seguido).
+
+**Prioridad manual vs. Yahoo en vivo:** si hay una fila cargada a mano
+para hoy, se usa esa (🟢 verde). Si no, se cae a `/api/forward-curve`
+(Yahoo, ya construido en BUG 5) y se etiqueta en amarillo
+"Yahoo Finance en vivo (sin entrada manual para hoy)" — nunca se
+mezclan como si fueran la misma fuente. Importante: las funciones
+serverless de Vercel **no pueden escribir de vuelta al repo** — el
+fallback a Yahoo es solo para mostrar en pantalla esa visita, no se
+persiste a `brent-history.json` (eso solo pasa vía el workflow manual,
+tal como ya estaba diseñado en el proyecto original).
+
+**Tab FUTUROS BRENT:** panel de precios (CO1-CO12, vencimiento,
+precio, Var%1D, Var%5D — estas dos últimas solo se calculan si hay
+historial manual suficiente, si no muestran "—"), curva visual con
+selector de fecha pasada para comparación (línea punteada amarilla).
+
+**Tab SPREADS:** matriz 12x12 de CO_i − CO_j con heatmap de color
+(verde=positivo, rojo=negativo, intensidad proporcional a la magnitud).
+
+---
+
+## ⚡ Vuelta mayor: Top 1 + Top 2 (BUG 1, 5, 2, 8)
+
+**BUG 1 (chart arbitrario) — RAÍZ ENCONTRADA Y ELIMINADA:**
+`buildSimData()`, `SEEDS`, `TF_CFG` y `genOHLC()` (el generador de velas
+con `Math.random()`) se borraron por completo — ya no existen en el
+código. De paso encontré y corregí dos bugs más de la misma familia que
+no estaban en tu lista pero violaban la regla de "cero Math.random() en
+datos visibles":
+- El ticker superior recalculaba el %cambio cada 3 segundos comparando
+  contra precios base **hardcodeados**, pisando el dato real que ya
+  llegaba de Yahoo. Ahora solo lee `S.changes` (real).
+- La asignación de impacto en noticias de GNews usaba
+  `Math.random()>.6?'high':'med'` — ahora usa el clasificador de
+  keywords real (`classifyImpact`).
+
+`selAsset`/`selTF` ya no renderizan nada hasta que `loadRealCandles()`
+trae datos reales — mientras tanto se ve un spinner explícito
+("Cargando datos OHLC históricos reales..."), nunca una vela inventada.
+Si Yahoo falla, se ve un mensaje de error explícito, no un spinner
+infinito ni datos viejos mezclados con nuevos.
+
+`YAHOO_TF_MAP` ahora pide la resolución máxima real: 1D trae 5 años de
+diario, 1W trae 10 años de semanal, 1M trae todo el histórico mensual
+que tenga Yahoo. Cache-Control de 60s agregado en `prices-yahoo.js`
+para que el mismo gráfico no muestre datos distintos en clicks
+consecutivos dentro de la misma ventana.
+
+**BUG 5 (curva no determinística):** `forward-curve.js` ya no usa
+`regularMarketPrice` (fluctúa intradía — esa era la causa real de "la
+curva cambia al refrescar"). Ahora usa el `close` de la última vela
+diaria YA CERRADA. Cache subida a 5 min. Cada punto muestra ticker real,
+mes-año en español, precio, volumen, y fecha del cierre — open interest
+se devuelve `null` explícito porque Yahoo no lo provee en este endpoint,
+no se inventa. Brent usa etiquetas `CO1, CO2...` (convención ICE), WTI
+usa `M1, M2...`. Selector de rango M1-M6/M1-M12/M1-M24 agregado.
+**M1-M36 no se implementó**: más allá de ~24 meses los contratos de
+crudo no tienen listado/liquidez confiable, agregar ese botón hubiera
+sido prometer algo que en la práctica devuelve mayormente errores.
+Badge de frescura del mercado (CME Globex: abierto domingo 18h ET a
+viernes 17h ET, aproximado a la hora, suficiente para este indicador).
+
+**BUG 2 (noticias):** Reuters cerró sus feeds RSS directos en **junio
+de 2020** — esto está ampliamente documentado, las URLs que sugeriste
+(`feeds.reuters.com/...`) devuelven 404. En vez de usarlas, Reuters/
+Bloomberg/Financial Times se traen vía el workaround de Google News
+(`news.google.com/rss/search?q=site:dominio.com+...`), que es gratis,
+público, y es la forma estándar que usa la comunidad desde 2020. Se
+agregaron también OPEC/IEA/Rigzone, pero esos tres **no los pude
+verificar con certeza** sin acceso de prueba en vivo — si fallan, no
+rompen nada (`Promise.allSettled` + timeout de 6s por feed), simplemente
+no aportan artículos. S&P Global Commodity Insights y Argus Media **no
+se incluyeron**: son contenido mayormente pago, no tienen RSS público
+real. Extracción de imagen (media:content → enclosure → primer `<img>`
+en la descripción → null). Clasificación automática de activo,
+categoría e impacto por keywords, exactamente según tu especificación.
+Badges de fuente con los colores que pediste (Reuters rojo, Bloomberg
+azul oscuro, FT salmón). Nuevos filtros ACTIVO y ORDEN en la UI. GNews
+y el agregador RSS corren siempre en paralelo (ya no es "RSS solo si
+GNews falla" — ahora aporta fuentes con nombre propio que GNews no
+tiene). Cache de 3 min.
+
+**BUG 8 (favicon):** `favicon.svg` nuevo en la raíz, mismo SVG del logo
+del topbar (gota naranja `#ff6d00`), 32x32, fondo transparente. Linkeado
+en el `<head>`. El `<title>` ya decía "Terminal de Petróleo" sin emoji,
+no hizo falta tocarlo.
+
+**Pendiente, avisame para seguir:** BUG 6 (integrar brent-spread-
+monitor), BUG 3 (dashboard del mapa), BUG 4 (análisis dinámico), BUG 7
+(calendario macro ampliado).
+
+---
+
 ## ⚡ Sprint 1 + Bugs B1/B3 (esta vuelta)
 
 Por tamaño del pedido, esta vuelta cubrió **Top 1 (Sprint 1) + Top 2
