@@ -1,0 +1,84 @@
+[
+  {
+    "type": "fomc",
+    "title": "FOMC — Decisión de tasas (Fed)",
+    "importance": "alta",
+    "dateET": "2026-01-28T14:00:00",
+    "source": "federalreserve.gov/monetarypolicy/fomccalendars.htm",
+    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+  },
+  {
+    "type": "fomc",
+    "title": "FOMC — Decisión de tasas (Fed)",
+    "importance": "alta",
+    "dateET": "2026-03-18T14:00:00",
+    "source": "federalreserve.gov/monetarypolicy/fomccalendars.htm",
+    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+  },
+  {
+    "type": "fomc",
+    "title": "FOMC — Decisión de tasas (Fed)",
+    "importance": "alta",
+    "dateET": "2026-04-29T14:00:00",
+    "source": "federalreserve.gov/monetarypolicy/fomccalendars.htm",
+    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+  },
+  {
+    "type": "fomc",
+    "title": "FOMC — Decisión de tasas (Fed)",
+    "importance": "alta",
+    "dateET": "2026-06-17T14:00:00",
+    "source": "federalreserve.gov/monetarypolicy/fomccalendars.htm",
+    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+  },
+  {
+    "type": "fomc",
+    "title": "FOMC — Decisión de tasas (Fed)",
+    "importance": "alta",
+    "dateET": "2026-07-29T14:00:00",
+    "source": "federalreserve.gov/monetarypolicy/fomccalendars.htm",
+    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+  },
+  {
+    "type": "fomc",
+    "title": "FOMC — Decisión de tasas (Fed)",
+    "importance": "alta",
+    "dateET": "2026-09-16T14:00:00",
+    "source": "federalreserve.gov/monetarypolicy/fomccalendars.htm",
+    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+  },
+  {
+    "type": "fomc",
+    "title": "FOMC — Decisión de tasas (Fed)",
+    "importance": "alta",
+    "dateET": "2026-10-28T14:00:00",
+    "source": "federalreserve.gov/monetarypolicy/fomccalendars.htm",
+    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+  },
+  {
+    "type": "fomc",
+    "title": "FOMC — Decisión de tasas (Fed)",
+    "importance": "alta",
+    "dateET": "2026-12-09T14:00:00",
+    "source": "federalreserve.gov/monetarypolicy/fomccalendars.htm",
+    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+  },
+  {
+    "type": "opec",
+    "title": "OPEC+ JMMC — 67ª reunión (ESTIMADA, no confirmada oficialmente)",
+    "importance": "media",
+    "dateET": "2026-08-02T09:00:00",
+    "estimated": true,
+    "source": "Estimado por cadencia bimestral (64ª: 1-feb, 65ª: 5-abr, 66ª: 7-jun, todas confirmadas en opec.org). La fecha exacta de la 67ª no estaba publicada en opec.org al momento de generar este archivo.",
+    "url": "https://www.opec.org/jmmc.html"
+  },
+  {
+    "type": "opec",
+    "title": "OPEC+ ONOMM — Reunión ministerial (ESTIMADA, no confirmada oficialmente)",
+    "importance": "alta",
+    "dateET": "2026-12-06T09:00:00",
+    "estimated": true,
+    "source": "Estimado por cadencia semestral (41ª ONOMM confirmada: 7-jun-2026). La fecha exacta de la 42ª no estaba publicada en opec.org al momento de generar este archivo.",
+    "url": "https://www.opec.org/opec_web/en/press_room/28.htm"
+  }
+]
