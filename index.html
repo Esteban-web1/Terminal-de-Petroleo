@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Terminal de Petróleo</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="alternate icon" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Archivo+Black&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -68,6 +70,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .ind-btn.on-green{border-color:var(--green);color:var(--green);background:rgba(0,230,118,.08)}
 .chart-wrap{position:relative;background:#060810;display:flex;justify-content:center;padding:14px}
 .chart-box{position:relative;width:100%;max-width:920px;aspect-ratio:4/3;background:#060810;border:1px solid var(--border2)}
+.chart-spinner{width:14px;height:14px;border:2px solid var(--border2);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
 #lwChart{position:absolute;inset:0}
 .chart-zoom-hint{position:absolute;bottom:6px;right:10px;font-family:var(--mono);font-size:10px;color:var(--text3);pointer-events:none;z-index:5}
 .chart-asset-label{position:absolute;top:8px;right:12px;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text);letter-spacing:1px;pointer-events:none;z-index:5;background:rgba(6,8,16,.75);padding:3px 9px;border-radius:3px;border:1px solid var(--border2)}
@@ -79,6 +83,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 
 /* 1.4 Curva de futuros */
 .curve-controls{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:8px 12px;background:var(--panel2);border-bottom:1px solid var(--border)}
+.curve-freshness{padding:6px 12px;font-family:var(--mono);font-size:11px;border-bottom:1px solid var(--border2)}
+.curve-freshness.open{color:var(--green)}
+.curve-freshness.closed{color:var(--yellow)}
+.spreads-matrix{border-collapse:collapse;font-family:var(--mono);font-size:11px}
+.spreads-matrix th,.spreads-matrix td{padding:5px 8px;text-align:center;border:1px solid var(--border)}
+.spreads-matrix th{background:var(--panel3);color:var(--text2);font-weight:700}
+.spreads-matrix td.diag{background:var(--panel3);color:var(--text3)}
 .curve-shape-gauge{display:flex;align-items:center;gap:10px;font-family:var(--mono)}
 .curve-shape-label{font-size:13px;font-weight:700;padding:4px 12px;border-radius:3px}
 .curve-shape-label.contango{background:rgba(255,64,96,.12);color:var(--red)}
@@ -177,6 +188,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .np-card{cursor:pointer}
 .np-card-img{width:100%;height:110px;object-fit:cover;border-radius:3px;background:linear-gradient(135deg,#2a2d35,#555);display:flex;align-items:center;justify-content:center;color:#999;font-size:10px;font-family:var(--mono)}
 .np-card-src{font-size:9.5px;font-weight:800;color:#d32f2f;letter-spacing:.5px;margin-top:9px;font-family:var(--mono)}
+.np-src-badge{display:inline-block;padding:1px 6px;border-radius:2px;font-size:9px;font-weight:800;letter-spacing:.3px}
 .np-card-title{font-size:12.5px;font-weight:600;line-height:1.4;color:#111;margin-top:4px}
 .np-empty{padding:40px 20px;text-align:center;color:#888;font-family:var(--mono);font-size:13px}
 #tab-map{display:none}
@@ -188,14 +200,25 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .mt-btn:last-child{border-right:none}
 .mt-btn.active{background:rgba(41,121,255,.15);color:var(--blue2)}
 .map-body{flex:1;display:flex;flex-direction:column;align-items:center;padding:14px;overflow-y:auto;gap:14px}
-#mapView{position:relative;overflow:hidden;background:#030508;width:100%;max-width:920px;aspect-ratio:4/3;border:1px solid var(--border2);flex-shrink:0}
+.threat-index-bar{display:flex;gap:8px;flex-wrap:wrap;padding:8px 14px;background:var(--panel2);border-bottom:1px solid var(--border)}
+.threat-chip{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--text2);border:1px solid;border-radius:3px;padding:3px 9px}
+.threat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.map-body-row{display:flex;gap:14px;padding:14px;align-items:flex-start;flex-wrap:wrap}
+.map-main-col{flex:1;min-width:320px}
+.map-movements-col{width:300px;flex-shrink:0;border:1px solid var(--border2);max-height:600px;overflow-y:auto}
+.map-movements-list{padding:6px}
+.mov-row{display:flex;gap:8px;padding:8px 6px;border-bottom:1px solid var(--border);cursor:pointer}
+.mov-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.mov-text{font-size:12px;color:var(--text2);line-height:1.4}
+.mov-meta{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:2px}
+#mapView{position:relative;overflow:hidden;background:#030508;width:100%;aspect-ratio:4/3;border:1px solid var(--border2);flex-shrink:0}
 #mapCanvas{display:block;width:100%;height:100%}
 .map-tooltip{position:absolute;background:var(--panel2);border:1px solid var(--border2);padding:10px 12px;font-family:var(--mono);font-size:12px;max-width:220px;pointer-events:none;z-index:10;display:none}
 .map-tooltip.show{display:block}
 .mt-country{font-size:14px;font-weight:700;color:var(--yellow);margin-bottom:6px}
 .mt-row{display:flex;justify-content:space-between;gap:16px;margin-bottom:3px}
 .mt-lbl{color:var(--text3)}.mt-val{color:var(--text)}
-#listView{display:none;overflow-y:auto;width:100%;max-width:920px}
+#listView{display:none;overflow-y:auto;width:100%}
 .prod-table{width:100%;font-family:var(--mono);font-size:12px;border-collapse:collapse}
 .prod-table th{padding:7px 10px;background:var(--panel2);color:var(--text3);font-weight:500;text-align:left;font-size:11px;letter-spacing:.8px;border-bottom:1px solid var(--border2);position:sticky;top:0}
 .prod-table td{padding:6px 10px;border-bottom:1px solid var(--border)}
@@ -203,7 +226,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .status-stable{color:var(--green)}.status-tension{color:var(--yellow)}.status-conflict{color:var(--red)}.status-sanction{color:var(--purple)}
 .prod-bar-bg{height:4px;background:var(--border);margin-top:3px;border-radius:2px}
 .prod-bar-fill{height:100%;border-radius:2px}
-.map-sidebar{display:grid;grid-template-columns:1fr 1fr;width:100%;max-width:920px;border:1px solid var(--border2)}
+.map-sidebar{display:grid;grid-template-columns:1fr 1fr;width:100%;max-width:920px;border:1px solid var(--border2);margin:0 auto 14px}
 .ms-section{padding:10px 12px;border-bottom:1px solid var(--border2)}
 .ms-section:first-child{border-right:1px solid var(--border2)}
 .ms-title{font-family:var(--mono);font-size:12px;color:var(--text3);letter-spacing:1px;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
@@ -293,6 +316,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
     <button class="tab-btn" id="tbn-analysis" onclick="switchTab('analysis')"><span class="tab-icon">🔍</span><span>ANÁLISIS 24H</span></button>
     <button class="tab-btn" id="tbn-curve" onclick="switchTab('curve')"><span class="tab-icon">📐</span><span>CURVA</span></button>
     <button class="tab-btn" id="tbn-macro" onclick="switchTab('macro')"><span class="tab-icon">🌐</span><span>MACRO</span></button>
+    <button class="tab-btn" id="tbn-futuros" onclick="switchTab('futuros')"><span class="tab-icon">📉</span><span>FUTUROS BRENT</span></button>
+    <button class="tab-btn" id="tbn-spreads" onclick="switchTab('spreads')"><span class="tab-icon">🔲</span><span>SPREADS</span></button>
   </nav>
 </div>
 
@@ -386,6 +411,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
     <div class="np-body">
       <div class="np-filters-bar">
         <div class="nf-row">
+          <span class="nf-lbl">ACTIVO</span>
+          <button class="nf-btn on" onclick="filterNews('asset','all',this)">TODOS</button>
+          <button class="nf-btn" onclick="filterNews('asset','brent',this)">BRENT</button>
+          <button class="nf-btn" onclick="filterNews('asset','wti',this)">WTI</button>
+          <button class="nf-btn" onclick="filterNews('asset','ng',this)">GAS NAT</button>
+          <button class="nf-btn" onclick="filterNews('asset','rbob',this)">GASOLINE</button>
+          <button class="nf-btn" onclick="filterNews('asset','ho',this)">HEATING</button>
+        </div>
+        <div class="nf-row">
           <span class="nf-lbl">FUENTE</span>
           <button class="nf-btn on" onclick="filterNews('src','all',this)">TODAS</button>
           <button class="nf-btn" onclick="filterNews('src','bloomberg',this)">BLOOMBERG</button>
@@ -399,7 +433,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
           <button class="nf-btn on" onclick="filterNews('cat','all',this)">TODAS</button>
           <button class="nf-btn" onclick="filterNews('cat','geo',this)">GEOPOLÍTICA</button>
           <button class="nf-btn" onclick="filterNews('cat','opec',this)">OPEC+</button>
+          <button class="nf-btn" onclick="filterNews('cat','inv',this)">INVENTARIOS</button>
           <button class="nf-btn" onclick="filterNews('cat','prod',this)">PRODUCCIÓN</button>
+          <button class="nf-btn" onclick="filterNews('cat','refining',this)">REFINING</button>
         </div>
         <div class="nf-row">
           <span class="nf-lbl">IMPACTO</span>
@@ -407,6 +443,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
           <button class="nf-btn nf-high" onclick="filterNews('imp','high',this)">ALTO</button>
           <button class="nf-btn nf-med" onclick="filterNews('imp','med',this)">MEDIO</button>
           <button class="nf-btn nf-low" onclick="filterNews('imp','low',this)">BAJO</button>
+        </div>
+        <div class="nf-row">
+          <span class="nf-lbl">ORDEN</span>
+          <button class="nf-btn on" onclick="filterNews('sort','recent',this)">MÁS RECIENTE</button>
+          <button class="nf-btn" onclick="filterNews('sort','impact',this)">MAYOR IMPACTO</button>
         </div>
       </div>
       <div class="np-grid">
@@ -433,24 +474,37 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
         </div>
         <div class="map-toggle">
           <button class="mt-btn" id="mt-reserves" onclick="toggleReservesLayer()">⬡ RESERVAS</button>
+          <button class="mt-btn" id="mt-tankers" onclick="toggleTankerRoutes()">🛢 RUTAS TÍPICAS</button>
         </div>
       </div>
     </div>
-    <div class="map-body">
-      <div id="mapView">
-        <canvas id="mapCanvas"></canvas>
-        <div class="map-tooltip" id="mapTooltip"></div>
+    <!-- BUG3: Threat Index — riesgo real calculado de noticias de 48h, no estático -->
+    <div id="threatIndexBar" class="threat-index-bar"></div>
+    <div class="map-body-row">
+      <div class="map-main-col">
+        <div id="mapView">
+          <canvas id="mapCanvas"></canvas>
+          <div class="map-tooltip" id="mapTooltip"></div>
+        </div>
+        <div id="listView">
+          <table class="prod-table">
+            <thead><tr><th>PAÍS</th><th>PRODUCCIÓN Mb/d</th><th>CAPACIDAD</th><th>%CAP</th><th>COMPAÑÍA</th><th>ESTADO</th></tr></thead>
+            <tbody id="prodTableBody"></tbody>
+          </table>
+        </div>
       </div>
-      <div id="listView">
-        <table class="prod-table">
-          <thead><tr><th>PAÍS</th><th>PRODUCCIÓN Mb/d</th><th>CAPACIDAD</th><th>%CAP</th><th>COMPAÑÍA</th><th>ESTADO</th></tr></thead>
-          <tbody id="prodTableBody"></tbody>
-        </table>
+      <!-- BUG3: ÚLTIMOS MOVIMIENTOS — real, del feed de noticias filtrado por categorías geo/conflict/sanction/supply -->
+      <div class="map-movements-col">
+        <div class="panel-hdr" style="margin:0"><span>📡 ÚLTIMOS MOVIMIENTOS</span></div>
+        <div id="mapMovementsList" class="map-movements-list"></div>
       </div>
-      <div class="map-sidebar">
-        <div class="ms-section"><div class="ms-title">NIVELES DE ALMACENAMIENTO</div><div id="storageCards"></div></div>
-        <div class="ms-section"><div class="ms-title">RESERVAS PROBADAS (ANUAL — NO EN VIVO)</div><div id="reservesCards"></div></div>
-      </div>
+    </div>
+    <!-- BUG3: KPIs LIVE — todo real, ya cargado en otras partes de la app -->
+    <div class="panel-hdr"><span>⚡ KPIs EN VIVO</span></div>
+    <div id="mapKpisGrid" class="dash-grid"></div>
+    <div class="map-sidebar">
+      <div class="ms-section"><div class="ms-title">NIVELES DE ALMACENAMIENTO</div><div id="storageCards"></div></div>
+      <div class="ms-section"><div class="ms-title">RESERVAS PROBADAS (ANUAL — NO EN VIVO)</div><div id="reservesCards"></div></div>
     </div>
   </section>
 
@@ -461,8 +515,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
         <span>📋 DIGEST ÚLTIMAS 24H</span>
         <span id="aiStatus" style="font-size:11px;color:var(--text3)">AUTO-ANÁLISIS: ESPERANDO</span>
       </div>
+      <div id="analysisTimestamp" class="curve-freshness"></div>
       <div class="digest-list" id="digestList"></div>
       <div class="sentiment-row" id="sentimentRow"></div>
+      <div class="panel-hdr" style="margin-top:6px"><span>🔥 TOP 5 EVENTOS DE MAYOR IMPACTO HOY</span></div>
+      <div id="top5EventsList" class="digest-list"></div>
+      <div class="panel-hdr" style="margin-top:6px"><span>📌 EVENTOS POR SEGUIR HOY (calendario)</span></div>
+      <div id="eventsTodayList" class="calendar-list"></div>
     </div>
     <div class="analysis-right">
       <div class="panel-hdr"><span>📈 PROYECCIONES — EIA STEO (oficial, mensual) + research manual</span></div>
@@ -482,8 +541,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
         <button class="seg-btn active" onclick="selCurveUnderlying('wti',this)">WTI</button>
         <button class="seg-btn" onclick="selCurveUnderlying('brent',this)">BRENT</button>
       </div>
+      <div class="seg-group" id="curveCountSel">
+        <button class="seg-btn active" onclick="selCurveCount(6,this)">M1-M6</button>
+        <button class="seg-btn" onclick="selCurveCount(12,this)">M1-M12</button>
+        <button class="seg-btn" onclick="selCurveCount(24,this)">M1-M24</button>
+      </div>
       <div id="curveShapeGauge" class="curve-shape-gauge"></div>
     </div>
+    <div id="curveFreshness" class="curve-freshness"></div>
     <div class="curve-body">
       <div class="curve-chart-box">
         <svg id="curveSvg" viewBox="0 0 700 320" preserveAspectRatio="xMidYMid meet"></svg>
@@ -520,6 +585,36 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
       <div id="perfHeatmap" class="perf-heatmap"></div>
     </div>
   </section>
+
+  <!-- ═══ TAB: FUTUROS BRENT (BUG 6 — portado de brent-spread-monitor) ═══ -->
+  <section id="tab-futuros" class="tab-section">
+    <div id="futurosFuente" class="curve-freshness"></div>
+    <div class="panel-hdr"><span>PANEL DE PRECIOS — CO1 a CO12</span></div>
+    <div style="overflow-x:auto">
+      <table class="proj-table" id="futurosPanelTable" style="min-width:600px">
+        <thead><tr><th>CONTRATO</th><th>VENCIMIENTO</th><th>PRECIO ACTUAL</th><th>VAR % 1D</th><th>VAR % 5D</th></tr></thead>
+        <tbody id="futurosPanelBody"></tbody>
+      </table>
+    </div>
+    <div class="curve-controls">
+      <div class="panel-hdr" style="margin:0;border:none"><span>FORWARD CURVE — CO1 a CO12</span></div>
+      <div class="seg-group" id="futurosCompareSel"></div>
+    </div>
+    <div class="curve-body">
+      <div class="curve-chart-box">
+        <svg id="futurosCurveSvg" viewBox="0 0 700 320" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ TAB: SPREADS (BUG 6 — portado de brent-spread-monitor) ═══ -->
+  <section id="tab-spreads" class="tab-section">
+    <div id="spreadsFuente" class="curve-freshness"></div>
+    <div class="panel-hdr"><span id="spreadsMatrixTitle">MATRIZ DE SPREADS (CO_i − CO_j)</span></div>
+    <div style="overflow-x:auto;padding:10px 14px">
+      <table id="spreadsMatrixTable" class="spreads-matrix"></table>
+    </div>
+  </section>
 </div>
 </div>
 
@@ -529,27 +624,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 const S = {
   tab:'charts', asset:'brent', tf:'1D',
   ind:{sma20:false,sma50:false,sma200:false,ema20:false,bb:false,volume:true,rsi:false,macd:false},
-  newsFilter:{src:'all',cat:'all',imp:'all'},
-  mapView:'map', hover:-1, showReserves:false, curveUnderlying:'wti',
+  newsFilter:{src:'all',cat:'all',imp:'all',asset:'all',sort:'recent'},
+  mapView:'map', hover:-1, showReserves:false, showTankerRoutes:false, curveUnderlying:'wti', curveCount:6,
   prices:{brent:74.38,wti:70.81,coil:71.42,ng:2.847,heatoil:2.118,rbob:2.264},
   changes:{brent:+0.57,wti:-0.46,coil:+0.25,ng:+1.10,heatoil:0,rbob:-0.40},
   chartData:null, liveActive:false
 };
 
-/* ── DATOS SIMULADOS ──────────────────────── */
-const SEEDS={brent:{b:74.38,v:.9},wti:{b:70.81,v:.85},coil:{b:71.42,v:.88},ng:{b:2.847,v:.06},spread:{b:3.57,v:.15}};
-const TF_CFG={'1H':{n:60,v:.18,d:0,step:3600},'4H':{n:64,v:.28,d:0,step:14400},'1D':{n:48,v:.35,d:-.001,step:1800},'1W':{n:56,v:.55,d:-.002,step:86400},'1M':{n:30,v:.9,d:.01,step:86400},'3M':{n:65,v:1.1,d:.02,step:86400},'6M':{n:130,v:1.4,d:.03,step:86400},'1Y':{n:52,v:2.0,d:.05,step:604800},'5Y':{n:60,v:3.5,d:.12,step:2592000}};
-function genOHLC(base,n,vol,drift,stepSec){
-  const d=[];let last=base;
-  const startSec=Math.floor(Date.now()/1000)-n*stepSec;
-  for(let i=0;i<n;i++){const o=last,h=o+Math.random()*vol*1.5,l=o-Math.random()*vol*1.2,c=o+(Math.random()-.48)*vol+drift;
-    last=c;d.push({time:startSec+i*stepSec,open:+o.toFixed(2),high:+Math.max(h,o,c).toFixed(2),low:+Math.min(l,o,c).toFixed(2),close:+c.toFixed(2),volume:Math.floor(60000+Math.random()*140000)});}
-  return d;
-}
-function buildSimData(){
-  const cfg=TF_CFG[S.tf]||TF_CFG['1D'],seed=SEEDS[S.asset]||SEEDS.brent;
-  return{ohlc:genOHLC(seed.b,cfg.n,seed.v,cfg.d,cfg.step),_sim:true};
-}
+/* ── BUG 1 fix: acá vivían SEEDS/TF_CFG/genOHLC/buildSimData — un
+   generador de velas con Math.random(). Se borraron por completo, tal
+   como pediste. El chart ya NUNCA muestra datos inventados: si no hay
+   datos reales todavía, se muestra un spinner explícito (ver
+   showChartLoading más abajo), nunca una vela falsa. ── */
 function sortDedupeOhlc(ohlc){
   const seen=new Set();
   return ohlc.filter(d=>{if(seen.has(d.time))return false;seen.add(d.time);return true;}).sort((a,b)=>a.time-b.time);
@@ -591,19 +677,28 @@ let seriesMarkersPlugin=null;
 /* ── LIGHTWEIGHT CHARTS (TradingView) ─────── */
 const ASSET_NAMES={brent:'BRENT ICE — Futuros Continuos',wti:'WTI NYMEX — Futuros Continuos',coil:'WTI NYMEX (=COIL, sin spread propio verificado)',ng:'NATURAL GAS — Henry Hub',spread:'BRENT-WTI — Spread real ($/bbl)'};
 let lwChart=null,lwCandleSeries=null;
+// BUG 1 fix: spinner explícito mientras se esperan datos OHLC reales —
+// nunca se rellena con datos inventados mientras tanto.
+function showChartLoading(){
+  const container=document.getElementById('lwChart');if(!container)return;
+  if(lwChart){lwChart.remove();lwChart=null;}
+  container.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;gap:8px;color:var(--text3);font-family:var(--mono);font-size:12px"><span class="chart-spinner"></span>Cargando datos OHLC históricos reales (Yahoo Finance)...</div>';
+}
+function showChartError(msg){
+  const container=document.getElementById('lwChart');if(!container)return;
+  if(lwChart){lwChart.remove();lwChart=null;}
+  container.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--red);font-family:var(--mono);font-size:12px;text-align:center;padding:20px">⚠ ${msg}</div>`;
+}
 function renderChart(){
   const container=document.getElementById('lwChart');if(!container)return;
-  // B3 fix (causa real): para "spread" nunca se debe usar el placeholder
-  // simulado (buildSimData/SEEDS), porque esa línea es una extrapolación
-  // ficticia que sube siempre — exactamente la queja del bug. Si todavía
-  // no llegó el cálculo real (brent.close-wti.close), se muestra un
-  // estado de carga explícito en vez de una línea falsa.
-  if(S.asset==='spread'&&(!S.chartData||S.chartData._sim)){
-    if(lwChart){lwChart.remove();lwChart=null;}
-    container.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text3);font-family:var(--mono);font-size:12px">Calculando spread real Brent-WTI (Yahoo Finance)...</div>';
+  // BUG 1 fix: si todavía no hay datos reales (cualquier asset, no solo
+  // spread), se muestra un spinner explícito. Nunca se rellena con datos
+  // inventados — antes acá había un fallback a buildSimData() que ya
+  // no existe.
+  if(!S.chartData||!S.chartData.ohlc||S.chartData.ohlc.length===0){
+    showChartLoading();
     return;
   }
-  if(!S.chartData)S.chartData=buildSimData();
   const{ohlc}=S.chartData;
   const closes=ohlc.map(d=>d.close);
 
@@ -735,11 +830,15 @@ function fitChart(){if(lwChart)lwChart.timeScale().fitContent();}
 ═══════════════════════════════════════════════ */
 const YAHOO_SYM_MAP={brent:'brent',wti:'wti',ng:'ng',coil:'wti'};
 const YAHOO_TF_MAP={
-  '1H':  {interval:'1h',  range:'5d'},
-  '4H':  {interval:'1h',  range:'1mo'}, // se resamplea x4 en el frontend, ver resampleOHLC()
-  '1D':  {interval:'1d',  range:'3mo'},
-  '1W':  {interval:'1wk', range:'2y'},
-  '1M':  {interval:'1mo', range:'5y'},
+  // BUG 1 fix: máxima resolución real posible por timeframe (pedido
+  // explícito). interval se mantiene '1h' (no '60m') porque así está
+  // whiteliisteado y verificado en el backend — Yahoo los trata igual,
+  // cambiar el string no agrega nada real.
+  '1H':  {interval:'1h',  range:'5d'},                          // ~80+ velas reales de 1h
+  '4H':  {interval:'1h',  range:'1mo'},                          // se resamplea x4 en el frontend
+  '1D':  {interval:'1d',  range:'5y'},                           // máximo histórico diario real
+  '1W':  {interval:'1wk', range:'10y'},                          // 10 años de semanas reales
+  '1M':  {interval:'1mo', range:'max'},                          // todo el histórico mensual que tenga Yahoo
   '3M':  {interval:'1d',  range:'3mo'},
   '6M':  {interval:'1d',  range:'6mo'},
   '1Y':  {interval:'1d',  range:'1y'},
@@ -903,18 +1002,19 @@ async function fetchFuturesCurve(){
   const svg=document.getElementById('curveSvg');
   if(svg)svg.innerHTML='<text x="350" y="160" text-anchor="middle" fill="#5a6178" font-family="monospace" font-size="13">Cargando curva real de Yahoo Finance...</text>';
   try{
-    const r=await fetch(`/api/forward-curve?underlying=${S.curveUnderlying}&count=12`);
+    const r=await fetch(`/api/forward-curve?underlying=${S.curveUnderlying}&count=${S.curveCount}`);
     const d=await r.json();
     if(d.error){
       if(svg)svg.innerHTML=`<text x="350" y="160" text-anchor="middle" fill="#ff4060" font-family="monospace" font-size="12">${d.message}</text>`;
       document.getElementById('curveSpreadsTable').innerHTML='';
       document.getElementById('curveContractsList').innerHTML='';
       document.getElementById('curveShapeGauge').innerHTML='';
+      document.getElementById('curveFreshness').innerHTML='';
       return;
     }
     CURVE_DATA=d;
     renderCurve();
-    console.log(`[Forward Curve] ${S.curveUnderlying}: ${d.curve.length} contratos reales, ${d.shape} (${d.diffPct}%)`);
+    console.log(`[Forward Curve] ${S.curveUnderlying}: ${d.curve.length} contratos reales, ${d.shape} (${d.diffPct}%), cierre ${d.freshness?.lastCloseDate}`);
   }catch(e){
     console.warn('[Forward Curve Error]',e);
     if(svg)svg.innerHTML='<text x="350" y="160" text-anchor="middle" fill="#ff4060" font-family="monospace" font-size="12">Error de red consultando la curva.</text>';
@@ -926,23 +1026,39 @@ function selCurveUnderlying(u,btn){
   fetchFuturesCurve();
   savePrefs();
 }
+function selCurveCount(n,btn){
+  S.curveCount=n;
+  document.querySelectorAll('#curveCountSel .seg-btn').forEach(b=>b.className='seg-btn');btn.className='seg-btn active';
+  fetchFuturesCurve();
+  savePrefs();
+}
 function renderCurve(){
   const d=CURVE_DATA;if(!d)return;
   const shapeCls=d.shape.toLowerCase();
   const shapeTxt=d.shape==='CONTANGO'?'CONTANGO (bearish)':d.shape==='BACKWARDATION'?'BACKWARDATION (bullish)':'PLANA';
-  document.getElementById('curveShapeGauge').innerHTML=`<span class="curve-shape-label ${shapeCls}">${shapeTxt}</span><span style="color:var(--text2)">M1→M${d.curve.length}: ${d.diffPct>0?'+':''}${d.diffPct}%</span>${d.rollYieldPct!==null?`<span style="color:var(--text3)">Roll yield anualizado: ${d.rollYieldPct>0?'+':''}${d.rollYieldPct}%</span>`:''}`;
+  document.getElementById('curveShapeGauge').innerHTML=`<span class="curve-shape-label ${shapeCls}">${shapeTxt}</span><span style="color:var(--text2)">${d.curve[0]?.label}→${d.curve[d.curve.length-1]?.label}: ${d.diffPct>0?'+':''}${d.diffPct}%</span>${d.rollYieldPct!==null?`<span style="color:var(--text3)">Roll yield anualizado: ${d.rollYieldPct>0?'+':''}${d.rollYieldPct}%</span>`:''}`;
 
-  // Tabla de time spreads
+  // BUG 5: indicador de frescura — de qué cierre son estos datos
+  const fr=d.freshness;
+  if(fr){
+    document.getElementById('curveFreshness').className='curve-freshness '+(fr.isOpen?'open':'closed');
+    document.getElementById('curveFreshness').innerHTML=fr.isOpen
+      ?`🟢 Mercado abierto (CME Globex). Datos del cierre del ${fr.lastCloseDate}.`
+      :`🔴 Mercado cerrado ahora. Datos del cierre del ${fr.lastCloseDate}.`;
+  }
+
   const sp=d.spreads;
   const rows=[['M1−M2',sp.m1m2],['M1−M3',sp.m1m3],['M1−M6',sp.m1m6],['M1−M12',sp.m1m12]];
   document.getElementById('curveSpreadsTable').innerHTML=rows.map(([lbl,v])=>`<div class="cs-row"><span style="color:var(--text2)">${lbl}</span><span style="color:${v===null?'var(--text3)':v>=0?'var(--green)':'var(--red)'}">${v===null?'— (sin dato)':'$'+v.toFixed(2)}</span></div>`).join('');
 
-  // Lista de contratos reales
-  document.getElementById('curveContractsList').innerHTML=`<div class="cc-row"><span>SPOT</span><span>$${d.spot.toFixed(2)}</span></div>`+d.curve.map(c=>`<div class="cc-row"><span>${c.label} (${c.month})</span><span>$${c.price.toFixed(2)}</span></div>`).join('');
+  // BUG 5: lista de contratos con ticker real, volumen, fecha de cierre — open interest explícito como "no disponible"
+  document.getElementById('curveContractsList').innerHTML=
+    `<div class="cc-row"><span>SPOT (${d.underlying.toUpperCase()})</span><span>$${d.spot.toFixed(2)}${d.spotVolume?' · vol '+d.spotVolume.toLocaleString('es-AR'):''}</span></div>`+
+    d.curve.map(c=>`<div class="cc-row" title="${c.ticker} · ${c.month} · cierre ${c.closeDate} · volumen ${c.volume!==null?c.volume.toLocaleString('es-AR'):'—'} · open interest: no disponible vía Yahoo"><span>${c.label} (${c.month}) — ${c.ticker}</span><span>$${c.price.toFixed(2)}</span></div>`).join('');
 
-  // SVG: eje X = contratos, eje Y = precio
   const svg=document.getElementById('curveSvg');
-  const pts=[{label:'SPOT',price:d.spot},...d.curve.map(c=>({label:c.label,price:c.price}))];
+  const pts=[{label:'SPOT',price:d.spot,info:`Spot ${d.underlying.toUpperCase()} · cierre ${d.freshness?.lastCloseDate||'—'}`},
+    ...d.curve.map(c=>({label:c.label,price:c.price,info:`${c.ticker} · ${c.month} · vol ${c.volume!==null?c.volume.toLocaleString('es-AR'):'—'} · OI: no disponible`}))];
   const W=700,H=320,padL=50,padR=20,padT=20,padB=30;
   const prices=pts.map(p=>p.price);
   const min=Math.min(...prices),max=Math.max(...prices);
@@ -953,7 +1069,8 @@ function renderCurve(){
   pts.forEach((p,i)=>{path+=(i===0?'M':'L')+x(i).toFixed(1)+','+y(p.price).toFixed(1)+' ';});
   const gridLines=[];
   for(let i=0;i<=4;i++){const v=min+range*i/4;gridLines.push(`<line x1="${padL}" y1="${y(v).toFixed(1)}" x2="${W-padR}" y2="${y(v).toFixed(1)}" stroke="#1a1d2e" stroke-width="1"/><text x="6" y="${(y(v)+4).toFixed(1)}" fill="#5a6178" font-family="monospace" font-size="10">$${v.toFixed(1)}</text>`);}
-  const dots=pts.map((p,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(p.price).toFixed(1)}" r="3.5" fill="${i===0?'#ffd600':'#2979ff'}"/><text x="${x(i).toFixed(1)}" y="${H-padB+16}" fill="#9099b8" font-family="monospace" font-size="9" text-anchor="middle">${p.label}</text>`).join('');
+  // BUG 5: <title> nativo de SVG = tooltip al hover sin JS extra, con ticker/mes/volumen/OI
+  const dots=pts.map((p,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(p.price).toFixed(1)}" r="4" fill="${i===0?'#ffd600':'#2979ff'}"><title>${p.label}: $${p.price.toFixed(2)} — ${p.info}</title></circle><text x="${x(i).toFixed(1)}" y="${H-padB+16}" fill="#9099b8" font-family="monospace" font-size="9" text-anchor="middle">${p.label}</text>`).join('');
   svg.innerHTML=`${gridLines.join('')}<path d="${path}" fill="none" stroke="#2979ff" stroke-width="2"/>${dots}`;
 }
 
@@ -1032,7 +1149,7 @@ const PREFS_KEY='terminal_petroleo_prefs_v1';
 function savePrefs(){
   try{
     localStorage.setItem(PREFS_KEY,JSON.stringify({
-      tab:S.tab,asset:S.asset,tf:S.tf,ind:S.ind,newsFilter:S.newsFilter,curveUnderlying:S.curveUnderlying
+      tab:S.tab,asset:S.asset,tf:S.tf,ind:S.ind,newsFilter:S.newsFilter,curveUnderlying:S.curveUnderlying,curveCount:S.curveCount
     }));
   }catch(e){console.warn('[Prefs] no se pudo guardar (localStorage bloqueado/lleno?)',e);}
 }
@@ -1062,13 +1179,147 @@ function restoreUIFromState(){
       b.className=b.getAttribute('onclick')?.includes(`'${S.curveUnderlying}'`)?'seg-btn active':'seg-btn';
     });
   }
-  ['src','cat','imp'].forEach(type=>{
+  if(S.curveCount){
+    document.querySelectorAll('#curveCountSel .seg-btn').forEach(b=>{
+      b.className=b.getAttribute('onclick')?.includes(`(${S.curveCount},`)?'seg-btn active':'seg-btn';
+    });
+  }
+  ['src','cat','imp','asset','sort'].forEach(type=>{
     const val=S.newsFilter[type];
     document.querySelectorAll('.nf-row .nf-btn').forEach(b=>{
       const oc=b.getAttribute('onclick')||'';
       if(oc.includes(`'${type}'`)){b.classList.toggle('on',oc.includes(`'${val}'`));}
     });
   });
+}
+
+/* ═══════════════════════════════════════════════
+   BUG 6 — INTEGRACIÓN brent-spread-monitor (Futuros Brent + Spreads)
+   Prioridad: si hay entrada MANUAL de hoy en data/brent-history.json
+   (cargada por workflow_dispatch), se usa esa. Si no hay, se cae a
+   /api/forward-curve?underlying=brent (Yahoo Finance en vivo) — pero
+   se etiqueta claramente cuál de las dos está mostrando, nunca se
+   mezclan como si fueran lo mismo.
+═══════════════════════════════════════════════ */
+let BRENT_HISTORY={co_curve:[],dated_brent:[]};
+let FUTUROS_COMPARE_DATE=null;
+async function fetchBrentHistory(){
+  try{
+    const r=await fetch('/api/brent-history');
+    const d=await r.json();
+    BRENT_HISTORY=d;
+    console.log(`[Brent History] ${d.co_curve.length} filas manuales co_curve, ${d.dated_brent.length} filas dated_brent`);
+  }catch(e){console.warn('[Brent History Error]',e);}
+}
+function todayISO(){return new Date().toISOString().slice(0,10);}
+async function getTodaysCurveRow(){
+  const manual=BRENT_HISTORY.co_curve.find(r=>r.Date===todayISO());
+  if(manual)return{row:manual,source:'manual',label:`Carga manual (workflow) — ${manual.Date}`};
+  try{
+    const r=await fetch('/api/forward-curve?underlying=brent&count=12');
+    const d=await r.json();
+    if(d.error)return{row:null,source:'error',label:d.message};
+    const row={Date:d.freshness?.lastCloseDate||todayISO()};
+    d.curve.forEach((c,i)=>{row[`CO${i+1}`]=c.price;});
+    return{row,source:'live',label:`Yahoo Finance en vivo (sin entrada manual para hoy) — cierre ${row.Date}`};
+  }catch(e){return{row:null,source:'error',label:'Error consultando Yahoo Finance.'};}
+}
+function findCurveRowByDate(targetDate){
+  return BRENT_HISTORY.co_curve.find(r=>r.Date===targetDate)||null;
+}
+async function loadFuturosTab(){
+  await fetchBrentHistory();
+  const{row,source,label}=await getTodaysCurveRow();
+  const fuenteEl=document.getElementById('futurosFuente');
+  fuenteEl.className='curve-freshness '+(source==='manual'?'open':'closed');
+  fuenteEl.textContent=source==='manual'?`🟢 ${label}`:source==='live'?`🟡 ${label}`:`🔴 ${label}`;
+  if(!row){document.getElementById('futurosPanelBody').innerHTML='';return;}
+  S.futurosCurrentRow=row;
+  renderFuturosCompareSelector();
+  renderFuturosPanel(row);
+  renderFuturosCurve(row,null);
+}
+function renderFuturosCompareSelector(){
+  const el=document.getElementById('futurosCompareSel');
+  const pastDates=BRENT_HISTORY.co_curve.map(r=>r.Date).filter(d=>d!==todayISO()).sort().reverse().slice(0,12);
+  if(pastDates.length===0){el.innerHTML='<span style="font-family:var(--mono);font-size:11px;color:var(--text3);padding:4px 8px">Sin histórico manual todavía para comparar — cargalo con el workflow update-prices.yml</span>';return;}
+  el.innerHTML=`<button class="seg-btn active" onclick="selFuturosCompare(null,this)">SOLO HOY</button>`+
+    pastDates.map(d=>`<button class="seg-btn" onclick="selFuturosCompare('${d}',this)">${d}</button>`).join('');
+}
+function selFuturosCompare(dateStr,btn){
+  FUTUROS_COMPARE_DATE=dateStr;
+  document.querySelectorAll('#futurosCompareSel .seg-btn').forEach(b=>b.className='seg-btn');btn.className='seg-btn active';
+  const compareRow=dateStr?findCurveRowByDate(dateStr):null;
+  renderFuturosCurve(S.futurosCurrentRow,compareRow);
+}
+function renderFuturosPanel(row){
+  const co_dates=BRENT_HISTORY.co_curve.map(r=>r.Date).sort();
+  const idx=co_dates.indexOf(row.Date);
+  const prev1=idx>0?BRENT_HISTORY.co_curve.find(r=>r.Date===co_dates[idx-1]):null;
+  const prev5=idx>=5?BRENT_HISTORY.co_curve.find(r=>r.Date===co_dates[idx-5]):null;
+  const rows=[];
+  for(let i=1;i<=12;i++){
+    const key=`CO${i}`,price=row[key];
+    if(typeof price!=='number')continue;
+    const v1d=prev1&&typeof prev1[key]==='number'?+(((price-prev1[key])/prev1[key])*100).toFixed(2):null;
+    const v5d=prev5&&typeof prev5[key]==='number'?+(((price-prev5[key])/prev5[key])*100).toFixed(2):null;
+    const d=new Date(); d.setUTCMonth(d.getUTCMonth()+i);
+    const vencTxt=d.toLocaleDateString('es-AR',{month:'short',year:'2-digit'});
+    rows.push({key,price,v1d,v5d,vencTxt});
+  }
+  document.getElementById('futurosPanelBody').innerHTML=rows.map(r=>`<tr><td><strong>${r.key}</strong></td><td style="color:var(--text3)">${r.vencTxt}</td><td>$${r.price.toFixed(2)}</td><td style="color:${r.v1d===null?'var(--text3)':r.v1d>=0?'var(--green)':'var(--red)'}">${r.v1d===null?'—':(r.v1d>=0?'+':'')+r.v1d+'%'}</td><td style="color:${r.v5d===null?'var(--text3)':r.v5d>=0?'var(--green)':'var(--red)'}">${r.v5d===null?'—':(r.v5d>=0?'+':'')+r.v5d+'%'}</td></tr>`).join('');
+}
+function renderFuturosCurve(row,compareRow){
+  const svg=document.getElementById('futurosCurveSvg');if(!svg)return;
+  const pts=[];for(let i=1;i<=12;i++){if(typeof row[`CO${i}`]==='number')pts.push({label:`CO${i}`,price:row[`CO${i}`]});}
+  if(pts.length===0){svg.innerHTML='<text x="350" y="160" text-anchor="middle" fill="#5a6178" font-family="monospace" font-size="13">Sin datos para graficar.</text>';return;}
+  const cmpPts=compareRow?(()=>{const a=[];for(let i=1;i<=12;i++){if(typeof compareRow[`CO${i}`]==='number')a.push({label:`CO${i}`,price:compareRow[`CO${i}`]});}return a;})():null;
+  const W=700,H=320,padL=50,padR=20,padT=20,padB=30;
+  const allPrices=[...pts.map(p=>p.price),...(cmpPts?cmpPts.map(p=>p.price):[])];
+  const min=Math.min(...allPrices),max=Math.max(...allPrices),range=(max-min)||1;
+  const x=i=>padL+(i/(pts.length-1))*(W-padL-padR);
+  const y=v=>padT+(1-((v-min)/range))*(H-padT-padB);
+  const pathFor=arr=>arr.map((p,i)=>(i===0?'M':'L')+x(i).toFixed(1)+','+y(p.price).toFixed(1)).join(' ');
+  const gridLines=[];
+  for(let i=0;i<=4;i++){const v=min+range*i/4;gridLines.push(`<line x1="${padL}" y1="${y(v).toFixed(1)}" x2="${W-padR}" y2="${y(v).toFixed(1)}" stroke="#1a1d2e" stroke-width="1"/><text x="6" y="${(y(v)+4).toFixed(1)}" fill="#5a6178" font-family="monospace" font-size="10">$${v.toFixed(1)}</text>`);}
+  const dotsFor=(arr,color)=>arr.map((p,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(p.price).toFixed(1)}" r="3.5" fill="${color}"><title>${p.label}: $${p.price.toFixed(2)}</title></circle>`).join('');
+  const labels=pts.map((p,i)=>`<text x="${x(i).toFixed(1)}" y="${H-padB+16}" fill="#9099b8" font-family="monospace" font-size="9" text-anchor="middle">${p.label}</text>`).join('');
+  svg.innerHTML=`${gridLines.join('')}<path d="${pathFor(pts)}" fill="none" stroke="#2979ff" stroke-width="2"/>${dotsFor(pts,'#2979ff')}${cmpPts?`<path d="${pathFor(cmpPts)}" fill="none" stroke="#ffd600" stroke-width="2" stroke-dasharray="5,4"/>${dotsFor(cmpPts,'#ffd600')}`:''}${labels}`;
+}
+
+/* ── SPREADS (matriz CO_i - CO_j con heatmap de color) ── */
+async function loadSpreadsTab(){
+  await fetchBrentHistory();
+  const{row,source,label}=await getTodaysCurveRow();
+  const fuenteEl=document.getElementById('spreadsFuente');
+  fuenteEl.className='curve-freshness '+(source==='manual'?'open':'closed');
+  fuenteEl.textContent=source==='manual'?`🟢 ${label}`:source==='live'?`🟡 ${label}`:`🔴 ${label}`;
+  document.getElementById('spreadsMatrixTitle').textContent=row?`MATRIZ DE SPREADS (CO_i − CO_j) — ${row.Date}`:'MATRIZ DE SPREADS';
+  if(!row){document.getElementById('spreadsMatrixTable').innerHTML='';return;}
+  renderSpreadsMatrix(row);
+}
+function spreadColor(v,maxAbs){
+  if(v===0)return'transparent';
+  const intensity=Math.min(Math.abs(v)/(maxAbs||1),1);
+  return v>0?`rgba(0,230,118,${.12+intensity*.55})`:`rgba(255,64,96,${.12+intensity*.55})`;
+}
+function renderSpreadsMatrix(row){
+  const labels=[];for(let i=1;i<=12;i++){if(typeof row[`CO${i}`]==='number')labels.push(`CO${i}`);}
+  const table=document.getElementById('spreadsMatrixTable');
+  let maxAbs=0;
+  const matrix=labels.map(li=>labels.map(lj=>{
+    const v=+(row[li]-row[lj]).toFixed(2);maxAbs=Math.max(maxAbs,Math.abs(v));return v;
+  }));
+  let html='<thead><tr><th></th>'+labels.map(l=>`<th>${l}</th>`).join('')+'</tr></thead><tbody>';
+  labels.forEach((li,i)=>{
+    html+=`<tr><th>${li}</th>`+labels.map((lj,j)=>{
+      const v=matrix[i][j];
+      if(i===j)return'<td class="diag">—</td>';
+      return`<td style="background:${spreadColor(v,maxAbs)}">${v>0?'+':''}${v.toFixed(2)}</td>`;
+    }).join('')+'</tr>';
+  });
+  html+='</tbody>';
+  table.innerHTML=html;
 }
 
 /* ═══════════════════════════════════════════════
@@ -1256,7 +1507,7 @@ async function loadRealCandles(){
         fetchYahooCandles('brent',interval,range),
         fetchYahooCandles('wti',interval,range),
       ]);
-      if(brentBars.length===0||wtiBars.length===0){console.warn('[Spread] faltan datos de Brent o WTI');return;}
+      if(brentBars.length===0||wtiBars.length===0){console.warn('[Spread] faltan datos de Brent o WTI');showChartError('No se pudo calcular el spread — Yahoo no devolvió datos de Brent o WTI.');return;}
       const wtiByTime=new Map(wtiBars.map(b=>[b.time,b]));
       const spreadOhlc=[];
       for(const b of brentBars){
@@ -1265,7 +1516,7 @@ async function loadRealCandles(){
         const diff=+(b.close-w.close).toFixed(3);
         spreadOhlc.push({time:b.time,open:diff,high:diff,low:diff,close:diff,volume:0});
       }
-      if(spreadOhlc.length===0){console.warn('[Spread] sin fechas en común entre Brent y WTI');return;}
+      if(spreadOhlc.length===0){console.warn('[Spread] sin fechas en común entre Brent y WTI');showChartError('Brent y WTI no tienen fechas en común en este rango.');return;}
       S.chartData={ohlc:sortDedupeOhlc(spreadOhlc)};
       S.prices.spread=spreadOhlc[spreadOhlc.length-1].close; // último spread real, ya no hardcodeado
       renderChart();
@@ -1275,13 +1526,13 @@ async function loadRealCandles(){
 
     const symKey=YAHOO_SYM_MAP[S.asset];if(!symKey)return;
     let ohlc=await fetchYahooCandles(symKey,interval,range);
-    if(ohlc.length===0)return;
+    if(ohlc.length===0){showChartError(`Yahoo Finance no devolvió velas para ${S.asset.toUpperCase()} (${interval}/${range}).`);return;}
     // BUG 3 fix: Yahoo no tiene "4h" nativo — se pide 1h y se agrupa de 4 en 4.
     if(S.tf==='4H')ohlc=resampleOHLC(ohlc,4);
     S.chartData={ohlc};
     renderChart();
     console.log(`[YahooFinance] Velas reales cargadas: ${ohlc.length} barras ${interval}/${range} para ${symKey}${S.tf==='4H'?' (resampleado x4)':''}`);
-  }catch(e){console.warn('[YahooFinance OHLCV Error]',e);}
+  }catch(e){console.warn('[YahooFinance OHLCV Error]',e);showChartError('Error de red consultando Yahoo Finance. Probá de nuevo.');}
 }
 function manualRefreshChart(){
   const btn=document.getElementById('btnRefreshChart');
@@ -1324,31 +1575,35 @@ async function fetchEIAInventories(){
    Se activa si gnews no está vacío arriba
 ═══════════════════════════════════════════════ */
 let newsAnySourceOk=false;
-// BUG 1 fix: fallback final cuando GNews Y NewsAPI fallan — RSS público,
-// sin key, no depende de ningún rate limit comercial.
-async function fetchNewsRSSFallback(){  try{
+// BUG2: RSS ya no es solo un fallback — corre SIEMPRE en paralelo con
+// GNews, porque ahora trae fuentes con nombre propio (Reuters/Bloomberg/
+// FT vía Google News, ver api/news-rss.js) que GNews no necesariamente tiene.
+async function fetchNewsRSS(){  try{
     const r=await fetch('/api/news-rss');const d=await r.json();
     if(d.articles&&d.articles.length>0){
       d.articles.forEach((a,i)=>{
         const pubDate=new Date(a.publishedAt);
+        const text=a.title+' '+(a.description||'');
         NEWS.unshift({
           id:Date.now()+2000+i,
           realTime:pubDate.getTime(),
           ts:pubDate.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',hour12:false}),
-          src:'rss',srcL:(a.source?.name||'RSS').substring(0,16).toUpperCase(),
-          srcColor:'#00bcd4',impact:'med',cat:'prod',hl:a.title,hi:false,chg:'',url:a.url,image:null,desc:a.description||''
+          src:'rss',srcL:(a.source?.name||'RSS').substring(0,20).toUpperCase(),
+          srcColor:sourceBadgeColor((a.source?.name||'RSS').toUpperCase()),
+          impact:classifyImpact(text),cat:classifyCategory(text),asset:classifyAsset(text),
+          hl:a.title,hi:false,chg:'',url:a.url,image:a.image||null,desc:a.description||''
         });
       });
-      dedupeNews();if(NEWS.length>60)NEWS.splice(60);
+      dedupeNews();if(NEWS.length>80)NEWS.splice(80);
       newsAnySourceOk=true;
       if(S.tab==='news')renderNews();
-      addStatusChip('RSS (fallback) ✓');
-      console.log(`[RSS Fallback] ${d.articles.length} noticias cargadas (${d._fuente||''})`);
+      addStatusChip('RSS ✓');
+      console.log(`[RSS] ${d.articles.length} noticias cargadas (${d._fuente||''})`);
+      if(d._warnings)console.warn('[RSS] feeds que no respondieron:',d._warnings);
     }
-  }catch(e){console.warn('[RSS Fallback Error]',e);}
+  }catch(e){console.warn('[RSS Error]',e);}
 }
-// Orquesta: intenta GNews + NewsAPI en paralelo; si ninguno trajo nada
-// real, recién ahí cae al RSS. Evita gastar el fallback si alguno funcionó.
+// Orquesta: GNews + RSS multi-fuente SIEMPRE en paralelo (BUG2).
 async function fetchAllNewsSources(){
   newsAnySourceOk=false;
   // B1 fix: NewsAPI se sacó del flujo activo. Su plan gratuito "Developer"
@@ -1356,18 +1611,65 @@ async function fetchAllNewsSources(){
   // — llamarlo desde Vercel siempre va a dar 401 o, peor, violar sus
   // términos de servicio. fetchNewsAPI() queda en el código por si en
   // algún momento pagás un plan que sí permita producción, pero no se
-  // llama acá. Las fuentes reales activas son GNews + RSS multi-fuente.
-  await fetchGNews();
+  // llama acá.
+  await Promise.all([fetchGNews(),fetchNewsRSS()]);
   if(!newsAnySourceOk&&NEWS.length===0){
-    console.log('[Noticias] GNews sin datos — probando agregador RSS multi-fuente...');
-    if(S.tab==='news')renderNewsLoadingState('Sin noticias disponibles — intentando con feeds alternativos...');
-    await fetchNewsRSSFallback();
+    if(S.tab==='news')renderNewsLoadingState('Sin noticias disponibles — GNews y el agregador RSS no respondieron.');
   }
+  // BUG4: re-correr el análisis automático cada vez que llegan noticias
+  // nuevas, no solo cada 5 minutos por timer.
+  if(newsAnySourceOk)fetchAISummary();
+  // BUG3: el riesgo de chokepoints y "últimos movimientos" dependen de
+  // noticias reales — recalcular si el usuario está mirando el mapa.
+  if(newsAnySourceOk&&S.tab==='map'){renderThreatIndex();renderMapMovements();renderMapCanvas();}
 }
 function renderNewsLoadingState(msg){
   const el=document.getElementById('npFeatured');
   if(el)el.innerHTML=`<div class="np-empty">${msg}</div>`;
 }
+// REGLA NO NEGOCIABLE: nada de Math.random() en datos visibles — esto
+// reemplaza una asignación aleatoria de impacto que había antes acá.
+// Keywords exactos de la especificación (ALTO/MEDIO/BAJO).
+const IMPACT_HIGH_KW=['hormuz','houthi','opec+ cuts','sanctions','sanción','war','guerra','missile','misil','strike','attack','ataque','embargo'];
+const IMPACT_MED_KW=['rigs','inventory','inventario','production','producción','exports','imports','exportaciones','importaciones'];
+function classifyImpact(text){
+  const t=(text||'').toLowerCase();
+  if(IMPACT_HIGH_KW.some(k=>t.includes(k)))return'high';
+  if(IMPACT_MED_KW.some(k=>t.includes(k)))return'med';
+  return'low';
+}
+// BUG2: clasificación automática de activo y categoría, exactamente
+// según la especificación.
+function classifyAsset(text){
+  const t=(text||'').toLowerCase();
+  if(t.includes('brent')||t.includes(' ice '))return'brent';
+  if(t.includes('wti')||t.includes('nymex'))return'wti';
+  if(t.includes('natural gas')||t.includes('lng'))return'ng';
+  if(t.includes('gasoline'))return'rbob';
+  if(t.includes('diesel')||t.includes('heating oil'))return'ho';
+  return'all';
+}
+function classifyCategory(text){
+  const t=(text||'').toLowerCase();
+  if(['hormuz','suez','mar rojo','red sea','war','guerra'].some(k=>t.includes(k)))return'geo';
+  if(['opec','jmmc','cuts','quota','recorte'].some(k=>t.includes(k)))return'opec';
+  if(['inventory','stocks','stockpiles','cushing','inventario'].some(k=>t.includes(k)))return'inv';
+  if(['refinery','refining','crack','refinería'].some(k=>t.includes(k)))return'refining';
+  if(['production','output','rigs','shale','producción'].some(k=>t.includes(k)))return'prod';
+  return'prod';
+}
+// BUG2: badges de fuente con el color exacto pedido
+const SOURCE_BADGE_COLORS={
+  'REUTERS':'#da291c',      // rojo Pantone 485
+  'BLOOMBERG':'#1a1f3a',    // azul oscuro
+  'FINANCIAL TIMES':'#fff1e5', // rosa salmón (fondo claro, texto oscuro)
+  'WSJ':'#000000',
+  'OPEC':'#ffc300',
+  'EIA TODAY IN ENERGY':'#2979ff',
+  'OILPRICE.COM':'#ff6d00',
+};
+function sourceBadgeColor(srcL){return SOURCE_BADGE_COLORS[srcL]||'#5a6178';}
+
 async function fetchGNews(){  try{
     const query=encodeURIComponent('crude oil OPEC Brent WTI petroleum');
     const url = `/api/news-gnews?q=${query}&lang=en&max=10`;
@@ -1383,8 +1685,9 @@ async function fetchGNews(){  try{
           ts:pubDate.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',hour12:false}),
           src:'gnews',srcL:srcName.substring(0,12).toUpperCase(),
           srcColor:srcColors[srcName]||'#9099b8',
-          impact:Math.random()>.6?'high':'med',
-          cat:a.title.toLowerCase().includes('opec')?'opec':a.title.toLowerCase().includes('iran')||a.title.toLowerCase().includes('hormuz')?'geo':'prod',
+          impact:classifyImpact(a.title+' '+(a.description||'')),
+          cat:classifyCategory(a.title+' '+(a.description||'')),
+          asset:classifyAsset(a.title+' '+(a.description||'')),
           hl:a.title,hi:false,chg:'',url:a.url,image:a.image||null,desc:a.description||''
         });
       });
@@ -1498,33 +1801,52 @@ async function fetchWorldBank(){
 // Resumen automático SIN API — agrupa por categoría/impacto y calcula
 // sesgo de precio contando palabras clave alcistas/bajistas en los
 // titulares ya cargados. No requiere Anthropic ni ningún costo.
+// BUG4: keywords EXACTOS de la especificación para el sesgo direccional.
+const BIAS_BULLISH_KW=['cut','supply','war','attack','sanctions','hormuz','embargo','opec+ tightening','recorte','guerra','ataque','sanción'];
+const BIAS_BEARISH_KW=['surplus','oversupply','shale','weakness','demand drop','recession','china weak','superávit','exceso de oferta','debilidad','recesión'];
+let LAST_ANALYSIS_AT=null,TOP5_EVENTS=[],ANALYSIS_BIAS=null;
 function fetchAISummary(){
-  const noticias=NEWS.slice(0,12);
+  const noticias=NEWS.slice(0,15); // BUG4: últimas 12-15 noticias reales
   if(!noticias.length)return;
   const altas=noticias.filter(n=>n.impact==='high');
-  const cats={geo:[],opec:[],inv:[],prod:[],hormuz:[]};
+  const cats={geo:[],opec:[],inv:[],prod:[],refining:[]};
   noticias.forEach(n=>{if(cats[n.cat])cats[n.cat].push(n);});
 
-  const palabrasBull=['cierre','sanción','recorte','tensión','conflicto','houthi','hormuz','misil','incauta','ataque','reduces','cut'];
-  const palabrasBear=['superávit','surplus','sube producción','aumenta','shale','rigs','inventarios suben','revisada al alza'];
   let scoreBull=0,scoreBear=0;
-  noticias.forEach(n=>{const t=n.hl.toLowerCase();palabrasBull.forEach(p=>{if(t.includes(p))scoreBull++;});palabrasBear.forEach(p=>{if(t.includes(p))scoreBear++;});});
+  noticias.forEach(n=>{
+    const t=n.hl.toLowerCase();
+    BIAS_BULLISH_KW.forEach(p=>{if(t.includes(p))scoreBull++;});
+    BIAS_BEARISH_KW.forEach(p=>{if(t.includes(p))scoreBear++;});
+  });
   const sesgo=scoreBull>scoreBear?'▲ ALCISTA':scoreBear>scoreBull?'▼ BAJISTA':'— NEUTRAL';
   const sesgoCls=scoreBull>scoreBear?'high':scoreBear>scoreBull?'low':'med';
+  ANALYSIS_BIAS={label:sesgo,cls:sesgoCls,scoreBull,scoreBear,n:noticias.length};
 
   const puntos=[];
   if(altas.length)puntos.push({t:'RESUMEN',imp:'high',text:`${altas.length} evento(s) de alto impacto: ${altas.map(n=>n.hl.split('—')[0].trim()).join(' / ')}`,tags:['auto','alto-impacto']});
-  const geo=[...cats.geo,...cats.hormuz];
-  if(geo.length)puntos.push({t:'GEO',imp:geo.some(n=>n.impact==='high')?'high':'med',text:`Geopolítica: ${geo.length} noticia(s) activas. ${geo[0]?.hl.split('—')[0].trim()||''}`,tags:['auto','geopolítica']});
+  if(cats.geo.length)puntos.push({t:'GEO',imp:cats.geo.some(n=>n.impact==='high')?'high':'med',text:`Geopolítica: ${cats.geo.length} noticia(s) activas. ${cats.geo[0]?.hl.split('—')[0].trim()||''}`,tags:['auto','geopolítica']});
   if(cats.opec.length)puntos.push({t:'OPEC',imp:'med',text:`OPEC+: ${cats.opec.map(n=>n.hl.split('—')[0].trim()).join('. ')}`,tags:['auto','opec']});
   if(cats.inv.length)puntos.push({t:'INV',imp:cats.inv[0]?.impact||'med',text:`Inventarios: ${cats.inv.map(n=>n.hl.split('—')[0].trim()).join('. ')}`,tags:['auto','inventarios']});
   if(cats.prod.length)puntos.push({t:'PROD',imp:'low',text:`Producción: ${cats.prod.slice(0,2).map(n=>n.hl.split('—')[0].trim()).join('. ')}`,tags:['auto','producción']});
+  if(cats.refining.length)puntos.push({t:'REFINING',imp:'low',text:`Refinación: ${cats.refining.slice(0,2).map(n=>n.hl.split('—')[0].trim()).join('. ')}`,tags:['auto','refining']});
   puntos.push({t:'SESGO',imp:sesgoCls,text:`Sesgo de precio consolidado: ${sesgo} (${scoreBull} señales alcistas vs ${scoreBear} bajistas de ${noticias.length} noticias)`,tags:['auto','sesgo']});
 
   AUTO_SUMMARY_POINTS=puntos.reverse();
+
+  // BUG4: top 5 eventos de mayor impacto del día (reales, ordenados por impacto+fecha)
+  const rank={high:0,med:1,low:2};
+  TOP5_EVENTS=[...noticias].sort((a,b)=>(rank[a.impact]??3)-(rank[b.impact]??3)||((b.realTime||0)-(a.realTime||0))).slice(0,5);
+
+  LAST_ANALYSIS_AT=new Date();
   if(S.tab==='analysis')renderAnalysis();
   const st=document.getElementById('aiStatus');
   if(st){st.textContent='AUTO-ANÁLISIS ✓';st.style.color='var(--blue2)';}
+}
+// BUG4: "eventos por seguir hoy" — cruza con el calendario ya cargado
+function getEventsToday(){
+  if(!CALENDAR_EVENTS||CALENDAR_EVENTS.length===0)return[];
+  const now=new Date();
+  return CALENDAR_EVENTS.filter(e=>e.target&&e.target.toDateString()===now.toDateString());
 }
 
 /* ── STATUS CHIPS ─────────────────────────── */
@@ -1596,7 +1918,11 @@ function renderTicker(){
 function renderNews(){
   renderTicker();
   const f=S.newsFilter;
-  const filtered=NEWS.filter(n=>(f.src==='all'||n.src===f.src||n.srcL.toLowerCase().includes(f.src))&&(f.cat==='all'||n.cat===f.cat)&&(f.imp==='all'||n.impact===f.imp));
+  let filtered=NEWS.filter(n=>(f.src==='all'||n.src===f.src||n.srcL.toLowerCase().includes(f.src))&&(f.cat==='all'||n.cat===f.cat)&&(f.imp==='all'||n.impact===f.imp)&&(f.asset==='all'||n.asset===f.asset));
+  if(f.sort==='impact'){
+    const rank={high:0,med:1,low:2};
+    filtered=[...filtered].sort((a,b)=>(rank[a.impact]??3)-(rank[b.impact]??3)||((b.realTime||0)-(a.realTime||0)));
+  }
 
   const breaking=filtered.find(n=>n.impact==='high');
   const brEl=document.getElementById('npBreaking');
@@ -1608,18 +1934,19 @@ function renderNews(){
   }else brEl.style.display='none';
 
   if(filtered.length===0){
-    document.getElementById('npFeatured').innerHTML=`<div class="np-empty">Buscando noticias en vivo (GNews / NewsAPI)...</div>`;
+    document.getElementById('npFeatured').innerHTML=`<div class="np-empty">Buscando noticias en vivo (GNews + RSS multi-fuente)...</div>`;
     document.getElementById('npSideList').innerHTML='';
     document.getElementById('npCards').innerHTML='';
     return;
   }
 
-  const cardImg=n=>n.image?`<img class="np-card-img" src="${n.image}" loading="lazy" onerror="this.style.display='none'">`:`<div class="np-card-img">${n.srcL}</div>`;
+  const srcBadge=n=>`<span class="np-src-badge" style="background:${n.srcColor||sourceBadgeColor(n.srcL)};color:${(n.srcColor||'').startsWith('#fff')?'#1a1a1a':'#fff'}">${n.srcL}</span>`;
+  const cardImg=n=>n.image?`<img class="np-card-img" src="${n.image}" loading="lazy" onerror="this.style.display='none'">`:`<div class="np-card-img">${n.srcL.charAt(0)}</div>`;
 
   const top=filtered[0];
   document.getElementById('npFeatured').innerHTML=`
     ${top.image?`<img class="np-featured-img" src="${top.image}" loading="lazy" onerror="this.style.display='none'">`:`<div class="np-featured-img">${top.srcL}</div>`}
-    <div class="np-featured-src">${top.srcL} · ${top.ts}</div>
+    <div class="np-featured-src">${srcBadge(top)} · ${top.ts}</div>
     <div class="np-featured-title">${top.hl}</div>
     ${top.desc?`<div class="np-featured-desc">${top.desc}</div>`:''}`;
   document.getElementById('npFeatured').onclick=top.url?()=>window.open(top.url,'_blank'):null;
@@ -1635,7 +1962,7 @@ function renderNews(){
   document.getElementById('npCards').innerHTML=cards.map(n=>`
     <div class="np-card" ${n.url?`onclick="window.open('${n.url}','_blank')"`:''}>
       ${cardImg(n)}
-      <div class="np-card-src">${n.srcL} · ${n.ts}</div>
+      <div class="np-card-src">${srcBadge(n)} · ${n.ts}</div>
       <div class="np-card-title">${n.hl}</div>
     </div>`).join('');
 }
@@ -1758,6 +2085,36 @@ function drawCountryBorders(ctx,lonToX,latToY){
   });
 }
 
+// BUG3: antes esto era {lon,lat,label,col} con colores FIJOS hardcodeados
+// (Hormuz siempre rojo, Suez siempre amarillo, etc, sin importar lo que
+// pasara en el mundo). Ahora el riskLevel se calcula de verdad buscando
+// keywords en las noticias reales de las últimas 48h.
+const CHOKEPOINTS=[
+  {lon:56.3,lat:26.5,name:'Hormuz',label:'HORMUZ',keywords:['hormuz']},
+  {lon:32.5,lat:30,name:'Suez',label:'SUEZ',keywords:['suez']},
+  {lon:104,lat:1.3,name:'Malacca',label:'MALACCA',keywords:['malacca','malaca']},
+  {lon:43,lat:12,name:'Bab el-Mandeb',label:'BAB EL-MANDEB',keywords:['bab el-mandeb','bab al-mandab','houthi','red sea','mar rojo']},
+];
+const RISK_HIGH_KW=['ataque','attack','houthi','irán','iran','war','guerra','misil','missile','strike','sanción','sanction'];
+function computeChokepointRisk(cp){
+  const now=Date.now(),cutoff=48*3600*1000;
+  const recent=NEWS.filter(n=>n.realTime&&(now-n.realTime)<cutoff);
+  const matches=recent.filter(n=>{
+    const t=(n.hl+' '+(n.desc||'')).toLowerCase();
+    return cp.keywords.some(k=>t.includes(k));
+  });
+  if(matches.length===0)return{level:'green',col:'#00e676',matches:[]};
+  const hasHighSignal=matches.some(n=>n.impact==='high'||RISK_HIGH_KW.some(k=>n.hl.toLowerCase().includes(k)));
+  return hasHighSignal?{level:'red',col:'#ff4060',matches}:{level:'yellow',col:'#ffc300',matches};
+}
+function renderThreatIndex(){
+  const el=document.getElementById('threatIndexBar');if(!el)return;
+  el.innerHTML=CHOKEPOINTS.map(cp=>{
+    const risk=computeChokepointRisk(cp);
+    return`<div class="threat-chip" style="border-color:${risk.col}"><span class="threat-dot" style="background:${risk.col}"></span>${cp.label}<span style="color:var(--text3);font-size:9px"> (${risk.matches.length} noticias 48h)</span></div>`;
+  }).join('');
+}
+
 function renderMapCanvas(){
   const canvas=document.getElementById('mapCanvas');if(!canvas)return;
   const wrap=document.getElementById('mapView');
@@ -1786,8 +2143,17 @@ function renderMapCanvas(){
     ctx.fillStyle=col+'22';ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(px,py,r,0,Math.PI*2);ctx.fill();ctx.stroke();
     ctx.fillStyle=col;ctx.font='bold 9px JetBrains Mono';ctx.textAlign='center';ctx.fillText(p.flag+' '+p.prod,px,py-r-3);
   });
-  [{lon:56.3,lat:26.5,label:'⚠ HORMUZ',col:'#ff4060'},{lon:32.5,lat:30,label:'◈ SUEZ',col:'#ffc300'},{lon:104,lat:1.3,label:'◈ MALACCA',col:'#00e676'},{lon:43,lat:12,label:'⚠ BAB EL-MANDEB',col:'#ff4060'}].forEach(h=>{
-    const hx=lonToX(h.lon),hy=latToY(h.lat);ctx.fillStyle='rgba(6,8,16,.8)';ctx.fillRect(hx-2,hy-12,ctx.measureText(h.label).width+10,14);ctx.fillStyle=h.col;ctx.font='9px JetBrains Mono';ctx.textAlign='left';ctx.fillText(h.label,hx+2,hy-2);
+  if(S.showTankerRoutes&&TANKER_ROUTES.length>0){
+    TANKER_ROUTES.forEach(rt=>{
+      const x1=lonToX(rt.from[0]),y1=latToY(rt.from[1]),x2=lonToX(rt.to[0]),y2=latToY(rt.to[1]);
+      ctx.strokeStyle='rgba(255,109,0,.35)';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+      ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.setLineDash([]);
+    });
+  }
+  CHOKEPOINTS.forEach(h=>{
+    const risk=computeChokepointRisk(h);
+    const hx=lonToX(h.lon),hy=latToY(h.lat),label=(risk.level==='red'?'⚠ ':risk.level==='yellow'?'◈ ':'◈ ')+h.label;
+    ctx.fillStyle='rgba(6,8,16,.8)';ctx.fillRect(hx-2,hy-12,ctx.measureText(label).width+10,14);ctx.fillStyle=risk.col;ctx.font='9px JetBrains Mono';ctx.textAlign='left';ctx.fillText(label,hx+2,hy-2);
   });
   canvas.onmousemove=e=>{
     const rect=canvas.getBoundingClientRect(),mx=(e.clientX-rect.left)*(W/rect.width),my=(e.clientY-rect.top)*(H/rect.height);
@@ -1803,6 +2169,37 @@ function renderMapCanvas(){
   };
   canvas.onmouseleave=()=>document.getElementById('mapTooltip').classList.remove('show');
 }
+// BUG3: ÚLTIMOS MOVIMIENTOS — del feed de noticias real, filtrado a
+// las categorías relevantes para el mapa (geo/sanción/oferta/OPEC).
+function renderMapMovements(){
+  const el=document.getElementById('mapMovementsList');if(!el)return;
+  const relevant=NEWS.filter(n=>['geo','opec'].includes(n.cat)||IMPACT_HIGH_KW.some(k=>n.hl.toLowerCase().includes(k)))
+    .sort((a,b)=>(b.realTime||0)-(a.realTime||0)).slice(0,15);
+  if(relevant.length===0){el.innerHTML='<div style="color:var(--text3);font-family:var(--mono);font-size:12px;padding:14px">Esperando noticias geopolíticas reales...</div>';return;}
+  const now=Date.now();
+  el.innerHTML=relevant.map(n=>{
+    const hoursAgo=n.realTime?Math.max(0,Math.round((now-n.realTime)/3600000)):null;
+    const col=n.impact==='high'?'var(--red)':n.impact==='med'?'var(--yellow)':'var(--green)';
+    return`<div class="mov-row" ${n.url?`onclick="window.open('${n.url}','_blank')"`:''}><div class="mov-dot" style="background:${col}"></div><div><div class="mov-text">${n.hl}</div><div class="mov-meta">${n.srcL} · ${hoursAgo!==null?'hace '+hoursAgo+'h':n.ts}</div></div></div>`;
+  }).join('');
+}
+// BUG3: KPIs LIVE — todo reutilizado de datos ya reales en otras partes
+// de la app (precios, crack, Cushing, forma de la curva).
+function renderMapKpis(){
+  const el=document.getElementById('mapKpisGrid');if(!el)return;
+  const crudeRow=STORAGE_DATA.find(s=>s.seriesKey==='cushing_stocks');
+  const crack=computeCrackSpreads();
+  const kpis=[
+    {name:'BRENT',val:typeof S.prices.brent==='number'?'$'+S.prices.brent.toFixed(2):'—',sub:typeof S.changes.brent==='number'?(S.changes.brent>=0?'+':'')+S.changes.brent.toFixed(2)+'%':'—',col:S.changes.brent>=0?'var(--green)':'var(--red)'},
+    {name:'WTI',val:typeof S.prices.wti==='number'?'$'+S.prices.wti.toFixed(2):'—',sub:typeof S.changes.wti==='number'?(S.changes.wti>=0?'+':'')+S.changes.wti.toFixed(2)+'%':'—',col:S.changes.wti>=0?'var(--green)':'var(--red)'},
+    {name:'SPREAD BRENT-WTI',val:typeof S.prices.spread==='number'?'$'+S.prices.spread.toFixed(2):'—',sub:'real',col:'var(--text2)'},
+    {name:'CRACK 3:2:1',val:crack?'$'+crack.c321.toFixed(2)+'/b':'—',sub:crack?interpretCrack(crack.c321).txt:'—',col:crack?interpretCrack(crack.c321).col:'var(--text3)'},
+    {name:'CUSHING',val:crudeRow&&typeof crudeRow.level==='number'?crudeRow.level+' Mbl':'—',sub:crudeRow&&typeof crudeRow.chg==='number'?(crudeRow.chg>=0?'+':'')+crudeRow.chg+' Mbl':'—',col:crudeRow&&crudeRow.chg<0?'var(--green)':'var(--red)'},
+    {name:'CURVA WTI',val:CURVE_DATA?CURVE_DATA.shape:'—',sub:CURVE_DATA?(CURVE_DATA.shape==='CONTANGO'?'bearish':CURVE_DATA.shape==='BACKWARDATION'?'bullish':'neutral'):'visitá CURVA',col:'var(--text2)'},
+  ];
+  el.innerHTML=kpis.map(k=>`<div class="dash-card"><div class="dash-card-title">${k.name}</div><div class="dash-card-value" style="font-size:18px">${k.val}</div><div class="dash-card-sub" style="color:${k.col}">${k.sub}</div></div>`).join('');
+}
+
 function setMapView(v){
   S.mapView=v;
   document.getElementById('mapView').style.display=v==='map'?'block':'none';
@@ -1815,6 +2212,20 @@ function toggleReservesLayer(){
   S.showReserves=!S.showReserves;
   document.getElementById('mt-reserves').classList.toggle('active',S.showReserves);
   renderMapCanvas();
+}
+let TANKER_ROUTES=[];
+async function fetchTankerRoutes(){
+  try{
+    const r=await fetch('/api/tanker-routes');const d=await r.json();
+    TANKER_ROUTES=d.routes||[];
+    console.log(`[Tanker Routes] ${TANKER_ROUTES.length} rutas típicas cargadas (NO es tracking en vivo: ${d.note})`);
+  }catch(e){console.warn('[Tanker Routes Error]',e);}
+}
+function toggleTankerRoutes(){
+  S.showTankerRoutes=!S.showTankerRoutes;
+  document.getElementById('mt-tankers').classList.toggle('active',S.showTankerRoutes);
+  if(S.showTankerRoutes&&TANKER_ROUTES.length===0)fetchTankerRoutes().then(renderMapCanvas);
+  else renderMapCanvas();
 }
 
 /* ── ANALYSIS DATA & RENDER ───────────────── */
@@ -1863,6 +2274,18 @@ async function fetchManualProjections(){
   }catch(e){console.warn('[Proyecciones manuales Error]',e);}
 }
 function renderAnalysis(){
+  // BUG4: timestamp real del análisis — "Análisis del HH:MM:SS — Basado en N noticias"
+  const tsEl=document.getElementById('analysisTimestamp');
+  if(tsEl){
+    if(LAST_ANALYSIS_AT){
+      tsEl.className='curve-freshness open';
+      tsEl.textContent=`🟢 Análisis del ${LAST_ANALYSIS_AT.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})} — basado en ${ANALYSIS_BIAS?.n||0} noticias reales`;
+    }else{
+      tsEl.className='curve-freshness closed';
+      tsEl.textContent='🟡 Esperando suficientes noticias reales para el primer análisis...';
+    }
+  }
+
   const digest=buildDigest();
   document.getElementById('digestList').innerHTML=digest.length?digest.map(d=>`<div class="digest-item"><div class="di-time">${d.t}</div><div class="di-body"><span class="di-impact impact-${d.imp}">${d.imp.toUpperCase()}</span><div class="di-text">${d.text}</div><div class="di-tags">${d.tags.map(t=>`<span class="di-tag">${t}</span>`).join('')}</div></div></div>`).join(''):`<div class="digest-item" style="color:var(--text3);text-align:center;padding:24px 10px">Esperando noticias reales de las últimas 24h (GNews)...</div>`;
 
@@ -1873,7 +2296,32 @@ function renderAnalysis(){
   });
   const allRows=[...steoRows,...MANUAL_PROJECTIONS];
   document.getElementById('projTableBody').innerHTML=allRows.length?allRows.map(p=>`<tr ${p.url?`onclick="window.open('${p.url}','_blank')" style="cursor:pointer"`:''}><td><strong>${p.src}</strong>${p.analyst?`<br><span style="color:var(--text3);font-size:10px">${p.analyst}</span>`:''}</td><td style="color:var(--text3)">${p.period}</td><td style="color:var(--yellow)">${p.wti?'$'+(+p.wti).toFixed(2):'—'}</td><td style="color:var(--blue2)">${p.brent?'$'+(+p.brent).toFixed(2):'—'}</td><td style="color:var(--text2)">${p.tipo}</td><td style="color:var(--text3)">${p.date}</td></tr>`).join(''):`<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:18px">Cargando EIA STEO...</td></tr>`;
-  document.getElementById('sentimentRow').innerHTML=[{label:'SENTIMIENTO GLOBAL',value:62,desc:'LEV. ALCISTA',col:'#00e676'},{label:'TENSIÓN GEOPOLÍTICA',value:78,desc:'ALTA',col:'#ff4060'},{label:'SESGO OFERTA/DEMANDA',value:54,desc:'EQUILIBRADO',col:'#ffc300'}].map(s=>`<div class="sent-card"><div class="sent-label">${s.label}</div><svg class="sent-gauge" viewBox="0 0 60 60"><circle cx="30" cy="30" r="24" fill="none" stroke="#1f2235" stroke-width="6"/><circle cx="30" cy="30" r="24" fill="none" stroke="${s.col}" stroke-width="6" stroke-dasharray="${(s.value/100)*150.8} 150.8" stroke-dashoffset="37.7" stroke-linecap="round" transform="rotate(-90 30 30)"/></svg><div class="sent-value" style="color:${s.col}">${s.value}</div><div class="sent-desc">${s.desc}</div></div>`).join('');
+
+  // BUG4: los 3 gauges ahora son REALES (antes 62/78/54 eran estáticos
+  // hardcodeados — issue ya documentado en README, se aprovecha esta
+  // vuelta para corregirlo).
+  const geoCount=NEWS.slice(0,15).filter(n=>n.cat==='geo').length;
+  const opecCount=NEWS.slice(0,15).filter(n=>n.cat==='opec').length;
+  const biasPct=ANALYSIS_BIAS?Math.min(100,Math.round(50+((ANALYSIS_BIAS.scoreBull-ANALYSIS_BIAS.scoreBear)*8))):50;
+  const biasCol=biasPct>55?'#00e676':biasPct<45?'#ff4060':'#ffc300';
+  document.getElementById('sentimentRow').innerHTML=[
+    {label:'SESGO DIRECCIONAL (real)',value:biasPct,desc:ANALYSIS_BIAS?ANALYSIS_BIAS.label.replace(/[▲▼—]/g,'').trim():'—',col:biasCol},
+    {label:'EVENTOS GEOPOLÍTICOS (15 noticias)',value:Math.min(100,geoCount*20),desc:`${geoCount} activos`,col:geoCount>2?'#ff4060':geoCount>0?'#ffc300':'#00e676'},
+    {label:'ACTIVIDAD OPEC+ (15 noticias)',value:Math.min(100,opecCount*25),desc:`${opecCount} activos`,col:'#2979ff'},
+  ].map(s=>`<div class="sent-card"><div class="sent-label">${s.label}</div><svg class="sent-gauge" viewBox="0 0 60 60"><circle cx="30" cy="30" r="24" fill="none" stroke="#1f2235" stroke-width="6"/><circle cx="30" cy="30" r="24" fill="none" stroke="${s.col}" stroke-width="6" stroke-dasharray="${(s.value/100)*150.8} 150.8" stroke-dashoffset="37.7" stroke-linecap="round" transform="rotate(-90 30 30)"/></svg><div class="sent-value" style="color:${s.col}">${s.value}</div><div class="sent-desc">${s.desc}</div></div>`).join('');
+
+  // BUG4: top 5 eventos de mayor impacto del día
+  const t5=document.getElementById('top5EventsList');
+  if(t5){
+    t5.innerHTML=TOP5_EVENTS.length?TOP5_EVENTS.map((n,i)=>`<div class="digest-item" ${n.url?`onclick="window.open('${n.url}','_blank')" style="cursor:pointer"`:''}><div class="di-time">#${i+1}</div><div class="di-body"><span class="di-impact impact-${n.impact}">${n.impact.toUpperCase()}</span><div class="di-text">${n.hl}</div><div class="di-tags"><span class="di-tag">${n.srcL}</span><span class="di-tag">${n.ts}</span></div></div></div>`).join(''):`<div class="digest-item" style="color:var(--text3);text-align:center;padding:16px">Esperando noticias reales...</div>`;
+  }
+
+  // BUG4: eventos del calendario que caen hoy
+  const evToday=getEventsToday();
+  const evEl=document.getElementById('eventsTodayList');
+  if(evEl){
+    evEl.innerHTML=evToday.length?evToday.map(e=>`<div class="cal-row" ${e.url?`onclick="window.open('${e.url}','_blank')" style="cursor:pointer"`:''}><div class="cal-imp ${e.importance}"></div><div class="cal-body"><div class="cal-title">${e.title}</div><div class="cal-meta">${e.meta}</div></div></div>`).join(''):`<div style="color:var(--text3);font-family:var(--mono);font-size:12px;padding:10px">Ningún evento del calendario cae hoy.</div>`;
+  }
 }
 
 /* ── BACKGROUND MAP ───────────────────────── */
@@ -1903,12 +2351,23 @@ function buildTicker(){
   document.getElementById('tickerTrack').innerHTML=html;
 }
 function updateTicker(){
+  // REGLA NO NEGOCIABLE: antes esta función generaba un "drift" aleatorio
+  // con Math.random() ANTES de tener datos reales, y además recalculaba
+  // el %cambio comparando contra precios base hardcodeados — eso pisaba
+  // el %cambio REAL que ya llega de Yahoo (fetchTwelveDataPrices) cada
+  // 3 segundos. Ahora esta función solo LEE S.prices/S.changes (ya
+  // reales) y actualiza el DOM — no inventa ni recalcula nada.
   TICKERS.forEach(t=>{
-    if(!S.liveActive){const drift=(Math.random()-.499)*.04;S.prices[t.key]=+(S.prices[t.key]+drift).toFixed(t.key==='ng'||t.key==='rbob'||t.key==='heatoil'?3:2);}
-    const base={brent:74.38,wti:70.81,coil:71.42,ng:2.847,heatoil:2.118,rbob:2.264}[t.key];
-    const pct=+((S.prices[t.key]-base)/base*100).toFixed(2);S.changes[t.key]=pct;
-    const dir=pct>0?'up':pct<0?'dn':'flat';
-    for(let rep=0;rep<2;rep++){const el=document.getElementById(`tk-${t.key}-${rep}`);if(!el)return;const sp=el.querySelectorAll('.ti-price');sp[0].className=`ti-price price-${dir}`;sp[0].textContent=`$${S.prices[t.key]}`;sp[1].className=`ti-price price-${dir}`;sp[1].style.fontSize='10px';sp[1].textContent=` ${pct>0?'▲':pct<0?'▼':'—'}${Math.abs(pct).toFixed(2)}%`;}
+    const price=S.prices[t.key],pct=S.changes[t.key];
+    const dir=typeof pct!=='number'?'flat':pct>0?'up':pct<0?'dn':'flat';
+    for(let rep=0;rep<2;rep++){
+      const el=document.getElementById(`tk-${t.key}-${rep}`);if(!el)continue;
+      const sp=el.querySelectorAll('.ti-price');
+      sp[0].className=`ti-price price-${dir}`;
+      sp[0].textContent=typeof price==='number'?`$${price}`:'—';
+      sp[1].className=`ti-price price-${dir}`;sp[1].style.fontSize='10px';
+      sp[1].textContent=typeof pct==='number'?` ${pct>0?'▲':pct<0?'▼':'—'}${Math.abs(pct).toFixed(2)}%`:' —';
+    }
   });
   const a=S.asset,p=S.prices[a]||S.prices.brent,c=S.changes[a]||0;
   const el=document.getElementById('priceTag');if(el)el.innerHTML=`<span style="color:${c>0?'var(--green)':c<0?'var(--red)':'var(--text)'}">$${p} <span style="font-size:13px">${c>0?'▲':'▼'} ${c>0?'+':''}${c.toFixed(2)}%</span></span>`;
@@ -1929,12 +2388,14 @@ function switchTab(tab){
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('tbn-'+tab).classList.add('active');
   if(tab==='charts'){S.chartData=null;setTimeout(()=>{renderChart();},50);loadRealCandles();fetchAlphaVantage();}
-  if(tab==='map'){setTimeout(()=>{renderMapCanvas();renderProdTable();renderMapSidebar();setMapView(S.mapView);},50);}
+  if(tab==='map'){setTimeout(()=>{renderMapCanvas();renderProdTable();renderMapSidebar();setMapView(S.mapView);renderThreatIndex();renderMapMovements();renderMapKpis();},50);}
   if(tab==='news'){renderNews();}
   if(tab==='analysis'){renderAnalysis();if(NEWS.length>3)fetchAISummary();}
   if(tab==='curve'){fetchFuturesCurve();}
   if(tab==='dashboard'){loadDashboard();}
   if(tab==='macro'){loadCalendarEvents();fetchMacroCorrelations();}
+  if(tab==='futuros'){loadFuturosTab();}
+  if(tab==='spreads'){loadSpreadsTab();}
   savePrefs();
 }
 function selAsset(a,btn){
@@ -1984,7 +2445,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   fetchEIASTEO();
   fetchManualProjections();
   setTimeout(fetchAISummary, 15000);
-  setInterval(fetchAISummary, 600000);
+  setInterval(fetchAISummary, 300000);
   setInterval(fetchEIAInventories, 3600000);
   setInterval(fetchAlphaVantage, 3600000);
   setInterval(fetchEIASTEO, 3600000);
@@ -2003,6 +2464,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     Object.assign(S.ind,saved.ind||{});
     Object.assign(S.newsFilter,saved.newsFilter||{});
     S.curveUnderlying=saved.curveUnderlying||S.curveUnderlying;
+    S.curveCount=saved.curveCount||S.curveCount;
     restoreUIFromState();
     switchTab(saved.tab||'dashboard');
   }else{
