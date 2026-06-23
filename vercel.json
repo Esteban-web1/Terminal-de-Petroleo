@@ -21,6 +21,8 @@
     "api/eia-data.js":           { "maxDuration": 10 },
     "api/eia-steo.js":           { "maxDuration": 10 },
     "api/forward-curve.js":      { "maxDuration": 10 },
-    "api/macro-correlations.js": { "maxDuration": 10 }
+    "api/macro-correlations.js": { "maxDuration": 10 },
+    "api/brent-history.js":      { "maxDuration": 10 },
+    "api/tanker-routes.js":      { "maxDuration": 10 }
   }
 }
