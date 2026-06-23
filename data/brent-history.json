@@ -1,0 +1,5 @@
+{
+  "_nota": "Arranca vacío a propósito. NO se inventaron 30 dias de historico CO1-CO12 porque no hay forma confiable de reconstruir retroactivamente que contrato era 'front month' cada dia pasado sin haberlo registrado en su momento. A partir de hoy, cada corrida de los workflows update-prices.yml / update-dated-brent.yml (manual) va agregando filas reales aca. Ver README para como cargar el historico que ya tengas en brent-spread-monitor.",
+  "co_curve": [],
+  "dated_brent": []
+}
