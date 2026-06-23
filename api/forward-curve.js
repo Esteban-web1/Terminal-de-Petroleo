@@ -1,25 +1,33 @@
 // ══════════════════════════════════════════════════════════════
 // api/forward-curve.js (Vercel Serverless Function)
-// CAMBIO 1.4 — Curva de futuros real (contango/backwardation).
+// BUG 5 fix — la curva ya no usa regularMarketPrice (fluctúa intradía,
+// por eso "cambiaba al refrescar la página"). Ahora usa el CLOSE de la
+// última vela DIARIA ya cerrada — mismo valor durante todo el día,
+// determinístico.
 //
-// Usa los tickers de contrato con vencimiento real de Yahoo Finance.
-// Formato CME/ICE estándar verificado contra páginas reales existentes
-// hoy (finance.yahoo.com/quote/CLZ26.NYM/, BZM26.NYM/, etc.):
+// Tickers con vencimiento real de Yahoo Finance (verificado contra
+// páginas reales: finance.yahoo.com/quote/CLZ26.NYM/, BZM26.NYM/):
 //   WTI:   CL + código de mes + año (2 dígitos) + ".NYM"
 //   Brent: BZ + código de mes + año (2 dígitos) + ".NYM"
-// Código de mes (estándar de futuros, NO inventado):
+// Código de mes (estándar CME, NO inventado):
 //   F=Ene G=Feb H=Mar J=Abr K=May M=Jun N=Jul Q=Ago U=Sep V=Oct X=Nov Z=Dic
 //
-// GET /api/forward-curve?underlying=wti&count=12
-// → { spot, curve:[{label,month,ticker,price}], shape, diffPct,
-//     spreads:{m1m2,m1m3,m1m6,m1m12}, rollYieldPct }
+// Para Brent, además del ticker real se calcula una etiqueta estilo
+// ICE ("CO1, CO2...") porque así se conoce comercialmente la curva de
+// Brent — pero el dato sigue viniendo 100% de Yahoo, la etiqueta es
+// solo un nombre más familiar.
 //
-// No requiere API key (mismo endpoint no-oficial que prices-yahoo.js).
+// Open interest: Yahoo NO lo provee en este endpoint no-oficial de
+// chart — se devuelve null explícito, no se inventa.
+//
+// GET /api/forward-curve?underlying=wti&count=12
 // ══════════════════════════════════════════════════════════════
 
 const TIMEOUT_MS = 10_000;
 const SPOT_TICKER = { wti: 'CL=F', brent: 'BZ=F' };
 const PREFIX = { wti: 'CL', brent: 'BZ' };
+const FRIENDLY_PREFIX = { wti: 'M', brent: 'CO' }; // BUG5: Brent usa "CO1,CO2..." (convención ICE)
+const MAX_COUNT = 24; // ver nota en README: 36 meses no tiene liquidez/listado real confiable
 const MONTH_CODES = ['F','G','H','J','K','M','N','Q','U','V','X','Z'];
 const MONTH_NAMES_ES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
@@ -42,13 +50,16 @@ function sendError(res, statusCode, message, details = null) {
 }
 
 function sendOk(res, data) {
-  // CACHE: la curva de futuros no cambia segundo a segundo — 60s de caché
-  // de borde reduce drásticamente las ~13 llamadas a Yahoo por refresh.
-  res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=120');
+  // BUG 5 fix: 5 minutos de caché — la curva de cierre diario no tiene
+  // sentido revalidarla cada minuto.
+  res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
   return res.status(200).json(data);
 }
 
-async function fetchYahooQuote(ticker) {
+// BUG 5 fix: trae el CLOSE de la última vela DIARIA ya cerrada, no el
+// precio intradía en vivo — esto es lo que garantiza que la curva no
+// cambie cada vez que se refresca la página dentro del mismo día.
+async function fetchLastCloseAndVolume(ticker) {
   const url = new URL(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}`);
   url.searchParams.set('interval', '1d');
   url.searchParams.set('range', '5d');
@@ -60,9 +71,22 @@ async function fetchYahooQuote(ticker) {
     if (!response.ok) return { ok: false, error: `status ${response.status}` };
     const data = await response.json();
     const result = data?.chart?.result?.[0];
-    const price = result?.meta?.regularMarketPrice;
-    if (typeof price !== 'number') return { ok: false, error: 'sin precio válido' };
-    return { ok: true, price };
+    const ts = result?.timestamp;
+    const quote = result?.indicators?.quote?.[0];
+    if (!Array.isArray(ts) || !quote?.close) return { ok: false, error: 'sin serie diaria válida' };
+
+    for (let i = ts.length - 1; i >= 0; i--) {
+      if (typeof quote.close[i] === 'number') {
+        return {
+          ok: true,
+          close: quote.close[i],
+          volume: typeof quote.volume?.[i] === 'number' ? quote.volume[i] : null,
+          closeDate: new Date(ts[i] * 1000).toISOString().slice(0, 10),
+          closeTimestamp: ts[i],
+        };
+      }
+    }
+    return { ok: false, error: 'todas las barras recientes vienen sin close' };
   } catch (err) {
     clearTimeout(timer);
     return { ok: false, error: err.name === 'AbortError' ? 'timeout' : err.message };
@@ -71,6 +95,7 @@ async function fetchYahooQuote(ticker) {
 
 function generateContracts(underlying, count) {
   const prefix = PREFIX[underlying];
+  const friendly = FRIENDLY_PREFIX[underlying];
   const now = new Date();
   const contracts = [];
   for (let i = 1; i <= count; i++) {
@@ -79,11 +104,25 @@ function generateContracts(underlying, count) {
     const yy = String(d.getFullYear()).slice(-2);
     contracts.push({
       ticker: `${prefix}${code}${yy}.NYM`,
-      label: `M${i}`,
+      label: `${friendly}${i}`,
       month: `${MONTH_NAMES_ES[d.getMonth()]}-${yy}`,
     });
   }
   return contracts;
+}
+
+function marketFreshness(closeTimestamp) {
+  const now = new Date();
+  const closeDate = new Date(closeTimestamp * 1000);
+  const dayUTC = now.getUTCDay();
+  const hourUTC = now.getUTCHours();
+  const hourET = (hourUTC - 4 + 24) % 24; // aproximación ET, alcanza para este badge
+  const isWeekendGap = (dayUTC === 6) || (dayUTC === 0 && hourET < 18) || (dayUTC === 5 && hourET >= 17);
+  return {
+    isOpen: !isWeekendGap,
+    lastCloseDate: closeDate.toISOString().slice(0, 10),
+    asOf: now.toISOString(),
+  };
 }
 
 export default async function handler(req, res) {
@@ -97,15 +136,15 @@ export default async function handler(req, res) {
     return sendError(res, 400, `underlying inválido: "${underlying}". Usá "wti" o "brent".`);
   }
   const rawCount = parseInt(params.count, 10);
-  const count = isNaN(rawCount) ? 12 : Math.min(Math.max(rawCount, 3), 12);
+  const count = isNaN(rawCount) ? 12 : Math.min(Math.max(rawCount, 3), MAX_COUNT);
 
   console.log(`[forward-curve.js] underlying=${underlying} count=${count}`);
 
   const contracts = generateContracts(underlying, count);
 
   const [spotResult, ...contractResults] = await Promise.all([
-    fetchYahooQuote(SPOT_TICKER[underlying]),
-    ...contracts.map(c => fetchYahooQuote(c.ticker)),
+    fetchLastCloseAndVolume(SPOT_TICKER[underlying]),
+    ...contracts.map(c => fetchLastCloseAndVolume(c.ticker)),
   ]);
 
   if (!spotResult.ok) {
@@ -117,51 +156,56 @@ export default async function handler(req, res) {
   contracts.forEach((c, i) => {
     const r = contractResults[i];
     if (!r.ok) { failures.push(`${c.ticker}: ${r.error}`); return; }
-    curve.push({ ...c, price: +r.price.toFixed(2) });
+    curve.push({
+      ...c,
+      price: +r.close.toFixed(2),
+      volume: r.volume,
+      openInterest: null,
+      closeDate: r.closeDate,
+    });
   });
 
   if (curve.length < 3) {
     return sendError(res, 502,
-      `Yahoo no devolvió suficientes contratos de ${underlying.toUpperCase()} (mínimo 3, llegaron ${curve.length}). ` +
-      `Puede que algunos contratos lejanos todavía no listen en Yahoo.`,
+      `Yahoo no devolvió suficientes contratos de ${underlying.toUpperCase()} (mínimo 3, llegaron ${curve.length}).`,
       failures
     );
   }
 
-  // Forma de la curva: comparando el primer y último contrato disponible
   const first = curve[0].price, last = curve[curve.length - 1].price;
   const diffPct = +(((last - first) / first) * 100).toFixed(2);
   const shape = diffPct > 0.15 ? 'CONTANGO' : diffPct < -0.15 ? 'BACKWARDATION' : 'FLAT';
 
-  // Time spreads M1-M2 / M1-M3 / M1-M6 / M1-M12 — solo si ese contrato cargó real
   const byLabel = {};
   curve.forEach(c => { byLabel[c.label] = c.price; });
-  const m1 = byLabel['M1'] ?? null;
+  const friendly = FRIENDLY_PREFIX[underlying];
+  const m1 = byLabel[`${friendly}1`] ?? null;
   const spread = (label) => (m1 !== null && byLabel[label] !== undefined) ? +(m1 - byLabel[label]).toFixed(2) : null;
   const spreads = {
-    m1m2: spread('M2'),
-    m1m3: spread('M3'),
-    m1m6: spread('M6'),
-    m1m12: spread('M12'),
+    m1m2: spread(`${friendly}2`),
+    m1m3: spread(`${friendly}3`),
+    m1m6: spread(`${friendly}6`),
+    m1m12: spread(`${friendly}12`),
   };
 
-  // Roll yield aproximado: % de diferencia entre M1 y M2 anualizado simple
   let rollYieldPct = null;
-  if (m1 !== null && byLabel['M2'] !== undefined) {
-    rollYieldPct = +(((m1 - byLabel['M2']) / byLabel['M2']) * 100 * 12).toFixed(2); // anualizado simple (1 mes → x12)
+  if (m1 !== null && byLabel[`${friendly}2`] !== undefined) {
+    rollYieldPct = +(((m1 - byLabel[`${friendly}2`]) / byLabel[`${friendly}2`]) * 100 * 12).toFixed(2);
   }
 
   const out = {
     underlying,
-    spot: +spotResult.price.toFixed(2),
+    spot: +spotResult.close.toFixed(2),
+    spotVolume: spotResult.volume,
     curve,
     shape,
     diffPct,
     spreads,
     rollYieldPct,
+    freshness: marketFreshness(spotResult.closeTimestamp),
   };
   if (failures.length > 0) out._warnings = failures;
 
-  console.log(`[forward-curve.js] OK ${underlying}: ${curve.length} contratos, forma=${shape} (${diffPct}%)`);
+  console.log(`[forward-curve.js] OK ${underlying}: ${curve.length} contratos, forma=${shape} (${diffPct}%), cierre=${spotResult.closeDate}`);
   return sendOk(res, out);
 }
