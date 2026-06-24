@@ -20,7 +20,6 @@
     "api/news-translate.js":     { "maxDuration": 10 },
     "api/eia.js":                { "maxDuration": 10 },
     "api/forward-curve.js":      { "maxDuration": 10 },
-    "api/macro-correlations.js": { "maxDuration": 10 },
-    "api/static-data.js":        { "maxDuration": 10 }
+    "api/macro-correlations.js": { "maxDuration": 10 }
   }
 }
