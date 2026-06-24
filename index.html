@@ -6,7 +6,7 @@
 <title>Terminal de Petróleo</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="alternate icon" href="/favicon.svg">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Archivo+Black&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -23,7 +23,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:#2a2d40;border-radius:2px}
-#bgCanvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+/* BUG4: #bgCanvas (luces animadas de fondo) eliminado a pedido — fondo
+   plano sólido var(--bg) que ya estaba debajo. */
 #app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
 #topBar{position:sticky;top:0;z-index:100;background:rgba(6,8,16,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border2)}
 .tb-row1{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;border-bottom:1px solid var(--border)}
@@ -76,6 +77,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .chart-zoom-hint{position:absolute;bottom:6px;right:10px;font-family:var(--mono);font-size:10px;color:var(--text3);pointer-events:none;z-index:5}
 .chart-asset-label{position:absolute;top:8px;right:12px;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text);letter-spacing:1px;pointer-events:none;z-index:5;background:rgba(6,8,16,.75);padding:3px 9px;border-radius:3px;border:1px solid var(--border2)}
 .ohlc-display{position:absolute;top:8px;left:12px;font-family:var(--mono);font-size:12px;pointer-events:none;display:flex;gap:14px;flex-wrap:wrap;z-index:5;background:rgba(6,8,16,.75);padding:3px 8px;border-radius:3px}
+.chart-overlay-msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:8px;background:#060810;color:var(--text3);font-family:var(--mono);font-size:12px;z-index:8;text-align:center;padding:20px}
+.chart-overlay-msg.error{color:var(--red)}
 .ohlc-item{display:flex;gap:4px}
 .ohlc-lbl{color:var(--text3)}.ohlc-val{font-weight:600}
 .event-row{display:flex;gap:5px;padding:5px 12px;flex-wrap:wrap;border-top:1px solid var(--border);background:var(--panel2)}
@@ -86,10 +89,22 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .curve-freshness{padding:6px 12px;font-family:var(--mono);font-size:11px;border-bottom:1px solid var(--border2)}
 .curve-freshness.open{color:var(--green)}
 .curve-freshness.closed{color:var(--yellow)}
-.spreads-matrix{border-collapse:collapse;font-family:var(--mono);font-size:11px}
+.spreads-matrix{border-collapse:collapse;font-family:'IBM Plex Mono',var(--mono);font-size:11px}
 .spreads-matrix th,.spreads-matrix td{padding:5px 8px;text-align:center;border:1px solid var(--border)}
 .spreads-matrix th{background:var(--panel3);color:var(--text2);font-weight:700}
 .spreads-matrix td.diag{background:var(--panel3);color:var(--text3)}
+.spreads-matrix td.clickable{cursor:pointer;transition:outline .1s}
+.spreads-matrix td.clickable:hover{outline:2px solid var(--orange)}
+.spreads-matrix td.selected{outline:2px solid #fff}
+/* BUG5: stack IBM Plex Mono/Sans + naranja brillante, réplica de brent-spread-monitor */
+.bsm-controls{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:10px 14px;background:var(--panel2);border-bottom:1px solid var(--border);font-family:'IBM Plex Sans',var(--sans)}
+.bsm-ctrl-group{display:flex;align-items:center;gap:7px}
+.bsm-ctrl-lbl{font-family:'IBM Plex Mono',var(--mono);font-size:10px;color:var(--text3);letter-spacing:.5px}
+.bsm-select{background:var(--panel3);color:var(--text);border:1px solid var(--border2);font-family:'IBM Plex Mono',var(--mono);font-size:11px;padding:4px 8px;border-radius:3px}
+.bsm-swatch{width:14px;height:4px;border-radius:2px;flex-shrink:0}
+.bsm-chart-box{background:#060810;border:1px solid var(--border2);margin:14px;height:380px;position:relative}
+.bsm-chart-box canvas{padding:10px}
+.curve-chart-box{flex:1;min-width:320px;background:#060810;border:1px solid var(--border2)}
 .curve-shape-gauge{display:flex;align-items:center;gap:10px;font-family:var(--mono)}
 .curve-shape-label{font-size:13px;font-weight:700;padding:4px 12px;border-radius:3px}
 .curve-shape-label.contango{background:rgba(255,64,96,.12);color:var(--red)}
@@ -172,24 +187,38 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .np-filters-bar .nf-high.on{border-color:#d32f2f;color:#fff;background:#d32f2f}
 .np-filters-bar .nf-med.on{border-color:#e6a700;color:#1a1a1a;background:#ffd84d}
 .np-filters-bar .nf-low.on{border-color:#0a8a3e;color:#fff;background:#0a8a3e}
-.np-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:28px}
-.np-featured{cursor:pointer}
-.np-featured-img{width:100%;height:300px;object-fit:cover;border-radius:4px;background:linear-gradient(135deg,#2a2d35,#555);display:flex;align-items:center;justify-content:center;color:#aaa;font-size:11px;font-family:var(--mono)}
-.np-featured-src{font-size:11px;font-weight:800;color:#d32f2f;letter-spacing:.6px;margin-top:14px;font-family:var(--mono)}
-.np-featured-title{font-size:25px;font-weight:800;line-height:1.25;margin:6px 0 9px;color:#111;font-family:var(--sans)}
-.np-featured-desc{font-size:14px;color:#555;line-height:1.55}
-.np-side-list{display:flex;flex-direction:column}
-.np-side-hdr{font-size:12px;font-weight:800;letter-spacing:1px;color:#16181d;border-bottom:2px solid #16181d;padding-bottom:8px;margin-bottom:4px}
-.np-side-item{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid #e2e2e6;cursor:pointer}
-.np-side-num{font-size:21px;font-weight:800;color:#d32f2f;font-family:var(--mono);min-width:24px;line-height:1}
-.np-side-title{font-size:13.5px;font-weight:600;line-height:1.35;color:#111}
-.np-cards-title{font-size:13px;font-weight:800;letter-spacing:1px;color:#d32f2f;border-bottom:2px solid #d32f2f;padding-bottom:7px;margin:30px 0 16px}
-.np-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
-.np-card{cursor:pointer}
-.np-card-img{width:100%;height:110px;object-fit:cover;border-radius:3px;background:linear-gradient(135deg,#2a2d35,#555);display:flex;align-items:center;justify-content:center;color:#999;font-size:10px;font-family:var(--mono)}
-.np-card-src{font-size:9.5px;font-weight:800;color:#d32f2f;letter-spacing:.5px;margin-top:9px;font-family:var(--mono)}
-.np-src-badge{display:inline-block;padding:1px 6px;border-radius:2px;font-size:9px;font-weight:800;letter-spacing:.3px}
-.np-card-title{font-size:12.5px;font-weight:600;line-height:1.4;color:#111;margin-top:4px}
+/* BUG2 OPCIÓN A: estilo terminal financiera (Bloomberg/Reuters Eikon),
+   sin imágenes — layout 75% feed / 25% sidebar sticky. */
+.nt-layout{display:flex;gap:0;align-items:flex-start}
+.nt-feed-col{flex:1;min-width:0;border-right:1px solid var(--border2)}
+.nt-sidebar-col{width:280px;flex-shrink:0}
+.nt-sidebar-sticky{position:sticky;top:0;padding:14px;max-height:calc(100vh - 200px);overflow-y:auto}
+.nt-counter{padding:8px 16px;font-family:var(--mono);font-size:11px;color:var(--text3);border-bottom:1px solid var(--border)}
+.nt-feed{display:flex;flex-direction:column}
+.nt-item{padding:12px 16px;border-bottom:1px solid var(--border);cursor:default}
+.nt-item:hover{background:var(--panel2)}
+.nt-item-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.nt-impact-badge{font-family:var(--mono);font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:2px;letter-spacing:.5px}
+.nt-impact-badge.high{background:rgba(255,64,96,.18);color:var(--red)}
+.nt-impact-badge.med{background:rgba(255,195,0,.18);color:var(--yellow)}
+.nt-impact-badge.low{background:rgba(0,230,118,.18);color:var(--green)}
+.nt-time{font-family:var(--mono);font-size:11px;color:var(--text3)}
+.nt-src-badge{display:inline-block;padding:2px 7px;border-radius:2px;font-size:9.5px;font-weight:800;letter-spacing:.4px;font-family:var(--mono)}
+.nt-lang-badge{font-family:var(--mono);font-size:8.5px;color:var(--text3);border:1px solid var(--border2);padding:1px 5px;border-radius:2px}
+.nt-title{font-size:14px;color:var(--text);line-height:1.4;cursor:pointer;margin-bottom:6px}
+.nt-title:hover{color:var(--orange)}
+.nt-tags{display:flex;gap:6px;flex-wrap:wrap}
+.nt-tag{font-family:var(--mono);font-size:10px;color:var(--blue2);cursor:pointer;background:var(--panel3);padding:1px 7px;border-radius:8px}
+.nt-tag:hover{background:var(--panel3);color:var(--orange)}
+.nt-expand{margin-top:10px;padding:10px 12px;background:var(--panel2);border-left:2px solid var(--orange);font-size:13px;color:var(--text2);line-height:1.55}
+.nt-readmore{display:inline-block;margin-top:6px;color:var(--orange);font-family:var(--mono);font-size:11px;text-decoration:none}
+.nt-readmore:hover{text-decoration:underline}
+.nt-top5-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.nt-top5-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.nt-top5-title{font-size:12px;color:var(--text2);line-height:1.35}
+.nt-active-filters{display:flex;flex-direction:column;gap:5px}
+.nt-filter-chip{font-family:var(--mono);font-size:10.5px;color:var(--text2);background:var(--panel3);padding:3px 8px;border-radius:3px;border:1px solid var(--border2)}
+@media (max-width:900px){.nt-layout{flex-direction:column}.nt-sidebar-col{width:100%}.nt-sidebar-sticky{position:static;max-height:none}}
 .np-empty{padding:40px 20px;text-align:center;color:#888;font-family:var(--mono);font-size:13px}
 #tab-map{display:none}
 #tab-map.active{display:flex;flex-direction:column;min-height:calc(100vh - 130px)}
@@ -204,6 +233,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .threat-chip{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--text2);border:1px solid;border-radius:3px;padding:3px 9px}
 .threat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .map-body-row{display:flex;gap:14px;padding:14px;align-items:flex-start;flex-wrap:wrap}
+.group-filter-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:7px 14px;background:#0a0c15;border-bottom:1px solid var(--border2);font-family:var(--mono)}
+.group-summary{margin-left:auto;font-size:11px;color:var(--text2)}
+.top10-panel{display:grid;grid-template-columns:1fr 1fr;gap:0;width:100%;max-width:920px;border:1px solid var(--border2);margin:0 auto 14px}
+.top10-col{padding:10px 12px;border-right:1px solid var(--border2)}
+.top10-col:last-child{border-right:none}
+.t10-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:12px;cursor:pointer}
+.t10-rank{color:var(--text3);width:16px;flex-shrink:0}
+.t10-name{flex:1;color:var(--text2)}
+.t10-val{color:var(--text);font-weight:600}
+.t10-row:hover{background:var(--panel2)}
+.t10-row.hl{background:rgba(255,109,0,.1);border-left:2px solid var(--orange)}
 .map-main-col{flex:1;min-width:320px}
 .map-movements-col{width:300px;flex-shrink:0;border:1px solid var(--border2);max-height:600px;overflow-y:auto}
 .map-movements-list{padding:6px}
@@ -268,7 +308,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .sent-value{font-family:var(--mono);font-size:16px;font-weight:700}
 .sent-desc{font-family:var(--mono);font-size:11px;color:var(--text3);margin-top:2px}
 @media(max-width:1100px){
-  .np-grid{grid-template-columns:1fr}.np-cards{grid-template-columns:repeat(2,1fr)}
+  /* BUG2: .nt-layout ya tiene su propia regla responsive arriba */
   .map-sidebar{grid-template-columns:1fr}.ms-section:first-child{border-right:none}
   #tab-analysis.active{grid-template-columns:1fr}.analysis-right{display:none}
 }
@@ -276,7 +316,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 </style>
 </head>
 <body>
-<canvas id="bgCanvas"></canvas>
 <div id="app">
 
 <!-- TOPBAR -->
@@ -314,7 +353,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
     <button class="tab-btn" id="tbn-news" onclick="switchTab('news')"><span class="tab-icon">📰</span><span>NOTICIAS</span></button>
     <button class="tab-btn" id="tbn-map" onclick="switchTab('map')"><span class="tab-icon">🗺</span><span>MAPA GLOBAL</span></button>
     <button class="tab-btn" id="tbn-analysis" onclick="switchTab('analysis')"><span class="tab-icon">🔍</span><span>ANÁLISIS 24H</span></button>
-    <button class="tab-btn" id="tbn-curve" onclick="switchTab('curve')"><span class="tab-icon">📐</span><span>CURVA</span></button>
     <button class="tab-btn" id="tbn-macro" onclick="switchTab('macro')"><span class="tab-icon">🌐</span><span>MACRO</span></button>
     <button class="tab-btn" id="tbn-futuros" onclick="switchTab('futuros')"><span class="tab-icon">📉</span><span>FUTUROS BRENT</span></button>
     <button class="tab-btn" id="tbn-spreads" onclick="switchTab('spreads')"><span class="tab-icon">🔲</span><span>SPREADS</span></button>
@@ -380,6 +418,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
       <div class="chart-box">
         <div class="chart-asset-label" id="chartAssetLabel"></div>
         <div id="lwChart"></div>
+        <div class="chart-overlay-msg" id="chartOverlayMsg" style="display:none"></div>
         <div class="ohlc-display" id="ohlcDisplay"></div>
         <div class="chart-zoom-hint">🖱 scroll = zoom · arrastrar = pan</div>
       </div>
@@ -450,12 +489,21 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
           <button class="nf-btn" onclick="filterNews('sort','impact',this)">MAYOR IMPACTO</button>
         </div>
       </div>
-      <div class="np-grid">
-        <div class="np-featured" id="npFeatured"></div>
-        <div class="np-side-list" id="npSideList"></div>
+      <!-- BUG2 OPCIÓN A: terminal financiera, sin imágenes — 2 columnas 75/25 -->
+      <div class="nt-layout">
+        <div class="nt-feed-col">
+          <div class="nt-counter" id="ntCounter"></div>
+          <div class="nt-feed" id="ntFeed"></div>
+        </div>
+        <div class="nt-sidebar-col">
+          <div class="nt-sidebar-sticky">
+            <div class="panel-hdr" style="margin:0"><span>🔴 TOP 5 ALTO IMPACTO (24H)</span></div>
+            <div id="ntTop5"></div>
+            <div class="panel-hdr" style="margin-top:12px"><span>FILTROS ACTIVOS</span></div>
+            <div id="ntActiveFilters" class="nt-active-filters"></div>
+          </div>
+        </div>
       </div>
-      <div class="np-cards-title">MÁS NOTICIAS DE PETRÓLEO Y ENERGÍA</div>
-      <div class="np-cards" id="npCards"></div>
     </div>
   </section>
 
@@ -475,8 +523,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
         <div class="map-toggle">
           <button class="mt-btn" id="mt-reserves" onclick="toggleReservesLayer()">⬡ RESERVAS</button>
           <button class="mt-btn" id="mt-tankers" onclick="toggleTankerRoutes()">🛢 RUTAS TÍPICAS</button>
+          <button class="mt-btn" id="mt-flows" onclick="toggleTradeFlows()">↗ FLUJOS REALES</button>
         </div>
       </div>
+    </div>
+    <!-- BUG3.2: filtros por agrupación + resumen agregado -->
+    <div class="group-filter-bar">
+      <span class="nf-lbl">AGRUPACIÓN</span>
+      <button class="nf-btn on" onclick="selGroupFilter('all',this)">TODOS</button>
+      <button class="nf-btn" onclick="selGroupFilter('opec',this)">OPEC</button>
+      <button class="nf-btn" onclick="selGroupFilter('opecplus',this)">OPEC+</button>
+      <button class="nf-btn" onclick="selGroupFilter('g7',this)">G7</button>
+      <button class="nf-btn" onclick="selGroupFilter('brics',this)">BRICS</button>
+      <button class="nf-btn" onclick="selGroupFilter('noopec',this)">NO-OPEC</button>
+      <span id="groupSummary" class="group-summary"></span>
     </div>
     <!-- BUG3: Threat Index — riesgo real calculado de noticias de 48h, no estático -->
     <div id="threatIndexBar" class="threat-index-bar"></div>
@@ -505,6 +565,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
     <div class="map-sidebar">
       <div class="ms-section"><div class="ms-title">NIVELES DE ALMACENAMIENTO</div><div id="storageCards"></div></div>
       <div class="ms-section"><div class="ms-title">RESERVAS PROBADAS (ANUAL — NO EN VIVO)</div><div id="reservesCards"></div></div>
+    </div>
+    <!-- BUG3.3: top 10 exportadores/importadores netos, real, fecha de referencia explícita -->
+    <div class="top10-panel">
+      <div class="top10-col">
+        <div class="ms-title">TOP 10 EXPORTADORES NETOS (2024)</div>
+        <div id="top10Exporters"></div>
+      </div>
+      <div class="top10-col">
+        <div class="ms-title">TOP 10 IMPORTADORES NETOS (2024)</div>
+        <div id="top10Importers"></div>
+      </div>
     </div>
   </section>
 
@@ -535,41 +606,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
   </section>
 
   <!-- ═══ TAB: CURVA DE FUTUROS (1.4) ═══ -->
-  <section id="tab-curve" class="tab-section">
-    <div class="curve-controls">
-      <div class="seg-group" id="curveUnderlyingSel">
-        <button class="seg-btn active" onclick="selCurveUnderlying('wti',this)">WTI</button>
-        <button class="seg-btn" onclick="selCurveUnderlying('brent',this)">BRENT</button>
-      </div>
-      <div class="seg-group" id="curveCountSel">
-        <button class="seg-btn active" onclick="selCurveCount(6,this)">M1-M6</button>
-        <button class="seg-btn" onclick="selCurveCount(12,this)">M1-M12</button>
-        <button class="seg-btn" onclick="selCurveCount(24,this)">M1-M24</button>
-      </div>
-      <div id="curveShapeGauge" class="curve-shape-gauge"></div>
-    </div>
-    <div id="curveFreshness" class="curve-freshness"></div>
-    <div class="curve-body">
-      <div class="curve-chart-box">
-        <svg id="curveSvg" viewBox="0 0 700 320" preserveAspectRatio="xMidYMid meet"></svg>
-      </div>
-      <div class="curve-sidebar">
-        <div class="panel-hdr"><span>TIME SPREADS (M1 − Mn)</span></div>
-        <div id="curveSpreadsTable" class="curve-spreads-table"></div>
-        <div class="panel-hdr" style="margin-top:6px"><span>CONTRATOS (Yahoo Finance, real)</span></div>
-        <div id="curveContractsList" class="curve-contracts-list"></div>
-        <div class="curve-todo-note">
-          TODO (no implementado esta vuelta): overlay histórico de cómo
-          era esta misma curva hace 1 semana / 1 mes. Es técnicamente
-          real y posible, pero requeriría ~24 llamadas extra a Yahoo
-          por carga (historial de cada contrato individual) — quedó
-          afuera para no volver la pestaña lenta. Avisame si querés que
-          lo sume en otra vuelta como carga separada "on demand".
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- ═══ TAB: MACRO (2.1 + 2.2 + 2.3) ═══ -->
   <section id="tab-macro" class="tab-section">
     <div class="macro-section">
@@ -587,30 +623,80 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
   </section>
 
   <!-- ═══ TAB: FUTUROS BRENT (BUG 6 — portado de brent-spread-monitor) ═══ -->
+  <!-- ═══ TAB: FUTUROS BRENT (BUG 5 — réplica de brent-spread-monitor) ═══ -->
   <section id="tab-futuros" class="tab-section">
     <div id="futurosFuente" class="curve-freshness"></div>
-    <div class="panel-hdr"><span>PANEL DE PRECIOS — CO1 a CO12</span></div>
+    <div class="bsm-controls">
+      <div class="bsm-ctrl-group">
+        <span class="bsm-ctrl-lbl">CURVA ACTUAL</span>
+        <span class="bsm-swatch" style="background:#ff6d00"></span>
+      </div>
+      <div class="bsm-ctrl-group">
+        <span class="bsm-ctrl-lbl">COMPARAR 1</span>
+        <select id="futurosCompare1" class="bsm-select" onchange="onFuturosCompareChange()">
+          <option value="">— Ninguna —</option>
+          <option value="30">1 mes atrás</option>
+          <option value="60">2 meses atrás</option>
+          <option value="90">3 meses atrás</option>
+          <option value="180">6 meses atrás</option>
+          <option value="365">1 año atrás</option>
+        </select>
+        <span class="bsm-swatch" style="background:#2979ff"></span>
+      </div>
+      <div class="bsm-ctrl-group">
+        <span class="bsm-ctrl-lbl">COMPARAR 2</span>
+        <select id="futurosCompare2" class="bsm-select" onchange="onFuturosCompareChange()">
+          <option value="">— Ninguna —</option>
+          <option value="30">1 mes atrás</option>
+          <option value="60">2 meses atrás</option>
+          <option value="90">3 meses atrás</option>
+          <option value="180">6 meses atrás</option>
+          <option value="365">1 año atrás</option>
+        </select>
+        <span class="bsm-swatch" style="background:#b388ff"></span>
+      </div>
+    </div>
+    <div class="bsm-chart-box">
+      <canvas id="futurosChartCanvas"></canvas>
+    </div>
+    <div class="panel-hdr"><span>PANEL DE PRECIOS — ÚLTIMO DÍA DISPONIBLE</span></div>
     <div style="overflow-x:auto">
       <table class="proj-table" id="futurosPanelTable" style="min-width:600px">
-        <thead><tr><th>CONTRATO</th><th>VENCIMIENTO</th><th>PRECIO ACTUAL</th><th>VAR % 1D</th><th>VAR % 5D</th></tr></thead>
+        <thead><tr><th>CONTRATO</th><th>VENCIMIENTO</th><th>PRECIO</th><th>VAR % 1D</th><th>VAR % 5D</th><th>vs SIGUIENTE</th></tr></thead>
         <tbody id="futurosPanelBody"></tbody>
       </table>
     </div>
-    <div class="curve-controls">
-      <div class="panel-hdr" style="margin:0;border:none"><span>FORWARD CURVE — CO1 a CO12</span></div>
-      <div class="seg-group" id="futurosCompareSel"></div>
-    </div>
-    <div class="curve-body">
-      <div class="curve-chart-box">
-        <svg id="futurosCurveSvg" viewBox="0 0 700 320" preserveAspectRatio="xMidYMid meet"></svg>
-      </div>
-    </div>
   </section>
 
-  <!-- ═══ TAB: SPREADS (BUG 6 — portado de brent-spread-monitor) ═══ -->
+  <!-- ═══ TAB: SPREADS (BUG 5 — réplica de brent-spread-monitor) ═══ -->
   <section id="tab-spreads" class="tab-section">
     <div id="spreadsFuente" class="curve-freshness"></div>
-    <div class="panel-hdr"><span id="spreadsMatrixTitle">MATRIZ DE SPREADS (CO_i − CO_j)</span></div>
+    <div class="bsm-controls">
+      <div class="bsm-ctrl-group">
+        <span class="bsm-ctrl-lbl">PAR</span>
+        <select id="spreadPairSel" class="bsm-select" onchange="onSpreadPairChange()"></select>
+      </div>
+      <div class="bsm-ctrl-group">
+        <span class="bsm-ctrl-lbl">UNIDAD</span>
+        <div class="seg-group" id="spreadUnitSel">
+          <button class="seg-btn active" onclick="selSpreadUnit('usd',this)">USD</button>
+          <button class="seg-btn" onclick="selSpreadUnit('pct',this)">%</button>
+        </div>
+      </div>
+      <div class="bsm-ctrl-group">
+        <span class="bsm-ctrl-lbl">PERÍODO</span>
+        <div class="seg-group" id="spreadPeriodSel">
+          <button class="seg-btn" onclick="selSpreadPeriod('1mo',this)">1M</button>
+          <button class="seg-btn active" onclick="selSpreadPeriod('3mo',this)">3M</button>
+          <button class="seg-btn" onclick="selSpreadPeriod('6mo',this)">6M</button>
+          <button class="seg-btn" onclick="selSpreadPeriod('max',this)">MAX</button>
+        </div>
+      </div>
+    </div>
+    <div class="bsm-chart-box">
+      <canvas id="spreadHistChartCanvas"></canvas>
+    </div>
+    <div class="panel-hdr"><span id="spreadsMatrixTitle">MATRIZ DE SPREADS (CO_i − CO_j) — click para cargar el par arriba</span></div>
     <div style="overflow-x:auto;padding:10px 14px">
       <table id="spreadsMatrixTable" class="spreads-matrix"></table>
     </div>
@@ -619,13 +705,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 </div>
 
 <script src="https://unpkg.com/lightweight-charts@5.2.0/dist/lightweight-charts.standalone.production.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
 
 const S = {
   tab:'charts', asset:'brent', tf:'1D',
   ind:{sma20:false,sma50:false,sma200:false,ema20:false,bb:false,volume:true,rsi:false,macd:false},
   newsFilter:{src:'all',cat:'all',imp:'all',asset:'all',sort:'recent'},
-  mapView:'map', hover:-1, showReserves:false, showTankerRoutes:false, curveUnderlying:'wti', curveCount:6,
+  mapView:'map', hover:-1, showReserves:false, showTankerRoutes:false, showTradeFlows:false, activeGroup:'all', curveUnderlying:'wti', curveCount:6,
   prices:{brent:74.38,wti:70.81,coil:71.42,ng:2.847,heatoil:2.118,rbob:2.264},
   changes:{brent:+0.57,wti:-0.46,coil:+0.25,ng:+1.10,heatoil:0,rbob:-0.40},
   chartData:null, liveActive:false
@@ -676,36 +763,75 @@ let seriesMarkersPlugin=null;
 /* ── CHART RENDERER ───────────────────────── */
 /* ── LIGHTWEIGHT CHARTS (TradingView) ─────── */
 const ASSET_NAMES={brent:'BRENT ICE — Futuros Continuos',wti:'WTI NYMEX — Futuros Continuos',coil:'WTI NYMEX (=COIL, sin spread propio verificado)',ng:'NATURAL GAS — Henry Hub',spread:'BRENT-WTI — Spread real ($/bbl)'};
-let lwChart=null,lwCandleSeries=null;
-// BUG 1 fix: spinner explícito mientras se esperan datos OHLC reales —
-// nunca se rellena con datos inventados mientras tanto.
-function showChartLoading(){
-  const container=document.getElementById('lwChart');if(!container)return;
-  if(lwChart){lwChart.remove();lwChart=null;}
-  container.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;gap:8px;color:var(--text3);font-family:var(--mono);font-size:12px"><span class="chart-spinner"></span>Cargando datos OHLC históricos reales (Yahoo Finance)...</div>';
+let lwChart=null,lwCandleSeries=null,chartReady=false;
+// BUG 0 fix: ÚNICO punto que destruye el chart. Limpia el objeto de
+// Lightweight Charts Y el DOM a mano (por si .remove() no terminó de
+// limpiar algo) ANTES de que cualquier otro código pueda crear uno
+// nuevo. chartReady=false se marca PRIMERO para que cualquier callback
+// async que llegue tarde (subscribeCrosshairMove, resize interno, etc)
+// se auto-descarte en vez de tocar un objeto disposed.
+function destroyChart(){
+  chartReady=false;
+  if(lwChart){
+    try{lwChart.remove();}catch(e){/* puede tirar si ya estaba disposed — no importa */}
+    lwChart=null;
+    lwCandleSeries=null;
+  }
+  seriesMarkersPlugin=null;
+  const container=document.getElementById('lwChart');
+  if(container){while(container.firstChild)container.removeChild(container.firstChild);}
 }
-function showChartError(msg){
-  const container=document.getElementById('lwChart');if(!container)return;
-  if(lwChart){lwChart.remove();lwChart=null;}
-  container.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--red);font-family:var(--mono);font-size:12px;text-align:center;padding:20px">⚠ ${msg}</div>`;
+// BUG 1 fix: el overlay de carga/error es un DIV APARTE que se
+// superpone sobre #lwChart — nunca se le escribe innerHTML al propio
+// #lwChart (eso era lo que generaba el chart "duplicado": un texto de
+// carga reemplazando el contenedor mientras OTRO render seguía
+// intentando montar el chart real ahí mismo).
+function showChartOverlay(msg,isError){
+  destroyChart();
+  const ov=document.getElementById('chartOverlayMsg');if(!ov)return;
+  ov.className='chart-overlay-msg'+(isError?' error':'');
+  ov.innerHTML=isError?`⚠ ${msg}`:`<span class="chart-spinner"></span>${msg}`;
+  ov.style.display='flex';
+}
+function hideChartOverlay(){
+  const ov=document.getElementById('chartOverlayMsg');if(ov)ov.style.display='none';
+}
+function showChartLoading(){showChartOverlay('Cargando datos OHLC históricos reales (Yahoo Finance)...',false);}
+function showChartError(msg){showChartOverlay(msg,true);}
+
+const DOW_ES=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const MONTH_ES_SHORT=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+// BUG 1: formato "📅 Mar 25 Jun 2026" + Δ vs vela anterior. Se reusa
+// tanto para el readout fijo (última vela) como para el hover.
+function formatOhlcReadout(d,prevD){
+  const dt=new Date(d.time*1000);
+  const fecha=`📅 ${DOW_ES[dt.getUTCDay()]} ${String(dt.getUTCDate()).padStart(2,'0')} ${MONTH_ES_SHORT[dt.getUTCMonth()]} ${dt.getUTCFullYear()}`;
+  const bull=d.close>=d.open;
+  let deltaHtml='';
+  if(prevD&&typeof prevD.close==='number'&&prevD.close!==0){
+    const diff=d.close-prevD.close,pct=(diff/prevD.close)*100;
+    deltaHtml=`<div class="ohlc-item"><span class="ohlc-lbl">Δ</span><span class="ohlc-val" style="color:${diff>=0?'var(--green)':'var(--red)'}">${diff>=0?'+':''}${diff.toFixed(2)} (${pct>=0?'+':''}${pct.toFixed(2)}%)</span></div>`;
+  }
+  return`<div class="ohlc-item" style="color:var(--text3)">${fecha}</div><div class="ohlc-item"><span class="ohlc-lbl">O</span><span class="ohlc-val">$${d.open.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">H</span><span class="ohlc-val" style="color:var(--green)">$${d.high.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">L</span><span class="ohlc-val" style="color:var(--red)">$${d.low.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">C</span><span class="ohlc-val" style="color:${bull?'var(--green)':'var(--red)'}">$${d.close.toFixed(2)}</span></div>${d.volume!=null?`<div class="ohlc-item"><span class="ohlc-lbl">Vol</span><span class="ohlc-val" style="color:var(--text3)">${(d.volume/1000).toFixed(1)}K</span></div>`:''}${deltaHtml}`;
 }
 function renderChart(){
   const container=document.getElementById('lwChart');if(!container)return;
-  // BUG 1 fix: si todavía no hay datos reales (cualquier asset, no solo
-  // spread), se muestra un spinner explícito. Nunca se rellena con datos
-  // inventados — antes acá había un fallback a buildSimData() que ya
-  // no existe.
+  // BUG 0 fix: SIEMPRE arrancar destruyendo lo que había, sin
+  // excepciones — esto es lo que garantiza que nunca haya 2 charts
+  // (uno viejo a medio destruir + uno nuevo) en el DOM al mismo tiempo.
+  destroyChart();
+
   if(!S.chartData||!S.chartData.ohlc||S.chartData.ohlc.length===0){
     showChartLoading();
     return;
   }
+  hideChartOverlay();
   const{ohlc}=S.chartData;
   const closes=ohlc.map(d=>d.close);
 
   const lbl=document.getElementById('chartAssetLabel');
   if(lbl)lbl.textContent=ASSET_NAMES[S.asset]||S.asset.toUpperCase();
 
-  if(lwChart){lwChart.remove();lwChart=null;}
   lwChart=LightweightCharts.createChart(container,{
     layout:{background:{type:'solid',color:'#060810'},textColor:'#9099b8',fontFamily:'JetBrains Mono, monospace',fontSize:10,
       panes:{separatorColor:'#1f2235',separatorHoverColor:'#2a2d40'}},
@@ -804,24 +930,38 @@ function renderChart(){
     }
   }
 
-  // Crosshair → readout OHLCV (reemplaza el viejo hover de canvas)
+  // BUG 1 fix: el readout queda visible desde el primer render (datos
+  // de la última vela), no recién al pasar el mouse.
+  const ohlcBox=document.getElementById('ohlcDisplay');
+  if(ohlcBox)ohlcBox.innerHTML=formatOhlcReadout(ohlc[ohlc.length-1],ohlc[ohlc.length-2]);
+
+  // Crosshair → readout OHLCV. BUG 0 fix: guard chartReady/lwChart al
+  // principio — si este callback llega a disparar DESPUÉS de que el
+  // chart ya fue destruido (closure vieja de un render anterior), se
+  // descarta solo en vez de tocar un objeto disposed.
   lwChart.subscribeCrosshairMove(param=>{
+    if(!chartReady||!lwChart||!lwCandleSeries)return;
     const box=document.getElementById('ohlcDisplay');if(!box)return;
     const d=param.time&&param.seriesData?param.seriesData.get(lwCandleSeries):null;
-    if(!d){box.innerHTML='';return;}
-    const bull=d.close>=d.open;
-    const dt=new Date(param.time*1000);
-    const fecha=`${String(dt.getUTCDate()).padStart(2,'0')}/${String(dt.getUTCMonth()+1).padStart(2,'0')} ${String(dt.getUTCHours()).padStart(2,'0')}:${String(dt.getUTCMinutes()).padStart(2,'0')}`;
+    if(!d){
+      // Sin hover activo: vuelve al readout de la última vela, nunca vacío.
+      box.innerHTML=formatOhlcReadout(ohlc[ohlc.length-1],ohlc[ohlc.length-2]);
+      return;
+    }
+    const idx=ohlc.findIndex(b=>b.time===param.time);
+    const prevD=idx>0?ohlc[idx-1]:null;
+    let html=formatOhlcReadout(d,prevD);
     // MEJORA 3: si el crosshair está sobre (o muy cerca de) la fecha de un
     // evento, muestra su descripción debajo del readout OHLC.
     const ev=EVENTS.find(e=>Math.abs(e.time-param.time)<86400*2);
-    const evHtml=ev?`<div class="ohlc-item" style="max-width:260px;white-space:normal"><span class="ohlc-lbl">${EVENT_STYLE[ev.type].emoji}</span><span class="ohlc-val" style="color:var(--text2);font-weight:400">${ev.title}: ${ev.desc}</span></div>`:'';
-    box.innerHTML=`<div class="ohlc-item"><span class="ohlc-lbl">O</span><span class="ohlc-val">$${d.open.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">H</span><span class="ohlc-val" style="color:var(--green)">$${d.high.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">L</span><span class="ohlc-val" style="color:var(--red)">$${d.low.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">C</span><span class="ohlc-val" style="color:${bull?'var(--green)':'var(--red)'}">$${d.close.toFixed(2)}</span></div><div class="ohlc-item"><span class="ohlc-lbl">LBL</span><span class="ohlc-val" style="color:var(--text3)">${fecha}</span></div>${evHtml}`;
+    if(ev)html+=`<div class="ohlc-item" style="max-width:260px;white-space:normal;flex-basis:100%"><span class="ohlc-lbl">${EVENT_STYLE[ev.type].emoji}</span><span class="ohlc-val" style="color:var(--text2);font-weight:400">${ev.title}: ${ev.desc}</span></div>`;
+    box.innerHTML=html;
   });
 
   lwChart.timeScale().fitContent();
+  chartReady=true; // BUG 0 fix: recién acá, después de todo el setup síncrono
 }
-function fitChart(){if(lwChart)lwChart.timeScale().fitContent();}
+function fitChart(){if(chartReady&&lwChart)lwChart.timeScale().fitContent();}
 
 /* ═══════════════════════════════════════════════
    API 1 — YAHOO FINANCE (precios y velas reales)
@@ -998,82 +1138,22 @@ async function fetchSpreadStats(){
    contratos, se muestra el error tal cual, no se completa con nada.
 ═══════════════════════════════════════════════ */
 let CURVE_DATA=null;
+// BUG4: la pestaña "CURVA" se eliminó de la nav (pedido explícito) —
+// esta función queda, simplificada, porque el Dashboard y el Mapa
+// siguen mostrando un KPI real de "forma de la curva" que depende de
+// estos datos. api/forward-curve.js NO se borró del repo, solo se
+// sacó del bloque "functions" de vercel.json (ver ese archivo).
 async function fetchFuturesCurve(){
-  const svg=document.getElementById('curveSvg');
-  if(svg)svg.innerHTML='<text x="350" y="160" text-anchor="middle" fill="#5a6178" font-family="monospace" font-size="13">Cargando curva real de Yahoo Finance...</text>';
   try{
     const r=await fetch(`/api/forward-curve?underlying=${S.curveUnderlying}&count=${S.curveCount}`);
     const d=await r.json();
-    if(d.error){
-      if(svg)svg.innerHTML=`<text x="350" y="160" text-anchor="middle" fill="#ff4060" font-family="monospace" font-size="12">${d.message}</text>`;
-      document.getElementById('curveSpreadsTable').innerHTML='';
-      document.getElementById('curveContractsList').innerHTML='';
-      document.getElementById('curveShapeGauge').innerHTML='';
-      document.getElementById('curveFreshness').innerHTML='';
-      return;
-    }
+    if(d.error){console.warn('[Forward Curve]',d.message);return;}
     CURVE_DATA=d;
-    renderCurve();
     console.log(`[Forward Curve] ${S.curveUnderlying}: ${d.curve.length} contratos reales, ${d.shape} (${d.diffPct}%), cierre ${d.freshness?.lastCloseDate}`);
   }catch(e){
     console.warn('[Forward Curve Error]',e);
-    if(svg)svg.innerHTML='<text x="350" y="160" text-anchor="middle" fill="#ff4060" font-family="monospace" font-size="12">Error de red consultando la curva.</text>';
   }
 }
-function selCurveUnderlying(u,btn){
-  S.curveUnderlying=u;
-  document.querySelectorAll('#curveUnderlyingSel .seg-btn').forEach(b=>b.className='seg-btn');btn.className='seg-btn active';
-  fetchFuturesCurve();
-  savePrefs();
-}
-function selCurveCount(n,btn){
-  S.curveCount=n;
-  document.querySelectorAll('#curveCountSel .seg-btn').forEach(b=>b.className='seg-btn');btn.className='seg-btn active';
-  fetchFuturesCurve();
-  savePrefs();
-}
-function renderCurve(){
-  const d=CURVE_DATA;if(!d)return;
-  const shapeCls=d.shape.toLowerCase();
-  const shapeTxt=d.shape==='CONTANGO'?'CONTANGO (bearish)':d.shape==='BACKWARDATION'?'BACKWARDATION (bullish)':'PLANA';
-  document.getElementById('curveShapeGauge').innerHTML=`<span class="curve-shape-label ${shapeCls}">${shapeTxt}</span><span style="color:var(--text2)">${d.curve[0]?.label}→${d.curve[d.curve.length-1]?.label}: ${d.diffPct>0?'+':''}${d.diffPct}%</span>${d.rollYieldPct!==null?`<span style="color:var(--text3)">Roll yield anualizado: ${d.rollYieldPct>0?'+':''}${d.rollYieldPct}%</span>`:''}`;
-
-  // BUG 5: indicador de frescura — de qué cierre son estos datos
-  const fr=d.freshness;
-  if(fr){
-    document.getElementById('curveFreshness').className='curve-freshness '+(fr.isOpen?'open':'closed');
-    document.getElementById('curveFreshness').innerHTML=fr.isOpen
-      ?`🟢 Mercado abierto (CME Globex). Datos del cierre del ${fr.lastCloseDate}.`
-      :`🔴 Mercado cerrado ahora. Datos del cierre del ${fr.lastCloseDate}.`;
-  }
-
-  const sp=d.spreads;
-  const rows=[['M1−M2',sp.m1m2],['M1−M3',sp.m1m3],['M1−M6',sp.m1m6],['M1−M12',sp.m1m12]];
-  document.getElementById('curveSpreadsTable').innerHTML=rows.map(([lbl,v])=>`<div class="cs-row"><span style="color:var(--text2)">${lbl}</span><span style="color:${v===null?'var(--text3)':v>=0?'var(--green)':'var(--red)'}">${v===null?'— (sin dato)':'$'+v.toFixed(2)}</span></div>`).join('');
-
-  // BUG 5: lista de contratos con ticker real, volumen, fecha de cierre — open interest explícito como "no disponible"
-  document.getElementById('curveContractsList').innerHTML=
-    `<div class="cc-row"><span>SPOT (${d.underlying.toUpperCase()})</span><span>$${d.spot.toFixed(2)}${d.spotVolume?' · vol '+d.spotVolume.toLocaleString('es-AR'):''}</span></div>`+
-    d.curve.map(c=>`<div class="cc-row" title="${c.ticker} · ${c.month} · cierre ${c.closeDate} · volumen ${c.volume!==null?c.volume.toLocaleString('es-AR'):'—'} · open interest: no disponible vía Yahoo"><span>${c.label} (${c.month}) — ${c.ticker}</span><span>$${c.price.toFixed(2)}</span></div>`).join('');
-
-  const svg=document.getElementById('curveSvg');
-  const pts=[{label:'SPOT',price:d.spot,info:`Spot ${d.underlying.toUpperCase()} · cierre ${d.freshness?.lastCloseDate||'—'}`},
-    ...d.curve.map(c=>({label:c.label,price:c.price,info:`${c.ticker} · ${c.month} · vol ${c.volume!==null?c.volume.toLocaleString('es-AR'):'—'} · OI: no disponible`}))];
-  const W=700,H=320,padL=50,padR=20,padT=20,padB=30;
-  const prices=pts.map(p=>p.price);
-  const min=Math.min(...prices),max=Math.max(...prices);
-  const range=(max-min)||1;
-  const x=i=>padL+(i/(pts.length-1))*(W-padL-padR);
-  const y=v=>padT+(1-((v-min)/range))*(H-padT-padB);
-  let path='';
-  pts.forEach((p,i)=>{path+=(i===0?'M':'L')+x(i).toFixed(1)+','+y(p.price).toFixed(1)+' ';});
-  const gridLines=[];
-  for(let i=0;i<=4;i++){const v=min+range*i/4;gridLines.push(`<line x1="${padL}" y1="${y(v).toFixed(1)}" x2="${W-padR}" y2="${y(v).toFixed(1)}" stroke="#1a1d2e" stroke-width="1"/><text x="6" y="${(y(v)+4).toFixed(1)}" fill="#5a6178" font-family="monospace" font-size="10">$${v.toFixed(1)}</text>`);}
-  // BUG 5: <title> nativo de SVG = tooltip al hover sin JS extra, con ticker/mes/volumen/OI
-  const dots=pts.map((p,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(p.price).toFixed(1)}" r="4" fill="${i===0?'#ffd600':'#2979ff'}"><title>${p.label}: $${p.price.toFixed(2)} — ${p.info}</title></circle><text x="${x(i).toFixed(1)}" y="${H-padB+16}" fill="#9099b8" font-family="monospace" font-size="9" text-anchor="middle">${p.label}</text>`).join('');
-  svg.innerHTML=`${gridLines.join('')}<path d="${path}" fill="none" stroke="#2979ff" stroke-width="2"/>${dots}`;
-}
-
 /* ═══════════════════════════════════════════════
    4.2 — DASHBOARD HOME
    Grid 3x3 de KPIs, TODO real. Dos celdas del mockup original
@@ -1127,7 +1207,7 @@ function renderDashboard(){
     :`<div class="dash-card"><div class="dash-card-title">SPREAD BRENT-WTI</div><div class="dash-card-value" style="color:var(--text3)">—</div><div class="dash-card-sub" style="color:var(--text3)">esperando dato real</div></div>`;
 
   const curveCard=CURVE_DATA
-    ?`<div class="dash-card" onclick="switchTab('curve')"><div class="dash-card-title">CURVA WTI</div><div class="dash-card-value" style="font-size:16px;color:${CURVE_DATA.shape==='CONTANGO'?'var(--red)':CURVE_DATA.shape==='BACKWARDATION'?'var(--green)':'var(--yellow)'}">${CURVE_DATA.shape}</div><div class="dash-card-sub" style="color:var(--text3)">M1→M${CURVE_DATA.curve.length}: ${CURVE_DATA.diffPct>0?'+':''}${CURVE_DATA.diffPct}%</div></div>`
+    ?`<div class="dash-card"><div class="dash-card-title">CURVA WTI</div><div class="dash-card-value" style="font-size:16px;color:${CURVE_DATA.shape==='CONTANGO'?'var(--red)':CURVE_DATA.shape==='BACKWARDATION'?'var(--green)':'var(--yellow)'}">${CURVE_DATA.shape}</div><div class="dash-card-sub" style="color:var(--text3)">M1→M${CURVE_DATA.curve.length}: ${CURVE_DATA.diffPct>0?'+':''}${CURVE_DATA.diffPct}%</div></div>`
     :`<div class="dash-card"><div class="dash-card-title">CURVA WTI</div><div class="dash-card-value" style="color:var(--text3)">—</div><div class="dash-card-sub" style="color:var(--text3)">esperando Yahoo</div></div>`;
 
   const topReserve=[...RESERVES_DATA].sort((a,b)=>b.reserves-a.reserves)[0];
@@ -1174,16 +1254,6 @@ function restoreUIFromState(){
     const btn=document.getElementById('ib-'+ind);
     if(btn)btn.className=S.ind[ind]?'ind-btn '+IND_BTN_CLASS[ind]:'ind-btn';
   });
-  if(S.curveUnderlying){
-    document.querySelectorAll('#curveUnderlyingSel .seg-btn').forEach(b=>{
-      b.className=b.getAttribute('onclick')?.includes(`'${S.curveUnderlying}'`)?'seg-btn active':'seg-btn';
-    });
-  }
-  if(S.curveCount){
-    document.querySelectorAll('#curveCountSel .seg-btn').forEach(b=>{
-      b.className=b.getAttribute('onclick')?.includes(`(${S.curveCount},`)?'seg-btn active':'seg-btn';
-    });
-  }
   ['src','cat','imp','asset','sort'].forEach(type=>{
     const val=S.newsFilter[type];
     document.querySelectorAll('.nf-row .nf-btn').forEach(b=>{
@@ -1201,17 +1271,39 @@ function restoreUIFromState(){
    se etiqueta claramente cuál de las dos está mostrando, nunca se
    mezclan como si fueran lo mismo.
 ═══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   BUG 5 — RÉPLICA de brent-spread-monitor: Futuros Brent + Spreads
+   Stack pedido: Chart.js (no Lightweight Charts acá), IBM Plex.
+   Prioridad de datos: data/brent-history.json (manual, vía workflow)
+   > fallback Yahoo en vivo. Las curvas "hace N meses" y el histórico
+   del spread usan el precio REAL de ESE ticker puntual en esas fechas
+   (no una reconstrucción de qué contrato era front-month — eso sí
+   sería inventado). Ver api/forward-curve.js mode=history.
+═══════════════════════════════════════════════ */
 let BRENT_HISTORY={co_curve:[],dated_brent:[]};
-let FUTUROS_COMPARE_DATE=null;
+const MONTH_CODES_FC=['F','G','H','J','K','M','N','Q','U','V','X','Z'];
+const MONTH_NAMES_FC=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+function todayISO(){return new Date().toISOString().slice(0,10);}
+// Mismo algoritmo de generación de ticker que el backend (BZ+mes+año+.NYM)
+// — se duplica acá porque es pura aritmética de fechas, no requiere ir
+// a buscarlo al server.
+function brentContractTickers(count){
+  const now=new Date();const out=[];
+  for(let i=1;i<=count;i++){
+    const d=new Date(now.getUTCFullYear(),now.getUTCMonth()+i,1);
+    const code=MONTH_CODES_FC[d.getMonth()],yy=String(d.getFullYear()).slice(-2);
+    out.push({label:`CO${i}`,ticker:`BZ${code}${yy}.NYM`,month:`${MONTH_NAMES_FC[d.getMonth()]}-${yy}`});
+  }
+  return out;
+}
 async function fetchBrentHistory(){
   try{
-    const r=await fetch('/api/brent-history');
+    const r=await fetch('/api/static-data?file=brent-history');
     const d=await r.json();
     BRENT_HISTORY=d;
-    console.log(`[Brent History] ${d.co_curve.length} filas manuales co_curve, ${d.dated_brent.length} filas dated_brent`);
   }catch(e){console.warn('[Brent History Error]',e);}
 }
-function todayISO(){return new Date().toISOString().slice(0,10);}
+// Fila de "hoy": manual si existe, si no Yahoo en vivo (hoy)
 async function getTodaysCurveRow(){
   const manual=BRENT_HISTORY.co_curve.find(r=>r.Date===todayISO());
   if(manual)return{row:manual,source:'manual',label:`Carga manual (workflow) — ${manual.Date}`};
@@ -1224,35 +1316,85 @@ async function getTodaysCurveRow(){
     return{row,source:'live',label:`Yahoo Finance en vivo (sin entrada manual para hoy) — cierre ${row.Date}`};
   }catch(e){return{row:null,source:'error',label:'Error consultando Yahoo Finance.'};}
 }
-function findCurveRowByDate(targetDate){
-  return BRENT_HISTORY.co_curve.find(r=>r.Date===targetDate)||null;
+// Curva real "N días atrás": precio real de CADA contrato de hoy, en
+// esa fecha pasada (no una curva reconstruida con otro front-month).
+// Usa mode=history: trae el historial real de cada ticker puntual y
+// elige la rueda más cercana a (hoy - daysAgo) — nunca inventa un precio.
+async function fetchCompareCurve(daysAgo){
+  if(!daysAgo)return null;
+  const contracts=brentContractTickers(12);
+  const range=daysAgo<=35?'2mo':daysAgo<=95?'4mo':daysAgo<=185?'8mo':'2y';
+  try{
+    const tickers=contracts.map(c=>c.ticker).join(',');
+    const r=await fetch(`/api/forward-curve?mode=history&tickers=${tickers}&range=${range}`);
+    const d=await r.json();
+    if(d.error||!d.history)return null;
+    const targetDate=new Date(Date.now()-daysAgo*86400000);
+    return contracts.map(c=>{
+      const series=d.history[c.ticker];
+      if(!series||series.length===0)return{label:c.label,price:null};
+      // Rueda real más cercana a la fecha objetivo (sin inventar nada
+      // que no esté en la serie real devuelta por Yahoo)
+      let best=series[0],bestDiff=Infinity;
+      for(const p of series){
+        const diff=Math.abs(new Date(p.date)-targetDate);
+        if(diff<bestDiff){bestDiff=diff;best=p;}
+      }
+      return{label:c.label,price:best.close};
+    }).filter(c=>c.price!==null);
+  }catch(e){console.warn('[Compare Curve Error]',e);return null;}
 }
+let FUTUROS_CHART=null;
 async function loadFuturosTab(){
   await fetchBrentHistory();
   const{row,source,label}=await getTodaysCurveRow();
   const fuenteEl=document.getElementById('futurosFuente');
   fuenteEl.className='curve-freshness '+(source==='manual'?'open':'closed');
   fuenteEl.textContent=source==='manual'?`🟢 ${label}`:source==='live'?`🟡 ${label}`:`🔴 ${label}`;
-  if(!row){document.getElementById('futurosPanelBody').innerHTML='';return;}
+  if(!row)return;
   S.futurosCurrentRow=row;
-  renderFuturosCompareSelector();
   renderFuturosPanel(row);
-  renderFuturosCurve(row,null);
+  await renderFuturosChart(row);
 }
-function renderFuturosCompareSelector(){
-  const el=document.getElementById('futurosCompareSel');
-  const pastDates=BRENT_HISTORY.co_curve.map(r=>r.Date).filter(d=>d!==todayISO()).sort().reverse().slice(0,12);
-  if(pastDates.length===0){el.innerHTML='<span style="font-family:var(--mono);font-size:11px;color:var(--text3);padding:4px 8px">Sin histórico manual todavía para comparar — cargalo con el workflow update-prices.yml</span>';return;}
-  el.innerHTML=`<button class="seg-btn active" onclick="selFuturosCompare(null,this)">SOLO HOY</button>`+
-    pastDates.map(d=>`<button class="seg-btn" onclick="selFuturosCompare('${d}',this)">${d}</button>`).join('');
+async function onFuturosCompareChange(){
+  const d1=document.getElementById('futurosCompare1').value;
+  const d2=document.getElementById('futurosCompare2').value;
+  await renderFuturosChart(S.futurosCurrentRow,d1,d2);
 }
-function selFuturosCompare(dateStr,btn){
-  FUTUROS_COMPARE_DATE=dateStr;
-  document.querySelectorAll('#futurosCompareSel .seg-btn').forEach(b=>b.className='seg-btn');btn.className='seg-btn active';
-  const compareRow=dateStr?findCurveRowByDate(dateStr):null;
-  renderFuturosCurve(S.futurosCurrentRow,compareRow);
+async function renderFuturosChart(row,daysAgo1,daysAgo2){
+  if(!row)return;
+  const labels=[];for(let i=1;i<=12;i++){if(typeof row[`CO${i}`]==='number')labels.push(`CO${i}`);}
+  const todayData=labels.map(l=>row[l]);
+  const[cmp1,cmp2]=await Promise.all([fetchCompareCurve(daysAgo1),fetchCompareCurve(daysAgo2)]);
+  const datasets=[{label:'Hoy',data:todayData,borderColor:'#ff6d00',backgroundColor:'#ff6d00',borderWidth:2.5,pointRadius:3,tension:0}];
+  if(cmp1)datasets.push({label:document.getElementById('futurosCompare1').selectedOptions[0].text,data:labels.map(l=>{const c=cmp1.find(x=>x.label===l);return c?c.price:null;}),borderColor:'#2979ff',backgroundColor:'#2979ff',borderWidth:1.5,pointRadius:2,borderDash:[5,3],tension:0});
+  if(cmp2)datasets.push({label:document.getElementById('futurosCompare2').selectedOptions[0].text,data:labels.map(l=>{const c=cmp2.find(x=>x.label===l);return c?c.price:null;}),borderColor:'#b388ff',backgroundColor:'#b388ff',borderWidth:1.5,pointRadius:2,borderDash:[5,3],tension:0});
+
+  const ctx=document.getElementById('futurosChartCanvas');
+  if(FUTUROS_CHART){FUTUROS_CHART.destroy();FUTUROS_CHART=null;}
+  FUTUROS_CHART=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{labels:{color:'#9099b8',font:{family:'IBM Plex Mono',size:11}}},
+        tooltip:{callbacks:{label:ctx=>{
+          const c=BRENT_CONTRACTS_CACHE?.find(x=>x.label===ctx.label);
+          return`${ctx.dataset.label}: $${ctx.parsed.y?.toFixed(2)??'—'}${c?' ('+c.month+')':''}`;
+        }}},
+      },
+      scales:{
+        x:{ticks:{color:'#9099b8',font:{family:'IBM Plex Mono'}},grid:{color:'rgba(255,255,255,.04)'}},
+        y:{ticks:{color:'#9099b8',font:{family:'IBM Plex Mono'},callback:v=>'$'+v},grid:{color:'rgba(255,255,255,.04)'}},
+      },
+    },
+  });
 }
+let BRENT_CONTRACTS_CACHE=null;
 function renderFuturosPanel(row){
+  BRENT_CONTRACTS_CACHE=brentContractTickers(12);
   const co_dates=BRENT_HISTORY.co_curve.map(r=>r.Date).sort();
   const idx=co_dates.indexOf(row.Date);
   const prev1=idx>0?BRENT_HISTORY.co_curve.find(r=>r.Date===co_dates[idx-1]):null;
@@ -1263,48 +1405,114 @@ function renderFuturosPanel(row){
     if(typeof price!=='number')continue;
     const v1d=prev1&&typeof prev1[key]==='number'?+(((price-prev1[key])/prev1[key])*100).toFixed(2):null;
     const v5d=prev5&&typeof prev5[key]==='number'?+(((price-prev5[key])/prev5[key])*100).toFixed(2):null;
-    const d=new Date(); d.setUTCMonth(d.getUTCMonth()+i);
-    const vencTxt=d.toLocaleDateString('es-AR',{month:'short',year:'2-digit'});
-    rows.push({key,price,v1d,v5d,vencTxt});
+    const next=row[`CO${i+1}`];
+    let shape=null;
+    if(typeof next==='number'){
+      const diff=next-price;
+      shape=Math.abs(diff)<0.02?{txt:'FLAT',col:'var(--text3)'}:diff>0?{txt:'CONTANGO',col:'var(--red)'}:{txt:'BACKWARDATION',col:'var(--green)'};
+    }
+    rows.push({key,price,v1d,v5d,month:BRENT_CONTRACTS_CACHE[i-1].month,shape});
   }
-  document.getElementById('futurosPanelBody').innerHTML=rows.map(r=>`<tr><td><strong>${r.key}</strong></td><td style="color:var(--text3)">${r.vencTxt}</td><td>$${r.price.toFixed(2)}</td><td style="color:${r.v1d===null?'var(--text3)':r.v1d>=0?'var(--green)':'var(--red)'}">${r.v1d===null?'—':(r.v1d>=0?'+':'')+r.v1d+'%'}</td><td style="color:${r.v5d===null?'var(--text3)':r.v5d>=0?'var(--green)':'var(--red)'}">${r.v5d===null?'—':(r.v5d>=0?'+':'')+r.v5d+'%'}</td></tr>`).join('');
-}
-function renderFuturosCurve(row,compareRow){
-  const svg=document.getElementById('futurosCurveSvg');if(!svg)return;
-  const pts=[];for(let i=1;i<=12;i++){if(typeof row[`CO${i}`]==='number')pts.push({label:`CO${i}`,price:row[`CO${i}`]});}
-  if(pts.length===0){svg.innerHTML='<text x="350" y="160" text-anchor="middle" fill="#5a6178" font-family="monospace" font-size="13">Sin datos para graficar.</text>';return;}
-  const cmpPts=compareRow?(()=>{const a=[];for(let i=1;i<=12;i++){if(typeof compareRow[`CO${i}`]==='number')a.push({label:`CO${i}`,price:compareRow[`CO${i}`]});}return a;})():null;
-  const W=700,H=320,padL=50,padR=20,padT=20,padB=30;
-  const allPrices=[...pts.map(p=>p.price),...(cmpPts?cmpPts.map(p=>p.price):[])];
-  const min=Math.min(...allPrices),max=Math.max(...allPrices),range=(max-min)||1;
-  const x=i=>padL+(i/(pts.length-1))*(W-padL-padR);
-  const y=v=>padT+(1-((v-min)/range))*(H-padT-padB);
-  const pathFor=arr=>arr.map((p,i)=>(i===0?'M':'L')+x(i).toFixed(1)+','+y(p.price).toFixed(1)).join(' ');
-  const gridLines=[];
-  for(let i=0;i<=4;i++){const v=min+range*i/4;gridLines.push(`<line x1="${padL}" y1="${y(v).toFixed(1)}" x2="${W-padR}" y2="${y(v).toFixed(1)}" stroke="#1a1d2e" stroke-width="1"/><text x="6" y="${(y(v)+4).toFixed(1)}" fill="#5a6178" font-family="monospace" font-size="10">$${v.toFixed(1)}</text>`);}
-  const dotsFor=(arr,color)=>arr.map((p,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(p.price).toFixed(1)}" r="3.5" fill="${color}"><title>${p.label}: $${p.price.toFixed(2)}</title></circle>`).join('');
-  const labels=pts.map((p,i)=>`<text x="${x(i).toFixed(1)}" y="${H-padB+16}" fill="#9099b8" font-family="monospace" font-size="9" text-anchor="middle">${p.label}</text>`).join('');
-  svg.innerHTML=`${gridLines.join('')}<path d="${pathFor(pts)}" fill="none" stroke="#2979ff" stroke-width="2"/>${dotsFor(pts,'#2979ff')}${cmpPts?`<path d="${pathFor(cmpPts)}" fill="none" stroke="#ffd600" stroke-width="2" stroke-dasharray="5,4"/>${dotsFor(cmpPts,'#ffd600')}`:''}${labels}`;
+  document.getElementById('futurosPanelBody').innerHTML=rows.map(r=>`<tr><td><strong>${r.key}</strong></td><td style="color:var(--text3)">${r.month}</td><td>$${r.price.toFixed(2)}</td><td style="color:${r.v1d===null?'var(--text3)':r.v1d>=0?'var(--green)':'var(--red)'}">${r.v1d===null?'—':(r.v1d>=0?'+':'')+r.v1d+'%'}</td><td style="color:${r.v5d===null?'var(--text3)':r.v5d>=0?'var(--green)':'var(--red)'}">${r.v5d===null?'—':(r.v5d>=0?'+':'')+r.v5d+'%'}</td><td style="color:${r.shape?r.shape.col:'var(--text3)'}">${r.shape?r.shape.txt:'—'}</td></tr>`).join('');
 }
 
-/* ── SPREADS (matriz CO_i - CO_j con heatmap de color) ── */
+/* ── SPREADS (BUG5: selector de par + histórico + matriz 7x7 clickeable) ── */
+let SPREAD_STATE={pair:'CO1-CO2',unit:'usd',period:'3mo'};
+let SPREAD_CHART=null;
+function populateSpreadPairSelector(){
+  const sel=document.getElementById('spreadPairSel');if(!sel||sel.options.length>0)return;
+  const pairs=[];
+  for(let i=1;i<=6;i++)pairs.push(`CO${i}-CO${i+1}`);
+  sel.innerHTML=pairs.map(p=>`<option value="${p}">${p}</option>`).join('');
+  sel.value=SPREAD_STATE.pair;
+}
 async function loadSpreadsTab(){
+  populateSpreadPairSelector();
   await fetchBrentHistory();
   const{row,source,label}=await getTodaysCurveRow();
   const fuenteEl=document.getElementById('spreadsFuente');
   fuenteEl.className='curve-freshness '+(source==='manual'?'open':'closed');
   fuenteEl.textContent=source==='manual'?`🟢 ${label}`:source==='live'?`🟡 ${label}`:`🔴 ${label}`;
-  document.getElementById('spreadsMatrixTitle').textContent=row?`MATRIZ DE SPREADS (CO_i − CO_j) — ${row.Date}`:'MATRIZ DE SPREADS';
-  if(!row){document.getElementById('spreadsMatrixTable').innerHTML='';return;}
+  if(!row)return;
+  S.spreadsCurrentRow=row;
   renderSpreadsMatrix(row);
+  await renderSpreadHistChart();
+}
+function onSpreadPairChange(){
+  SPREAD_STATE.pair=document.getElementById('spreadPairSel').value;
+  renderSpreadHistChart();
+  highlightMatrixSelection();
+}
+function selSpreadUnit(u,btn){
+  SPREAD_STATE.unit=u;
+  document.querySelectorAll('#spreadUnitSel .seg-btn').forEach(b=>b.className='seg-btn');btn.className='seg-btn active';
+  renderSpreadHistChart();
+}
+function selSpreadPeriod(p,btn){
+  SPREAD_STATE.period=p;
+  document.querySelectorAll('#spreadPeriodSel .seg-btn').forEach(b=>b.className='seg-btn');btn.className='seg-btn active';
+  renderSpreadHistChart();
+}
+function selectMatrixPair(pairLabel){
+  document.getElementById('spreadPairSel').value=pairLabel;
+  SPREAD_STATE.pair=pairLabel;
+  renderSpreadHistChart();
+  highlightMatrixSelection();
+}
+function highlightMatrixSelection(){
+  document.querySelectorAll('#spreadsMatrixTable td.clickable').forEach(td=>{
+    td.classList.toggle('selected',td.dataset.pair===SPREAD_STATE.pair);
+  });
+}
+async function renderSpreadHistChart(){
+  const[a,b]=SPREAD_STATE.pair.split('-');
+  const idxA=parseInt(a.replace('CO','')),idxB=parseInt(b.replace('CO',''));
+  const contracts=brentContractTickers(12);
+  const tickerA=contracts[idxA-1]?.ticker,tickerB=contracts[idxB-1]?.ticker;
+  if(!tickerA||!tickerB)return;
+  const range=SPREAD_STATE.period;
+  try{
+    const r=await fetch(`/api/forward-curve?mode=history&tickers=${tickerA},${tickerB}&range=${range==='max'?'2y':range}`);
+    const d=await r.json();
+    if(d.error||!d.history){renderSpreadChartEmpty('Sin historial real disponible para este par.');return;}
+    const seriesA=d.history[tickerA]||[],seriesB=d.history[tickerB]||[];
+    const byDateB=new Map(seriesB.map(p=>[p.date,p.close]));
+    const points=seriesA.filter(p=>byDateB.has(p.date)).map(p=>{
+      const bClose=byDateB.get(p.date);
+      const spread=SPREAD_STATE.unit==='usd'?+(p.close-bClose).toFixed(3):+(((p.close-bClose)/bClose)*100).toFixed(3);
+      return{date:p.date,value:spread};
+    });
+    if(points.length===0){renderSpreadChartEmpty('Brent CO_i y CO_j sin fechas en común en este período.');return;}
+    const ctx=document.getElementById('spreadHistChartCanvas');
+    if(SPREAD_CHART){SPREAD_CHART.destroy();SPREAD_CHART=null;}
+    SPREAD_CHART=new Chart(ctx,{
+      type:'line',
+      data:{labels:points.map(p=>p.date),datasets:[{label:`${SPREAD_STATE.pair} (${SPREAD_STATE.unit.toUpperCase()})`,data:points.map(p=>p.value),borderColor:'#ff6d00',backgroundColor:'rgba(255,109,0,.08)',fill:true,borderWidth:2,pointRadius:0,tension:.15}]},
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#9099b8',font:{family:'IBM Plex Mono',size:11}}}},
+        scales:{
+          x:{ticks:{color:'#9099b8',font:{family:'IBM Plex Mono'},maxTicksLimit:10},grid:{color:'rgba(255,255,255,.04)'}},
+          y:{ticks:{color:'#9099b8',font:{family:'IBM Plex Mono'},callback:v=>SPREAD_STATE.unit==='usd'?'$'+v:v+'%'},grid:{color:'rgba(255,255,255,.04)'}},
+        },
+      },
+    });
+  }catch(e){console.warn('[Spread Hist Error]',e);renderSpreadChartEmpty('Error de red.');}
+}
+function renderSpreadChartEmpty(msg){
+  if(SPREAD_CHART){SPREAD_CHART.destroy();SPREAD_CHART=null;}
+  const ctx=document.getElementById('spreadHistChartCanvas').getContext('2d');
+  ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+  ctx.fillStyle='#5a6178';ctx.font='12px IBM Plex Mono';ctx.textAlign='center';
+  ctx.fillText(msg,ctx.canvas.width/2,ctx.canvas.height/2);
 }
 function spreadColor(v,maxAbs){
   if(v===0)return'transparent';
   const intensity=Math.min(Math.abs(v)/(maxAbs||1),1);
-  return v>0?`rgba(0,230,118,${.12+intensity*.55})`:`rgba(255,64,96,${.12+intensity*.55})`;
+  return v>0?`rgba(255,64,96,${.12+intensity*.55})`:`rgba(0,230,118,${.12+intensity*.55})`; // contango(+)=rojo, backwardation(-)=verde
 }
 function renderSpreadsMatrix(row){
-  const labels=[];for(let i=1;i<=12;i++){if(typeof row[`CO${i}`]==='number')labels.push(`CO${i}`);}
+  const labels=[];for(let i=1;i<=7;i++){if(typeof row[`CO${i}`]==='number')labels.push(`CO${i}`);}
   const table=document.getElementById('spreadsMatrixTable');
   let maxAbs=0;
   const matrix=labels.map(li=>labels.map(lj=>{
@@ -1315,12 +1523,17 @@ function renderSpreadsMatrix(row){
     html+=`<tr><th>${li}</th>`+labels.map((lj,j)=>{
       const v=matrix[i][j];
       if(i===j)return'<td class="diag">—</td>';
-      return`<td style="background:${spreadColor(v,maxAbs)}">${v>0?'+':''}${v.toFixed(2)}</td>`;
+      const pairLabel=`${li}-${lj}`,canSelect=j===i+1; // solo pares consecutivos son seleccionables (CO1-CO2, no CO1-CO5)
+      return canSelect
+        ?`<td class="clickable" data-pair="${pairLabel}" onclick="selectMatrixPair('${pairLabel}')" style="background:${spreadColor(v,maxAbs)}">${v>0?'+':''}${v.toFixed(2)}</td>`
+        :`<td style="background:${spreadColor(v,maxAbs)}">${v>0?'+':''}${v.toFixed(2)}</td>`;
     }).join('')+'</tr>';
   });
   html+='</tbody>';
   table.innerHTML=html;
+  highlightMatrixSelection();
 }
+
 
 /* ═══════════════════════════════════════════════
    2.1 — CALENDARIO ECONÓMICO
@@ -1549,7 +1762,7 @@ function manualRefreshChart(){
 async function fetchEIAInventories(){
   const results=await Promise.all(STORAGE_DATA.map(async(s)=>{
     try{
-      const r=await fetch(`/api/eia-data?series=${s.seriesKey}&length=4`);
+      const r=await fetch(`/api/eia?type=inventory&series=${s.seriesKey}&length=4`);
       const d=await r.json();
       if(d.response?.data?.length){
         return{s,latest:d.response.data[0],prev:d.response.data[1]};
@@ -1607,11 +1820,10 @@ async function fetchNewsRSS(){  try{
 async function fetchAllNewsSources(){
   newsAnySourceOk=false;
   // B1 fix: NewsAPI se sacó del flujo activo. Su plan gratuito "Developer"
-  // prohíbe explícitamente el uso en producción (solo localhost/testing)
-  // — llamarlo desde Vercel siempre va a dar 401 o, peor, violar sus
-  // términos de servicio. fetchNewsAPI() queda en el código por si en
-  // algún momento pagás un plan que sí permita producción, pero no se
-  // llama acá.
+  // prohíbe explícitamente el uso en producción (solo localhost/testing).
+  // Además, api/news-newsapi.js se borró del todo (no solo se desactivó)
+  // para liberar un slot de función de Vercel — si en el futuro pagás un
+  // plan que permita producción, hay que recrear esa función.
   await Promise.all([fetchGNews(),fetchNewsRSS()]);
   if(!newsAnySourceOk&&NEWS.length===0){
     if(S.tab==='news')renderNewsLoadingState('Sin noticias disponibles — GNews y el agregador RSS no respondieron.');
@@ -1624,7 +1836,7 @@ async function fetchAllNewsSources(){
   if(newsAnySourceOk&&S.tab==='map'){renderThreatIndex();renderMapMovements();renderMapCanvas();}
 }
 function renderNewsLoadingState(msg){
-  const el=document.getElementById('npFeatured');
+  const el=document.getElementById('ntFeed');
   if(el)el.innerHTML=`<div class="np-empty">${msg}</div>`;
 }
 // REGLA NO NEGOCIABLE: nada de Math.random() en datos visibles — esto
@@ -1705,31 +1917,11 @@ async function fetchGNews(){  try{
    backend proxy en producción, funciona en local)
    Se activa si newsapi no está vacío arriba
 ═══════════════════════════════════════════════ */
-async function fetchNewsAPI(){  try{
-    // En localhost funciona directo. En producción (GitHub Pages/Netlify)
-    // necesitás la Netlify Function del backend-guide.md
-    // Cambiá la URL a '/api/news' cuando uses Netlify
-    const url = `/api/news-newsapi?q=crude+oil+OPEC+Brent+WTI`;
-    const r=await fetch(url);const d=await r.json();
-    if(d.articles){
-      d.articles.forEach((a,i)=>{
-        const pubDate=new Date(a.publishedAt);
-        NEWS.unshift({
-          id:Date.now()+1000+i,
-          realTime:pubDate.getTime(),
-          ts:pubDate.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',hour12:false}),
-          src:'newsapi',srcL:(a.source?.name||'NEWS').substring(0,12).toUpperCase(),
-          srcColor:'#ff9100',impact:'med',cat:'prod',hl:a.title,hi:false,chg:'',url:a.url,image:a.urlToImage||null,desc:a.description||''
-        });
-      });
-      dedupeNews();if(NEWS.length>60)NEWS.splice(60);
-      newsAnySourceOk=true;
-      if(S.tab==='news')renderNews();
-      addStatusChip('NewsAPI ✓');
-      console.log(`[NewsAPI] ${d.articles.length} noticias cargadas`);
-    }
-  }catch(e){console.warn('[NewsAPI Error — en producción necesita proxy]',e);}
-}
+/* OPTIMIZACIÓN DE FUNCIONES: fetchNewsAPI() y su backend
+   (api/news-newsapi.js) se borraron — ya no se llamaban desde ningún
+   lado (NewsAPI prohíbe producción en su plan gratis, se había
+   desactivado hace dos vueltas) y mantenerlos vivos solo gastaba uno
+   de los 12 slots de función de Vercel sin aportar nada funcional. */
 
 /* ═══════════════════════════════════════════════
    API 5 — ALPHA VANTAGE (histórico largo plazo)
@@ -1897,7 +2089,7 @@ async function globalRefresh(){
 // con las noticias reales de GNews/NewsAPI. Eso es lo que generaba la queja
 // de "noticias de hace más de 6 días": esos ítems no tenían fecha real,
 // solo una hora del día inventada. Ahora arranca vacío; se llena 100% con
-// artículos reales en cuanto responde fetchGNews()/fetchNewsAPI().
+// artículos reales en cuanto responde fetchGNews()/fetchNewsRSS().
 const NEWS=[];
 // Evita duplicados cuando el mismo artículo aparece en dos ciclos de polling
 function dedupeNews(){
@@ -1908,12 +2100,88 @@ function dedupeNews(){
     else seen.add(key);
   }
 }
-function renderTicker(){
-  document.getElementById('npTicker').innerHTML=TICKERS.map(t=>{
-    const price=S.prices[t.key],chg=S.changes[t.key]||0;
-    const col=chg>0?'#00e676':chg<0?'#ff5252':'#9099a8';
-    return`<div class="np-ticker-item"><div class="np-ticker-name">${t.sym}</div><div class="np-ticker-price">${price?'$'+price:'—'}</div><div class="np-ticker-chg" style="color:${col}">${chg>0?'▲':chg<0?'▼':'—'} ${Math.abs(chg).toFixed(2)}%</div></div>`;
-  }).join('');
+function renderNewsItem(n){
+  const impactLabel={high:'ALTO',med:'MEDIO',low:'BAJO'}[n.impact]||'BAJO';
+  const title=n.hl_es||n.hl;
+  const langBadge=n.hl_es?'':'<span class="nt-lang-badge">EN</span>';
+  const bg=n.srcColor||sourceBadgeColor(n.srcL);
+  const fg=(bg||'').toLowerCase().startsWith('#fff')?'#1a1a1a':'#fff';
+  const tags=[n.asset&&n.asset!=='all'?n.asset:null,n.cat?n.cat:null].filter(Boolean);
+  return`<div class="nt-item">
+    <div class="nt-item-top">
+      <span class="nt-impact-badge ${n.impact}">${impactLabel}</span>
+      <span class="nt-time">${n.ts}</span>
+      <span class="nt-src-badge" style="background:${bg};color:${fg}">${n.srcL}</span>
+      ${langBadge}
+    </div>
+    <div class="nt-title" onclick="toggleNewsExpand(${n.id})">${title}</div>
+    <div class="nt-tags">${tags.map(t=>`<span class="nt-tag" onclick="event.stopPropagation();quickFilterTag('${t}')">#${t}</span>`).join('')}</div>
+    <div class="nt-expand" id="nt-expand-${n.id}" style="display:none"></div>
+  </div>`;
+}
+// BUG2: click en el título expande inline la descripción completa
+// (traducida bajo demanda — no se traduce hasta que el usuario la pide,
+// para no gastar quota en descripciones que nadie lee).
+async function toggleNewsExpand(id){
+  const box=document.getElementById('nt-expand-'+id);if(!box)return;
+  if(box.style.display==='block'){box.style.display='none';return;}
+  box.style.display='block';
+  const item=NEWS.find(n=>String(n.id)===String(id));
+  if(!item){box.innerHTML='';return;}
+  if(!item.desc){
+    box.innerHTML=`${item.url?`<a href="${item.url}" target="_blank" class="nt-readmore">Ver original →</a>`:'<span style="color:var(--text3)">Sin descripción disponible.</span>'}`;
+    return;
+  }
+  if(item.desc_es){
+    box.innerHTML=`<div>${item.desc_es}</div>${item.url?`<a href="${item.url}" target="_blank" class="nt-readmore">Ver original →</a>`:''}`;
+    return;
+  }
+  box.innerHTML='<span style="color:var(--text3)">Traduciendo...</span>';
+  const r=await translateText(item.desc);
+  item.desc_es=r.ok?r.text:item.desc;
+  box.innerHTML=`<div>${item.desc_es}${r.ok?'':' <span class="nt-lang-badge">EN</span>'}</div>${item.url?`<a href="${item.url}" target="_blank" class="nt-readmore">Ver original →</a>`:''}`;
+}
+function quickFilterTag(tag){
+  const assetKeys=['brent','wti','ng','rbob','ho'];
+  if(assetKeys.includes(tag)){
+    const btn=[...document.querySelectorAll('.nf-row .nf-btn')].find(b=>(b.getAttribute('onclick')||'').includes(`'asset','${tag}'`));
+    if(btn)filterNews('asset',tag,btn);
+  }else{
+    const btn=[...document.querySelectorAll('.nf-row .nf-btn')].find(b=>(b.getAttribute('onclick')||'').includes(`'cat','${tag}'`));
+    if(btn)filterNews('cat',tag,btn);
+  }
+}
+// BUG2: traducción — MyMemory gratis, 5000 caracteres/día COMPARTIDOS
+// entre todos los visitantes (no es por persona). Cache por texto en
+// inglés para nunca traducir 2 veces el mismo titular.
+const TRANSLATION_CACHE=new Map();
+async function translateText(text){
+  if(!text)return{text:'',ok:true};
+  if(TRANSLATION_CACHE.has(text))return TRANSLATION_CACHE.get(text);
+  try{
+    const r=await fetch('/api/news-translate?q='+encodeURIComponent(text));
+    const d=await r.json();
+    const result=(!d.error&&d.translated)?{text:d.translated,ok:true}:{text,ok:false};
+    TRANSLATION_CACHE.set(text,result);
+    return result;
+  }catch(e){
+    const fallback={text,ok:false};
+    TRANSLATION_CACHE.set(text,fallback);
+    return fallback;
+  }
+}
+// Traduce solo los TITULARES visibles (no las descripciones — esas se
+// traducen al expandir, bajo demanda) y solo los que todavía no tienen
+// hl_es ni fallaron antes. Tope de 12 por ciclo para no fundir la
+// quota diaria de 5000 caracteres en un solo refresh.
+async function translateVisibleHeadlines(items){
+  const todo=items.filter(n=>!n.hl_es&&!n._translateFailed).slice(0,12);
+  if(todo.length===0)return;
+  await Promise.all(todo.map(async n=>{
+    const r=await translateText(n.hl);
+    if(r.ok)n.hl_es=r.text;else n._translateFailed=true;
+  }));
+  if(S.tab==='news')renderNews();
 }
 function renderNews(){
   renderTicker();
@@ -1928,43 +2196,43 @@ function renderNews(){
   const brEl=document.getElementById('npBreaking');
   if(breaking){
     brEl.style.display='flex';
-    brEl.innerHTML=`<span class="np-breaking-tag">ÚLTIMO MOMENTO</span><span>${breaking.hl}</span>`;
+    brEl.innerHTML=`<span class="np-breaking-tag">ÚLTIMO MOMENTO</span><span>${breaking.hl_es||breaking.hl}</span>`;
     brEl.onclick=breaking.url?()=>window.open(breaking.url,'_blank'):null;
     brEl.style.cursor=breaking.url?'pointer':'default';
   }else brEl.style.display='none';
 
+  const counterEl=document.getElementById('ntCounter');
+  if(counterEl)counterEl.textContent=`${filtered.length} de ${NEWS.length} noticias visibles`;
+
   if(filtered.length===0){
-    document.getElementById('npFeatured').innerHTML=`<div class="np-empty">Buscando noticias en vivo (GNews + RSS multi-fuente)...</div>`;
-    document.getElementById('npSideList').innerHTML='';
-    document.getElementById('npCards').innerHTML='';
+    document.getElementById('ntFeed').innerHTML=`<div class="np-empty">Buscando noticias en vivo (GNews + RSS multi-fuente)...</div>`;
+    document.getElementById('ntTop5').innerHTML='';
     return;
   }
 
-  const srcBadge=n=>`<span class="np-src-badge" style="background:${n.srcColor||sourceBadgeColor(n.srcL)};color:${(n.srcColor||'').startsWith('#fff')?'#1a1a1a':'#fff'}">${n.srcL}</span>`;
-  const cardImg=n=>n.image?`<img class="np-card-img" src="${n.image}" loading="lazy" onerror="this.style.display='none'">`:`<div class="np-card-img">${n.srcL.charAt(0)}</div>`;
+  const visible=filtered.slice(0,40); // tope razonable de renderizado
+  document.getElementById('ntFeed').innerHTML=visible.map(renderNewsItem).join('');
 
-  const top=filtered[0];
-  document.getElementById('npFeatured').innerHTML=`
-    ${top.image?`<img class="np-featured-img" src="${top.image}" loading="lazy" onerror="this.style.display='none'">`:`<div class="np-featured-img">${top.srcL}</div>`}
-    <div class="np-featured-src">${srcBadge(top)} · ${top.ts}</div>
-    <div class="np-featured-title">${top.hl}</div>
-    ${top.desc?`<div class="np-featured-desc">${top.desc}</div>`:''}`;
-  document.getElementById('npFeatured').onclick=top.url?()=>window.open(top.url,'_blank'):null;
+  // BUG2: sidebar — Top 5 alto impacto últimas 24h, sticky
+  const now=Date.now();
+  const top5=NEWS.filter(n=>n.impact==='high'&&n.realTime&&(now-n.realTime)<24*3600*1000)
+    .sort((a,b)=>(b.realTime||0)-(a.realTime||0)).slice(0,5);
+  document.getElementById('ntTop5').innerHTML=top5.length?top5.map(n=>{
+    const bg=n.srcColor||sourceBadgeColor(n.srcL);
+    return`<div class="nt-top5-item" ${n.url?`onclick="window.open('${n.url}','_blank')"`:''}><span class="nt-top5-dot" style="background:${bg}"></span><span class="nt-top5-title">${n.hl_es||n.hl}</span></div>`;
+  }).join(''):'<div style="color:var(--text3);font-size:11px;padding:8px 0">Sin alto impacto en 24h.</div>';
 
-  const side=filtered.slice(1,6);
-  document.getElementById('npSideList').innerHTML=`<div class="np-side-hdr">MÁS LEÍDAS</div>`+side.map((n,i)=>`
-    <div class="np-side-item" ${n.url?`onclick="window.open('${n.url}','_blank')"`:''}>
-      <div class="np-side-num">${i+1}</div>
-      <div class="np-side-title">${n.hl}</div>
-    </div>`).join('');
+  // BUG2: sidebar — filtros activos
+  const fLabels=[];
+  if(f.asset!=='all')fLabels.push('Activo: '+f.asset.toUpperCase());
+  if(f.src!=='all')fLabels.push('Fuente: '+f.src);
+  if(f.cat!=='all')fLabels.push('Categoría: '+f.cat);
+  if(f.imp!=='all')fLabels.push('Impacto: '+f.imp);
+  if(f.sort==='impact')fLabels.push('Orden: mayor impacto');
+  document.getElementById('ntActiveFilters').innerHTML=fLabels.length?fLabels.map(x=>`<span class="nt-filter-chip">${x}</span>`).join(''):'<span style="color:var(--text3);font-size:11px">Ninguno</span>';
 
-  const cards=filtered.slice(6,14);
-  document.getElementById('npCards').innerHTML=cards.map(n=>`
-    <div class="np-card" ${n.url?`onclick="window.open('${n.url}','_blank')"`:''}>
-      ${cardImg(n)}
-      <div class="np-card-src">${srcBadge(n)} · ${n.ts}</div>
-      <div class="np-card-title">${n.hl}</div>
-    </div>`).join('');
+  // Traducción lazy de los titulares visibles (cacheada, no se repite)
+  translateVisibleHeadlines(visible);
 }
 function filterNews(type,val,btn){
   S.newsFilter[type]=val;
@@ -2089,6 +2357,118 @@ function drawCountryBorders(ctx,lonToX,latToY){
 // (Hormuz siempre rojo, Suez siempre amarillo, etc, sin importar lo que
 // pasara en el mundo). Ahora el riskLevel se calcula de verdad buscando
 // keywords en las noticias reales de las últimas 48h.
+/* ═══════════════════════════════════════════════
+   BUG 3.2 — FILTROS POR AGRUPACIÓN
+   Listados exactos como los diste. Solo resaltan los países que
+   además están en PROD_DATA (que cubre 15 países) — si un grupo no
+   tiene representantes ahí, el resumen lo dice explícito en vez de
+   simular que hay más cobertura de la que hay.
+═══════════════════════════════════════════════ */
+const GROUPS={
+  opec:['SAU','IRN','IRQ','ARE','KWT','DZA','LBY','NGA','VEN','AGO','COG','GAB','GNQ'],
+  opecplus:['RUS','MEX','KAZ','OMN','BHR','BRN','MYS','AZE','SDN','SSD'], // se suma a opec para "OPEC+"
+  g7:['USA','CAN','GBR','FRA','DEU','ITA','JPN'],
+  brics:['BRA','RUS','IND','CHN','ZAF','EGY','ETH','IRN','ARE'], // BRICS ampliado 2024
+};
+GROUPS.opecplus_full=[...GROUPS.opec,...GROUPS.opecplus];
+function countriesInGroup(g){
+  if(g==='all')return null;
+  if(g==='noopec')return PROD_DATA.filter(p=>!GROUPS.opec.includes(p.wb_code)).map(p=>p.wb_code);
+  if(g==='opecplus')return GROUPS.opecplus_full;
+  return GROUPS[g]||[];
+}
+function selGroupFilter(g,btn){
+  S.activeGroup=g;
+  document.querySelectorAll('.group-filter-bar .nf-btn').forEach(b=>b.className='nf-btn');btn.className='nf-btn on';
+  renderMapCanvas();renderGroupSummary();
+}
+function renderGroupSummary(){
+  const el=document.getElementById('groupSummary');if(!el)return;
+  const codes=countriesInGroup(S.activeGroup);
+  if(codes===null){el.textContent='';return;}
+  const matched=PROD_DATA.filter(p=>codes.includes(p.wb_code));
+  if(matched.length===0){el.textContent='Ningún país de este grupo tiene datos en el mapa actual.';return;}
+  const totalProd=matched.reduce((s,p)=>s+p.prod,0);
+  el.textContent=`${matched.length} país(es) con datos en el mapa · producción combinada: ${totalProd.toFixed(1)} Mb/d`;
+}
+
+/* ═══════════════════════════════════════════════
+   BUG 3.3 — TOP 10 EXPORTADORES/IMPORTADORES NETOS
+   Reales, Energy Institute Statistical Review 2024 + EIA International
+   Energy Statistics (ver _fecha_referencia). Hardcodeado a propósito
+   porque ninguna API gratuita da esto consolidado y verificable en
+   vivo — se documenta la fecha exacta en vez de simular un feed.
+═══════════════════════════════════════════════ */
+const TOP10_EXPORTERS=[
+  {country:'Arabia Saudita',flag:'🇸🇦',mbd:6.8},{country:'Rusia',flag:'🇷🇺',mbd:4.7},
+  {country:'Canadá',flag:'🇨🇦',mbd:4.2},{country:'Irak',flag:'🇮🇶',mbd:3.4},
+  {country:'EAU',flag:'🇦🇪',mbd:2.9},{country:'EE.UU.',flag:'🇺🇸',mbd:2.0},
+  {country:'Kuwait',flag:'🇰🇼',mbd:2.0},{country:'Nigeria',flag:'🇳🇬',mbd:1.5},
+  {country:'Kazajistán',flag:'🇰🇿',mbd:1.4},{country:'Noruega',flag:'🇳🇴',mbd:1.1},
+];
+const TOP10_IMPORTERS=[
+  {country:'China',flag:'🇨🇳',mbd:11.0},{country:'EE.UU.',flag:'🇺🇸',mbd:5.0},
+  {country:'India',flag:'🇮🇳',mbd:4.8},{country:'Japón',flag:'🇯🇵',mbd:2.6},
+  {country:'Corea del Sur',flag:'🇰🇷',mbd:2.6},{country:'Alemania',flag:'🇩🇪',mbd:1.8},
+  {country:'Países Bajos',flag:'🇳🇱',mbd:1.7},{country:'Italia',flag:'🇮🇹',mbd:1.3},
+  {country:'España',flag:'🇪🇸',mbd:1.2},{country:'Tailandia',flag:'🇹🇭',mbd:1.0},
+];
+function renderTop10Panel(){
+  const elE=document.getElementById('top10Exporters'),elI=document.getElementById('top10Importers');
+  if(!elE||!elI)return;
+  elE.innerHTML=TOP10_EXPORTERS.map((c,i)=>`<div class="t10-row" onclick="highlightCountryOnMap('${c.country}')"><span class="t10-rank">${i+1}.</span><span class="t10-name">${c.flag} ${c.country}</span><span class="t10-val">${c.mbd.toFixed(1)} Mb/d</span></div>`).join('');
+  elI.innerHTML=TOP10_IMPORTERS.map((c,i)=>`<div class="t10-row" onclick="highlightCountryOnMap('${c.country}')"><span class="t10-rank">${i+1}.</span><span class="t10-name">${c.flag} ${c.country}</span><span class="t10-val">${c.mbd.toFixed(1)} Mb/d</span></div>`).join('');
+}
+let HIGHLIGHTED_COUNTRY=null;
+function highlightCountryOnMap(name){
+  HIGHLIGHTED_COUNTRY=HIGHLIGHTED_COUNTRY===name?null:name;
+  document.querySelectorAll('.t10-row').forEach(r=>r.classList.toggle('hl',r.textContent.includes(name)&&HIGHLIGHTED_COUNTRY));
+  renderMapCanvas();
+}
+
+/* ═══════════════════════════════════════════════
+   BUG 3.1 — FLUJOS COMERCIALES REALES PRODUCTOR→CONSUMIDOR
+   data/trade-flows.json: volúmenes reales (Energy Institute 2024),
+   rutas marítimas pasando por chokepoints reales (waypoints), nunca
+   una línea recta que cruce tierra.
+═══════════════════════════════════════════════ */
+let TRADE_FLOWS_DATA=null,tradeFlowDashOffset=0,tradeFlowAnimTimer=null;
+async function fetchTradeFlows(){
+  try{
+    const r=await fetch('/api/static-data?file=trade-flows');
+    const d=await r.json();
+    TRADE_FLOWS_DATA=d;
+    console.log(`[Trade Flows] ${d.flows.length} flujos reales cargados (ref. ${d._fecha_referencia})`);
+  }catch(e){console.warn('[Trade Flows Error]',e);}
+}
+function toggleTradeFlows(){
+  S.showTradeFlows=!S.showTradeFlows;
+  document.getElementById('mt-flows').classList.toggle('active',S.showTradeFlows);
+  if(S.showTradeFlows){
+    if(!TRADE_FLOWS_DATA)fetchTradeFlows().then(renderMapCanvas);
+    // BUG3.1: animación de dasharray — liviana, redibuja cada 350ms
+    // solo mientras la capa está activa, no un loop constante de fondo.
+    if(!tradeFlowAnimTimer)tradeFlowAnimTimer=setInterval(()=>{tradeFlowDashOffset+=2;if(S.tab==='map')renderMapCanvas();},350);
+  }else if(tradeFlowAnimTimer){clearInterval(tradeFlowAnimTimer);tradeFlowAnimTimer=null;}
+  renderMapCanvas();
+}
+function drawTradeFlows(ctx,lonToX,latToY){
+  if(!TRADE_FLOWS_DATA)return;
+  const geo=TRADE_FLOWS_DATA.endpoints_geo,wp=TRADE_FLOWS_DATA.maritime_waypoints;
+  const modeColor={sea:'#2979ff',pipeline:'#ff6d00',rail:'#00e676'};
+  TRADE_FLOWS_DATA.flows.forEach(f=>{
+    const a=geo[f.from],b=geo[f.to];if(!a||!b)return;
+    const pts=[a,...(f.via||[]).map(w=>wp[w]).filter(Boolean),b];
+    ctx.strokeStyle=modeColor[f.mode]||'#9099b8';
+    ctx.lineWidth=Math.max(1,Math.min(5,f.volume_mbd*1.1));
+    ctx.setLineDash([7,5]);ctx.lineDashOffset=-tradeFlowDashOffset;
+    ctx.beginPath();ctx.moveTo(lonToX(pts[0][0]),latToY(pts[0][1]));
+    for(let i=1;i<pts.length;i++)ctx.lineTo(lonToX(pts[i][0]),latToY(pts[i][1]));
+    ctx.stroke();
+  });
+  ctx.setLineDash([]);ctx.lineDashOffset=0;
+}
+
 const CHOKEPOINTS=[
   {lon:56.3,lat:26.5,name:'Hormuz',label:'HORMUZ',keywords:['hormuz']},
   {lon:32.5,lat:30,name:'Suez',label:'SUEZ',keywords:['suez']},
@@ -2135,13 +2515,19 @@ function renderMapCanvas(){
       ctx.beginPath();ctx.arc(px,py,rad,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
     });
   }
+  const groupCodes=countriesInGroup(S.activeGroup);
   PROD_DATA.forEach(p=>{
     const px=lonToX(p.lon),py=latToY(p.lat),r=Math.sqrt(p.prod)*4+3;
     const col={stable:'#00e676',tension:'#ffc300',conflict:'#ff4060',sanction:'#b388ff'}[p.status];
+    const inGroup=groupCodes===null||groupCodes.includes(p.wb_code);
+    const isHighlighted=HIGHLIGHTED_COUNTRY&&p.country.includes(HIGHLIGHTED_COUNTRY.split(' ')[0]);
+    if(!inGroup)ctx.globalAlpha=.22; // BUG3.2: atenúa los que no pertenecen al grupo activo
     const grd=ctx.createRadialGradient(px,py,0,px,py,r*3);grd.addColorStop(0,col+'40');grd.addColorStop(1,'transparent');
     ctx.fillStyle=grd;ctx.beginPath();ctx.arc(px,py,r*3,0,Math.PI*2);ctx.fill();
     ctx.fillStyle=col+'22';ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(px,py,r,0,Math.PI*2);ctx.fill();ctx.stroke();
+    if(isHighlighted){ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(px,py,r+4,0,Math.PI*2);ctx.stroke();}
     ctx.fillStyle=col;ctx.font='bold 9px JetBrains Mono';ctx.textAlign='center';ctx.fillText(p.flag+' '+p.prod,px,py-r-3);
+    ctx.globalAlpha=1;
   });
   if(S.showTankerRoutes&&TANKER_ROUTES.length>0){
     TANKER_ROUTES.forEach(rt=>{
@@ -2150,6 +2536,7 @@ function renderMapCanvas(){
       ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.setLineDash([]);
     });
   }
+  if(S.showTradeFlows)drawTradeFlows(ctx,lonToX,latToY);
   CHOKEPOINTS.forEach(h=>{
     const risk=computeChokepointRisk(h);
     const hx=lonToX(h.lon),hy=latToY(h.lat),label=(risk.level==='red'?'⚠ ':risk.level==='yellow'?'◈ ':'◈ ')+h.label;
@@ -2195,7 +2582,7 @@ function renderMapKpis(){
     {name:'SPREAD BRENT-WTI',val:typeof S.prices.spread==='number'?'$'+S.prices.spread.toFixed(2):'—',sub:'real',col:'var(--text2)'},
     {name:'CRACK 3:2:1',val:crack?'$'+crack.c321.toFixed(2)+'/b':'—',sub:crack?interpretCrack(crack.c321).txt:'—',col:crack?interpretCrack(crack.c321).col:'var(--text3)'},
     {name:'CUSHING',val:crudeRow&&typeof crudeRow.level==='number'?crudeRow.level+' Mbl':'—',sub:crudeRow&&typeof crudeRow.chg==='number'?(crudeRow.chg>=0?'+':'')+crudeRow.chg+' Mbl':'—',col:crudeRow&&crudeRow.chg<0?'var(--green)':'var(--red)'},
-    {name:'CURVA WTI',val:CURVE_DATA?CURVE_DATA.shape:'—',sub:CURVE_DATA?(CURVE_DATA.shape==='CONTANGO'?'bearish':CURVE_DATA.shape==='BACKWARDATION'?'bullish':'neutral'):'visitá CURVA',col:'var(--text2)'},
+    {name:'CURVA WTI',val:CURVE_DATA?CURVE_DATA.shape:'—',sub:CURVE_DATA?(CURVE_DATA.shape==='CONTANGO'?'bearish':CURVE_DATA.shape==='BACKWARDATION'?'bullish':'neutral'):'cargando...',col:'var(--text2)'},
   ];
   el.innerHTML=kpis.map(k=>`<div class="dash-card"><div class="dash-card-title">${k.name}</div><div class="dash-card-value" style="font-size:18px">${k.val}</div><div class="dash-card-sub" style="color:${k.col}">${k.sub}</div></div>`).join('');
 }
@@ -2216,7 +2603,7 @@ function toggleReservesLayer(){
 let TANKER_ROUTES=[];
 async function fetchTankerRoutes(){
   try{
-    const r=await fetch('/api/tanker-routes');const d=await r.json();
+    const r=await fetch('/api/static-data?file=tanker-routes');const d=await r.json();
     TANKER_ROUTES=d.routes||[];
     console.log(`[Tanker Routes] ${TANKER_ROUTES.length} rutas típicas cargadas (NO es tracking en vivo: ${d.note})`);
   }catch(e){console.warn('[Tanker Routes Error]',e);}
@@ -2247,7 +2634,7 @@ function buildDigest(){
 let STEO_DATA={wti:[],brent:[]};
 async function fetchEIASTEO(){
   try{
-    const r=await fetch('/api/eia-steo');
+    const r=await fetch('/api/eia?type=steo');
     const d=await r.json();
     if(d.wti&&d.brent){
       STEO_DATA=d;
@@ -2324,25 +2711,12 @@ function renderAnalysis(){
   }
 }
 
-/* ── BACKGROUND MAP ───────────────────────── */
+/* ── BACKGROUND MAP (BUG4: ya NO se renderiza — se sacaron las luces
+   animadas a pedido explícito). Se deja el array de datos por si se
+   reusa para algo más adelante, pero la función de dibujo + el loop
+   de requestAnimationFrame se eliminaron por completo, no solo se
+   ocultaron. ── */
 const BG_CENTERS=[{lon:45,lat:24,p:9},{lon:53,lat:32,p:3.5},{lon:48,lat:29,p:2.4},{lon:54,lat:24,p:3},{lon:44,lat:33,p:4.3},{lon:-97,lat:38,p:13.3},{lon:-110,lat:56,p:5.8},{lon:60,lat:58,p:9.2},{lon:68,lat:48,p:2.1},{lon:-52,lat:-10,p:3.7},{lon:-66,lat:8,p:.8},{lon:18,lat:27,p:1.1},{lon:8,lat:9,p:1.4},{lon:10,lat:62,p:1.9},{lon:-102,lat:23,p:1.8}];
-function renderBgMap(){
-  const canvas=document.getElementById('bgCanvas');
-  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
-  const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height,t=Date.now()/1000;
-  ctx.clearRect(0,0,W,H);
-  const lX=lon=>(lon+180)/360*W,lY=lat=>(90-lat)/180*H;
-  ctx.strokeStyle='rgba(41,121,255,.025)';ctx.lineWidth=.5;
-  for(let lon=-180;lon<=180;lon+=30){ctx.beginPath();ctx.moveTo(lX(lon),0);ctx.lineTo(lX(lon),H);ctx.stroke();}
-  for(let lat=-90;lat<=90;lat+=30){ctx.beginPath();ctx.moveTo(0,lY(lat));ctx.lineTo(W,lY(lat));ctx.stroke();}
-  BG_CENTERS.forEach((c,idx)=>{
-    const px=lX(c.lon),py=lY(c.lat),pulse=.5+.5*Math.sin(t*1.4+idx*.8),r=Math.sqrt(c.p)*2.5;
-    const grd=ctx.createRadialGradient(px,py,0,px,py,r*(2+pulse));grd.addColorStop(0,`rgba(255,109,0,${.15*pulse})`);grd.addColorStop(1,'transparent');
-    ctx.fillStyle=grd;ctx.beginPath();ctx.arc(px,py,r*(2+pulse),0,Math.PI*2);ctx.fill();
-    ctx.fillStyle=`rgba(255,109,0,${.5+.5*pulse})`;ctx.beginPath();ctx.arc(px,py,Math.max(1.5,r*.3),0,Math.PI*2);ctx.fill();
-  });
-  requestAnimationFrame(renderBgMap);
-}
 
 /* ── TICKER & CLOCKS ──────────────────────── */
 const TICKERS=[{sym:'BRENT ICE',key:'brent'},{sym:'WTI NYMEX',key:'wti'},{sym:'COIL FUT',key:'coil'},{sym:'NAT GAS',key:'ng'},{sym:'HEATING OIL',key:'heatoil'},{sym:'RBOB GAS',key:'rbob'}];
@@ -2388,10 +2762,9 @@ function switchTab(tab){
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('tbn-'+tab).classList.add('active');
   if(tab==='charts'){S.chartData=null;setTimeout(()=>{renderChart();},50);loadRealCandles();fetchAlphaVantage();}
-  if(tab==='map'){setTimeout(()=>{renderMapCanvas();renderProdTable();renderMapSidebar();setMapView(S.mapView);renderThreatIndex();renderMapMovements();renderMapKpis();},50);}
+  if(tab==='map'){setTimeout(()=>{renderMapCanvas();renderProdTable();renderMapSidebar();setMapView(S.mapView);renderThreatIndex();renderMapMovements();renderMapKpis();renderTop10Panel();renderGroupSummary();},50);}
   if(tab==='news'){renderNews();}
   if(tab==='analysis'){renderAnalysis();if(NEWS.length>3)fetchAISummary();}
-  if(tab==='curve'){fetchFuturesCurve();}
   if(tab==='dashboard'){loadDashboard();}
   if(tab==='macro'){loadCalendarEvents();fetchMacroCorrelations();}
   if(tab==='futuros'){loadFuturosTab();}
@@ -2435,7 +2808,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   setInterval(fetchTwelveDataPrices,60000);
   // Actualizar noticias cada 10 minutos si hay key
   setInterval(fetchAllNewsSources,600000);
-  renderBgMap();
+  // BUG4: renderBgMap() eliminado — ya no se renderizan luces de fondo.
   // Llamadas iniciales a APIs
   fetchTwelveDataPrices();
   fetchEIAInventories();
@@ -2453,6 +2826,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   fetchCrackHistory();
   setInterval(fetchCrackHistory, 3600000);
   setInterval(()=>{if(S.tab==='macro')renderCalendar();},30000); // countdown vivo
+  fetchFuturesCurve(); // BUG4: ya no tiene tab propia, pero Dashboard/Mapa la usan como KPI
+  setInterval(fetchFuturesCurve,1800000); // cada 30 min alcanza, no cambia rápido
   renderCrackCards();
   // 4.4: restaurar preferencias guardadas (tab, asset, tf, indicadores,
   // filtros de noticias) si existen; si no, arranca en el Dashboard
