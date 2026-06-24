@@ -1,40 +1,64 @@
+// ══════════════════════════════════════════════════════════════
+// api/trade-flows.js (Vercel Serverless Function)
+// BUG 3.1 — Flujos comerciales productor→consumidor para el mapa.
+//
+// Investigación de factibilidad (honesta):
+//   - UN Comtrade API: es real y gratuita, pero requiere mapear cada
+//     país a su código HS de "crude petroleum oils" (2709) Y maneja
+//     rate-limiting agresivo sin key registrada — sin poder probarlo
+//     en vivo, integrarlo a ciegas arriesgaba traer datos mal armados.
+//   - JODI (jodidata.org): tiene descargas de archivos planos (CSV/XLS),
+//     no expone un endpoint JSON simple consumible desde un fetch().
+//   - EIA Petroleum Trade (companylevel): es para EE.UU. específicamente,
+//     no da flujos bilaterales de otros países.
+//
+// Por eso esto sirve data/trade-flows.json: volúmenes reales (no
+// inventados) tomados de Energy Institute Statistical Review 2024 +
+// reportes públicos de flujo comercial, con fecha de referencia
+// explícita — no es un feed en vivo, se actualiza a mano cuando haya
+// datos más nuevos.
+//
+// GET /api/trade-flows
+// → { flows:[...], endpoints_geo:{...}, maritime_waypoints:{...} }
+// ══════════════════════════════════════════════════════════════
 
-{
-  "_fuente": "EIA International Energy Statistics + Energy Institute Statistical Review of World Energy 2024 (Statbase.org) + reportes de flujo comercial públicos. Volúmenes en Mb/d son aproximados a partir de toneladas/año publicadas — referencia 2024, no son un feed en vivo.",
-  "_fecha_referencia": "2024",
-  "flows": [
-    { "from": "SAU", "to": "CHN", "volume_mbd": 1.75, "mode": "sea", "via": ["hormuz", "malacca"] },
-    { "from": "SAU", "to": "IND", "volume_mbd": 0.85, "mode": "sea", "via": ["hormuz"] },
-    { "from": "SAU", "to": "USA", "volume_mbd": 0.45, "mode": "sea", "via": ["hormuz"] },
-    { "from": "RUS", "to": "CHN", "volume_mbd": 2.1, "mode": "pipeline", "via": [] },
-    { "from": "RUS", "to": "IND", "volume_mbd": 1.7, "mode": "sea", "via": ["suez"] },
-    { "from": "CAN", "to": "USA", "volume_mbd": 4.0, "mode": "pipeline", "via": [] },
-    { "from": "IRQ", "to": "CHN", "volume_mbd": 1.1, "mode": "sea", "via": ["hormuz", "malacca"] },
-    { "from": "IRQ", "to": "IND", "volume_mbd": 0.6, "mode": "sea", "via": ["hormuz"] },
-    { "from": "ARE", "to": "JPN", "volume_mbd": 0.7, "mode": "sea", "via": ["hormuz", "malacca"] },
-    { "from": "ARE", "to": "CHN", "volume_mbd": 0.5, "mode": "sea", "via": ["hormuz", "malacca"] },
-    { "from": "USA", "to": "EUROPE", "volume_mbd": 1.6, "mode": "sea", "via": [] },
-    { "from": "USA", "to": "CHN", "volume_mbd": 0.4, "mode": "sea", "via": ["panama"] },
-    { "from": "NGA", "to": "IND", "volume_mbd": 0.5, "mode": "sea", "via": ["suez"] },
-    { "from": "KWT", "to": "CHN", "volume_mbd": 0.45, "mode": "sea", "via": ["hormuz", "malacca"] },
-    { "from": "KAZ", "to": "EUROPE", "volume_mbd": 0.6, "mode": "pipeline", "via": ["bosphorus"] },
-    { "from": "NOR", "to": "EUROPE", "volume_mbd": 0.9, "mode": "sea", "via": [] },
-    { "from": "AGO", "to": "CHN", "volume_mbd": 0.55, "mode": "sea", "via": ["cape"] }
-  ],
-  "endpoints_geo": {
-    "SAU": [50.0, 25.0], "RUS": [60.0, 58.0], "CAN": [-100.0, 56.0], "USA": [-97.0, 38.0],
-    "IRQ": [44.5, 33.0], "ARE": [54.0, 24.0], "NGA": [8.0, 9.0], "KWT": [47.5, 29.3],
-    "KAZ": [68.0, 48.0], "NOR": [10.0, 62.0], "AGO": [18.0, -10.0],
-    "CHN": [114.0, 30.0], "IND": [78.0, 21.0], "JPN": [138.0, 36.0], "EUROPE": [4.0, 51.0]
-  },
-  "maritime_waypoints": {
-    "_nota": "Coordenadas reales aproximadas de cada chokepoint, usadas para que las rutas marítimas dibujadas en el mapa pasen por el corredor correcto en vez de cruzar tierra en línea recta.",
-    "hormuz":    [56.25, 26.5],
-    "suez":      [32.5, 30.5],
-    "bab_mandeb":[43.3, 12.5],
-    "malacca":   [100.5, 2.5],
-    "cape":      [18.4, -34.8],
-    "panama":    [-79.5, 9.1],
-    "bosphorus": [29.0, 41.1]
+import { readFile } from 'fs/promises';
+import { join } from 'path';
+
+function setCors(res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+}
+
+function sendError(res, statusCode, message, details = null) {
+  const body = { error: true, message };
+  if (details) body.details = details;
+  console.error(`[trade-flows.js] ERROR ${statusCode}: ${message}`, details || '');
+  return res.status(statusCode).json(body);
+}
+
+function sendOk(res, data) {
+  // Esto es un archivo de referencia anual, no necesita revalidarse seguido.
+  res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate=43200');
+  return res.status(200).json(data);
+}
+
+export default async function handler(req, res) {
+  setCors(res);
+  if (req.method === 'OPTIONS') return res.status(204).end();
+  if (req.method !== 'GET') return sendError(res, 405, 'Método no permitido. Usá GET.');
+
+  try {
+    const filePath = join(process.cwd(), 'data', 'trade-flows.json');
+    const raw = await readFile(filePath, 'utf-8');
+    const data = JSON.parse(raw);
+    console.log(`[trade-flows.js] OK: ${data.flows?.length || 0} flujos servidos (ref. ${data._fecha_referencia})`);
+    return sendOk(res, data);
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      return sendError(res, 404, 'data/trade-flows.json no existe en este deploy.');
+    }
+    return sendError(res, 502, 'Error leyendo o parseando data/trade-flows.json.', err.message);
   }
 }
