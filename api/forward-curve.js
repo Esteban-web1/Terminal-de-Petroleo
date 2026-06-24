@@ -131,6 +131,17 @@ export default async function handler(req, res) {
   if (req.method !== 'GET') return sendError(res, 405, 'Método no permitido. Usá GET.');
 
   const params = req.query || {};
+
+  // BUG 5 (brent-spread-monitor): historial diario real de uno o más
+  // contratos puntuales (CLN26.NYM, BZQ26.NYM, etc.) — esto es lo que
+  // permite armar curvas "hace 1/2/3/6 meses" y el histórico del
+  // spread entre dos contratos SIN inventar nada: es el precio real
+  // de ESE ticker puntual en esas fechas, no una reconstrucción de
+  // "qué contrato era front month" (eso sí sería inventado).
+  if (params.mode === 'history') {
+    return await handleHistory(res, params);
+  }
+
   const underlying = (params.underlying || 'wti').toLowerCase();
   if (!SPOT_TICKER[underlying]) {
     return sendError(res, 400, `underlying inválido: "${underlying}". Usá "wti" o "brent".`);
@@ -208,4 +219,70 @@ export default async function handler(req, res) {
 
   console.log(`[forward-curve.js] OK ${underlying}: ${curve.length} contratos, forma=${shape} (${diffPct}%), cierre=${spotResult.closeDate}`);
   return sendOk(res, out);
+}
+
+// ══════════════════════════════════════════════════════════════
+// MODE HISTORY — historial diario real de tickers puntuales
+// GET /api/forward-curve?mode=history&tickers=CLN26.NYM,CLQ26.NYM&range=6mo
+// → { history: { "CLN26.NYM": [{date,close}], ... }, _warnings? }
+// ══════════════════════════════════════════════════════════════
+const ALLOWED_HISTORY_RANGES = new Set(['1mo', '2mo', '3mo', '6mo', '1y', '2y', 'max']);
+
+async function fetchTickerHistory(ticker, range) {
+  const url = new URL(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}`);
+  url.searchParams.set('interval', '1d');
+  url.searchParams.set('range', range);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  try {
+    const response = await fetch(url.toString(), { signal: controller.signal, headers: YF_HEADERS });
+    clearTimeout(timer);
+    if (!response.ok) return { ok: false, error: `status ${response.status}` };
+    const data = await response.json();
+    const result = data?.chart?.result?.[0];
+    const ts = result?.timestamp;
+    const closes = result?.indicators?.quote?.[0]?.close;
+    if (!Array.isArray(ts) || !Array.isArray(closes)) return { ok: false, error: 'sin serie diaria válida' };
+    const series = [];
+    for (let i = 0; i < ts.length; i++) {
+      if (typeof closes[i] === 'number') {
+        series.push({ date: new Date(ts[i] * 1000).toISOString().slice(0, 10), close: +closes[i].toFixed(2) });
+      }
+    }
+    return { ok: true, series };
+  } catch (err) {
+    clearTimeout(timer);
+    return { ok: false, error: err.name === 'AbortError' ? 'timeout' : err.message };
+  }
+}
+
+async function handleHistory(res, params) {
+  const tickersRaw = params.tickers;
+  if (!tickersRaw) return sendError(res, 400, 'Falta el parámetro "tickers" (separados por coma).');
+  const tickers = tickersRaw.split(',').map(t => t.trim()).filter(Boolean).slice(0, 14); // tope razonable por request
+
+  const range = ALLOWED_HISTORY_RANGES.has(params.range) ? params.range : '6mo';
+
+  console.log(`[forward-curve.js] mode=history tickers=${tickers.length} range=${range}`);
+
+  const results = await Promise.all(tickers.map(t => fetchTickerHistory(t, range)));
+
+  const history = {};
+  const failures = [];
+  tickers.forEach((t, i) => {
+    const r = results[i];
+    if (!r.ok) { failures.push(`${t}: ${r.error}`); return; }
+    history[t] = r.series;
+  });
+
+  if (Object.keys(history).length === 0) {
+    return sendError(res, 502, 'Ningún ticker devolvió historial real.', failures);
+  }
+
+  const out = { history };
+  if (failures.length > 0) out._warnings = failures;
+
+  // Cache de 1h — historial diario no necesita revalidarse más seguido
+  res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=1800');
+  return res.status(200).json(out);
 }
