@@ -1,50 +1,40 @@
 // ══════════════════════════════════════════════════════════════
 // api/news-rss.js (Vercel Serverless Function)
-// BUG 2 — Agregador RSS multi-fuente, sin key.
+// Agregador RSS multi-fuente, sin key.
 //
-// IMPORTANTE sobre Reuters: sus feeds RSS directos (feeds.reuters.com)
-// están MUERTOS desde junio de 2020 — devuelven 404 o redirect (esto
-// es ampliamente documentado, no es un bug de este código). Por eso
-// Reuters, Bloomberg y FT se traen vía el WORKAROUND de Google News
-// (news.google.com/rss/search?q=site:dominio.com+...) — es gratis,
-// público, y es la forma estándar que usa la comunidad desde que
-// Reuters mató sus feeds.
+// ARREGLO 4: los 3 feeds que fallaban crónicamente eran casi seguro
+// OPEC press / IEA / Rigzone — habían quedado marcados como "no
+// verificado" en una vuelta anterior porque nunca pude confirmar que
+// esas URLs existieran de verdad. Se sacan. En su lugar se agregan 2
+// feeds de Dow Jones que VERIFIQUÉ ahora mismo con un fetch real
+// (tienen artículos de hoy, incluyendo uno sobre Brent/WTI y Hormuz):
+//   - feeds.content.dowjones.io/public/rss/RSSMarketsMain (WSJ Markets)
+//   - feeds.content.dowjones.io/public/rss/mw_topstories (MarketWatch)
 //
-// Feeds incluidos y su confiabilidad real:
-//   ✅ OilPrice.com           — verificado, feed propio funcionando
-//   ✅ EIA Today in Energy    — verificado, oficial gobierno EE.UU.
-//   ✅ Reuters (vía Google News)   — workaround verificado, funciona
-//   ✅ Bloomberg (vía Google News) — workaround verificado, funciona
-//   ✅ Financial Times (vía Google News) — workaround verificado
-//   ⚠️  OPEC press releases   — URL no verificable sin acceso de
-//       prueba en vivo; si falla, no rompe nada (Promise.allSettled),
-//       simplemente no aporta artículos.
-//   ⚠️  IEA News               — mismo caso, no verificado con certeza.
-//   ⚠️  Rigzone                — mismo caso, no verificado con certeza.
-//   ❌ S&P Global Commodity Insights — NO incluido: es contenido
-//       mayormente paywalled, no encontré un RSS público real.
-//   ❌ Argus Media — NO incluido: es un servicio de pago, no tiene
-//       RSS público.
+// Sobre Reuters/Bloomberg/FT vía Google News: es real que Google News
+// a veces devuelve error a IPs de datacenter (incluida la de Vercel) —
+// es un riesgo conocido, no inventado. Se mantienen (Promise.allSettled
+// hace que fallar ahí no rompa nada) pero ya no son la única fuente de
+// esos 3 medios — los feeds de Dow Jones nuevos cubren mercados/energía
+// en general como respaldo real si Google News falla ese día.
+//
+// Timeout subido de 6s a 10s por feed (ARREGLO 4).
 //
 // GET /api/news-rss
 // → { articles:[{title,description,url,publishedAt,source,image}], ... }
 // ══════════════════════════════════════════════════════════════
 
-const TIMEOUT_MS = 6_000; // BUG2: 6s por feed, ninguno puede colgar a los demás
+const TIMEOUT_MS = 10_000; // ARREGLO 4: subido de 6s a 10s
 const FEEDS = [
-  { url: 'https://oilprice.com/rss/main', name: 'OilPrice.com', confidence: 'alta' },
-  { url: 'https://www.eia.gov/rss/todayinenergy.xml', name: 'EIA Today in Energy', confidence: 'alta' },
-  { url: 'https://news.google.com/rss/search?q=site:reuters.com+(oil+OR+crude+OR+OPEC+OR+brent+OR+wti)+when:2d&hl=en-US&gl=US&ceid=US:en', name: 'Reuters', confidence: 'alta (vía Google News)' },
-  { url: 'https://news.google.com/rss/search?q=site:bloomberg.com+(oil+OR+crude+OR+OPEC)+when:2d&hl=en-US&gl=US&ceid=US:en', name: 'Bloomberg', confidence: 'alta (vía Google News)' },
-  { url: 'https://news.google.com/rss/search?q=site:ft.com+(oil+OR+crude+OR+OPEC)+when:3d&hl=en-US&gl=US&ceid=US:en', name: 'Financial Times', confidence: 'alta (vía Google News)' },
-  { url: 'https://www.opec.org/opec_web/static_files_project/media/downloads/press_room/feed.xml', name: 'OPEC', confidence: 'no verificado' },
-  { url: 'https://www.iea.org/news/feed', name: 'IEA', confidence: 'no verificado' },
-  { url: 'https://www.rigzone.com/news/rss/', name: 'Rigzone', confidence: 'no verificado' },
+  { url: 'https://oilprice.com/rss/main', name: 'OilPrice.com' },
+  { url: 'https://www.eia.gov/rss/todayinenergy.xml', name: 'EIA Today in Energy' },
+  { url: 'https://feeds.content.dowjones.io/public/rss/RSSMarketsMain', name: 'WSJ Markets' },
+  { url: 'https://feeds.content.dowjones.io/public/rss/mw_topstories', name: 'MarketWatch' },
+  { url: 'https://news.google.com/rss/search?q=site:reuters.com+(oil+OR+crude+OR+OPEC+OR+brent+OR+wti)+when:2d&hl=en-US&gl=US&ceid=US:en', name: 'Reuters' },
+  { url: 'https://news.google.com/rss/search?q=site:bloomberg.com+(oil+OR+crude+OR+OPEC)+when:2d&hl=en-US&gl=US&ceid=US:en', name: 'Bloomberg' },
+  { url: 'https://news.google.com/rss/search?q=site:ft.com+(oil+OR+crude+OR+OPEC)+when:3d&hl=en-US&gl=US&ceid=US:en', name: 'Financial Times' },
 ];
 
-// BUG2: keywords para filtrar — sobre todo importa para los feeds de
-// Google News (Reuters/Bloomberg/FT), que pueden traer ruido no-petróleo
-// aunque el query ya filtre por site: + términos.
 const OIL_KEYWORDS = ['oil','crude','opec','brent','wti','petroleum','refining','refinery','natural gas','opec+','hormuz','shale','gasoline','diesel','fuel','petróleo','crudo','gasolina','combustible'];
 
 function setCors(res) {
@@ -61,7 +51,6 @@ function sendError(res, statusCode, message, details = null) {
 }
 
 function sendOk(res, data) {
-  // BUG2: 3 minutos de caché de borde
   res.setHeader('Cache-Control', 's-maxage=180, stale-while-revalidate=300');
   return res.status(200).json(data);
 }
@@ -84,9 +73,6 @@ function extractTag(block, tag) {
   return m ? cleanXmlText(m[1]) : '';
 }
 
-// BUG2: extracción de imagen — 3 estrategias en orden, la primera que
-// encuentre algo gana. Si ninguna funciona, image:null (el frontend
-// muestra un placeholder con la inicial de la fuente, no se inventa nada).
 function extractImage(block) {
   let m = block.match(/<media:content[^>]*url=["']([^"']+)["']/i);
   if (m) return m[1];
@@ -114,9 +100,6 @@ function parseRssItems(xml, sourceName, maxItems = 15) {
     const image = extractImage(block);
 
     if (!title) continue;
-    // BUG2: filtro de keywords — los feeds genéricos (Google News) pueden
-    // traer ruido; OilPrice/EIA ya son 100% petróleo así que esto no les
-    // hace nada, pero a Reuters/Bloomberg/FT sí les filtra lo no-relevante.
     if (!matchesOilKeywords(title, description)) continue;
 
     let publishedAt = new Date().toISOString();
@@ -152,7 +135,7 @@ async function fetchOneFeed(feed) {
     return { ok: true, name: feed.name, items };
   } catch (err) {
     clearTimeout(timer);
-    return { ok: false, name: feed.name, error: err.name === 'AbortError' ? 'timeout 6s' : err.message };
+    return { ok: false, name: feed.name, error: err.name === 'AbortError' ? 'timeout 10s' : err.message };
   }
 }
 
@@ -162,12 +145,11 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'GET') return sendError(res, 405, 'Método no permitido. Usá GET.');
 
-  // BUG2: Promise.allSettled — un feed lento o caído (ej. OPEC/IEA/Rigzone
-  // sin verificar) NUNCA puede tirar abajo a los demás.
   const settled = await Promise.allSettled(FEEDS.map(f => fetchOneFeed(f)));
   const results = settled.map(s => s.status === 'fulfilled' ? s.value : { ok: false, name: '?', error: s.reason?.message || 'rejected' });
 
   const failures = results.filter(r => !r.ok);
+  const okCount = results.filter(r => r.ok).length;
   const articles = results
     .filter(r => r.ok)
     .flatMap(r => r.items)
@@ -179,12 +161,14 @@ export default async function handler(req, res) {
 
   console.log(`[news-rss.js] OK: ${articles.length} artículos (${results.filter(r => r.ok).map(r => r.name).join(', ')})`);
   if (failures.length > 0) {
-    console.warn('[news-rss.js] Feeds que fallaron (no rompen la respuesta):', failures.map(f => `${f.name}: ${f.error}`).join(' | '));
+    console.warn('[news-rss.js] Feeds que fallaron:', failures.map(f => `${f.name}: ${f.error}`).join(' | '));
   }
 
   return sendOk(res, {
     articles,
     _fuente: `RSS multi-fuente (${results.filter(r => r.ok).map(r => r.name).join(', ')})`,
+    _feedsOk: okCount,
+    _feedsTotal: FEEDS.length,
     _warnings: failures.length ? failures.map(f => `${f.name}: ${f.error}`) : undefined,
   });
 }
