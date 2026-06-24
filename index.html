@@ -806,6 +806,18 @@ const MONTH_ES_SHORT=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct
 function formatOhlcReadout(d,prevD){
   const dt=new Date(d.time*1000);
   const fecha=`📅 ${DOW_ES[dt.getUTCDay()]} ${String(dt.getUTCDate()).padStart(2,'0')} ${MONTH_ES_SHORT[dt.getUTCMonth()]} ${dt.getUTCFullYear()}`;
+  // FIX: cuando el asset es "spread" la serie es una LineSeries — Lightweight
+  // Charts devuelve {time,value} en el hover, NO {open,high,low,close}. Si no
+  // se detecta esto, d.open.toFixed() explota con "Cannot read properties of
+  // undefined" (ese era el bug nuevo del screenshot).
+  if(typeof d.value==='number'&&typeof d.open!=='number'){
+    let deltaHtml='';
+    if(prevD&&typeof prevD.value==='number'&&prevD.value!==0){
+      const diff=d.value-prevD.value,pct=(diff/Math.abs(prevD.value))*100;
+      deltaHtml=`<div class="ohlc-item"><span class="ohlc-lbl">Δ</span><span class="ohlc-val" style="color:${diff>=0?'var(--green)':'var(--red)'}">${diff>=0?'+':''}${diff.toFixed(2)} (${pct>=0?'+':''}${pct.toFixed(2)}%)</span></div>`;
+    }
+    return`<div class="ohlc-item" style="color:var(--text3)">${fecha}</div><div class="ohlc-item"><span class="ohlc-lbl">SPREAD</span><span class="ohlc-val" style="color:${d.value>=0?'var(--green)':'var(--red)'}">$${d.value.toFixed(2)}</span></div>${deltaHtml}`;
+  }
   const bull=d.close>=d.open;
   let deltaHtml='';
   if(prevD&&typeof prevD.close==='number'&&prevD.close!==0){
