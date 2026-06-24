@@ -1298,14 +1298,29 @@ function brentContractTickers(count){
 }
 async function fetchBrentHistory(){
   try{
-    const r=await fetch('/api/static-data?file=brent-history');
+    // ARREGLO 6: /data/*.json lo sirve Vercel directo como estático, sin
+    // gastar un slot de función — más simple que el proxy que había antes.
+    const r=await fetch('/data/brent-history.json');
     const d=await r.json();
-    BRENT_HISTORY=d;
+    // ARREGLO 3: si la respuesta no tiene la forma esperada (404, error,
+    // JSON vacío), NO se sobreescribe BRENT_HISTORY — se queda con el
+    // default seguro ({co_curve:[],dated_brent:[]}) en vez de quedar
+    // con un objeto sin esas propiedades que rompe todo lo que llama
+    // BRENT_HISTORY.co_curve.find(...) más abajo.
+    if(d&&Array.isArray(d.co_curve)&&Array.isArray(d.dated_brent)){
+      BRENT_HISTORY=d;
+    }else{
+      console.warn('[Brent History] respuesta sin forma válida, se mantiene el default vacío',d);
+    }
   }catch(e){console.warn('[Brent History Error]',e);}
 }
 // Fila de "hoy": manual si existe, si no Yahoo en vivo (hoy)
 async function getTodaysCurveRow(){
-  const manual=BRENT_HISTORY.co_curve.find(r=>r.Date===todayISO());
+  // ARREGLO 3: guard defensivo — aunque fetchBrentHistory ya garantiza
+  // un default seguro, esto protege también si getTodaysCurveRow se
+  // llega a llamar antes de que fetchBrentHistory termine alguna vez.
+  const co_curve=Array.isArray(BRENT_HISTORY?.co_curve)?BRENT_HISTORY.co_curve:[];
+  const manual=co_curve.find(r=>r.Date===todayISO());
   if(manual)return{row:manual,source:'manual',label:`Carga manual (workflow) — ${manual.Date}`};
   try{
     const r=await fetch('/api/forward-curve?underlying=brent&count=12');
@@ -1812,18 +1827,28 @@ async function fetchNewsRSS(){  try{
       if(S.tab==='news')renderNews();
       addStatusChip('RSS ✓');
       console.log(`[RSS] ${d.articles.length} noticias cargadas (${d._fuente||''})`);
-      if(d._warnings)console.warn('[RSS] feeds que no respondieron:',d._warnings);
+      if(d._warnings){
+        console.warn('[RSS] feeds que no respondieron:',d._warnings);
+        // ARREGLO 4: si fallan 3 o más feeds, programar un reintento solo
+        // — sin tapar las noticias reales que SÍ llegaron con un mensaje.
+        if(d._warnings.length>=3&&!rssRetryTimer){
+          addStatusChip(`RSS (${d._warnings.length} feeds caídos, reintentando) ⚠`);
+          rssRetryTimer=setTimeout(()=>{rssRetryTimer=null;fetchNewsRSS();},60000);
+        }
+      }
     }
   }catch(e){console.warn('[RSS Error]',e);}
 }
+let rssRetryTimer=null;
 // Orquesta: GNews + RSS multi-fuente SIEMPRE en paralelo (BUG2).
 async function fetchAllNewsSources(){
   newsAnySourceOk=false;
   // B1 fix: NewsAPI se sacó del flujo activo. Su plan gratuito "Developer"
-  // prohíbe explícitamente el uso en producción (solo localhost/testing).
-  // Además, api/news-newsapi.js se borró del todo (no solo se desactivó)
-  // para liberar un slot de función de Vercel — si en el futuro pagás un
-  // plan que permita producción, hay que recrear esa función.
+  // prohíbe explícitamente el uso en producción (solo localhost/testing)
+  // — llamarlo desde Vercel siempre va a dar 401 o, peor, violar sus
+  // términos de servicio. fetchNewsAPI() queda en el código por si en
+  // algún momento pagás un plan que sí permita producción, pero no se
+  // llama acá.
   await Promise.all([fetchGNews(),fetchNewsRSS()]);
   if(!newsAnySourceOk&&NEWS.length===0){
     if(S.tab==='news')renderNewsLoadingState('Sin noticias disponibles — GNews y el agregador RSS no respondieron.');
@@ -1917,11 +1942,31 @@ async function fetchGNews(){  try{
    backend proxy en producción, funciona en local)
    Se activa si newsapi no está vacío arriba
 ═══════════════════════════════════════════════ */
-/* OPTIMIZACIÓN DE FUNCIONES: fetchNewsAPI() y su backend
-   (api/news-newsapi.js) se borraron — ya no se llamaban desde ningún
-   lado (NewsAPI prohíbe producción en su plan gratis, se había
-   desactivado hace dos vueltas) y mantenerlos vivos solo gastaba uno
-   de los 12 slots de función de Vercel sin aportar nada funcional. */
+async function fetchNewsAPI(){  try{
+    // En localhost funciona directo. En producción (GitHub Pages/Netlify)
+    // necesitás la Netlify Function del backend-guide.md
+    // Cambiá la URL a '/api/news' cuando uses Netlify
+    const url = `/api/news-newsapi?q=crude+oil+OPEC+Brent+WTI`;
+    const r=await fetch(url);const d=await r.json();
+    if(d.articles){
+      d.articles.forEach((a,i)=>{
+        const pubDate=new Date(a.publishedAt);
+        NEWS.unshift({
+          id:Date.now()+1000+i,
+          realTime:pubDate.getTime(),
+          ts:pubDate.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',hour12:false}),
+          src:'newsapi',srcL:(a.source?.name||'NEWS').substring(0,12).toUpperCase(),
+          srcColor:'#ff9100',impact:'med',cat:'prod',hl:a.title,hi:false,chg:'',url:a.url,image:a.urlToImage||null,desc:a.description||''
+        });
+      });
+      dedupeNews();if(NEWS.length>60)NEWS.splice(60);
+      newsAnySourceOk=true;
+      if(S.tab==='news')renderNews();
+      addStatusChip('NewsAPI ✓');
+      console.log(`[NewsAPI] ${d.articles.length} noticias cargadas`);
+    }
+  }catch(e){console.warn('[NewsAPI Error — en producción necesita proxy]',e);}
+}
 
 /* ═══════════════════════════════════════════════
    API 5 — ALPHA VANTAGE (histórico largo plazo)
@@ -2089,7 +2134,7 @@ async function globalRefresh(){
 // con las noticias reales de GNews/NewsAPI. Eso es lo que generaba la queja
 // de "noticias de hace más de 6 días": esos ítems no tenían fecha real,
 // solo una hora del día inventada. Ahora arranca vacío; se llena 100% con
-// artículos reales en cuanto responde fetchGNews()/fetchNewsRSS().
+// artículos reales en cuanto responde fetchGNews()/fetchNewsAPI().
 const NEWS=[];
 // Evita duplicados cuando el mismo artículo aparece en dos ciclos de polling
 function dedupeNews(){
@@ -2182,6 +2227,23 @@ async function translateVisibleHeadlines(items){
     if(r.ok)n.hl_es=r.text;else n._translateFailed=true;
   }));
   if(S.tab==='news')renderNews();
+}
+// ARREGLO 1: esta función se llamaba desde renderNews() pero nunca se
+// había definido — ReferenceError real en consola. Puebla el mini-ticker
+// del header de Noticias (#npTicker), que es distinto del ticker principal
+// del topbar (#tickerTrack, ya lo llena updateTicker() más abajo).
+// ARREGLO 1: esta función se había perdido en una edición anterior —
+// se llama desde renderNews() pero nunca quedó definida, rompiendo
+// todo el tab Noticias. Puebla el ticker chico DENTRO del tab Noticias
+// (#npTicker), que es distinto del ticker del topbar (#tickerTrack,
+// que ya tiene su propia función updateTicker() y no se toca acá).
+function renderTicker(){
+  const el=document.getElementById('npTicker');if(!el)return;
+  el.innerHTML=TICKERS.map(t=>{
+    const p=S.prices[t.key],c=S.changes[t.key];
+    const col=typeof c!=='number'?'var(--text3)':c>0?'var(--green)':c<0?'var(--red)':'var(--text3)';
+    return`<div class="np-ticker-item"><div class="np-ticker-name">${t.sym}</div><div class="np-ticker-price">${typeof p==='number'?'$'+p:'—'}</div><div class="np-ticker-chg" style="color:${col}">${typeof c==='number'?(c>0?'▲':c<0?'▼':'—')+' '+Math.abs(c).toFixed(2)+'%':'—'}</div></div>`;
+  }).join('');
 }
 function renderNews(){
   renderTicker();
@@ -2435,11 +2497,21 @@ function highlightCountryOnMap(name){
 let TRADE_FLOWS_DATA=null,tradeFlowDashOffset=0,tradeFlowAnimTimer=null;
 async function fetchTradeFlows(){
   try{
-    const r=await fetch('/api/static-data?file=trade-flows');
+    // ARREGLO 6: /data/*.json se sirve directo como estático, sin función.
+    const r=await fetch('/data/trade-flows.json');
+    if(!r.ok)throw new Error(`HTTP ${r.status}`);
     const d=await r.json();
-    TRADE_FLOWS_DATA=d;
-    console.log(`[Trade Flows] ${d.flows.length} flujos reales cargados (ref. ${d._fecha_referencia})`);
-  }catch(e){console.warn('[Trade Flows Error]',e);}
+    // ARREGLO 5: nunca asignar una respuesta sin la forma esperada —
+    // antes esto dejaba TRADE_FLOWS_DATA = {error:true,message:...} y
+    // el primer .flows.length de abajo explotaba.
+    if(d&&Array.isArray(d.flows)&&d.endpoints_geo&&d.maritime_waypoints){
+      TRADE_FLOWS_DATA=d;
+      console.log(`[Trade Flows] ${d.flows.length} flujos reales cargados (ref. ${d._fecha_referencia||'—'})`);
+    }else{
+      console.warn('[Trade Flows] respuesta sin forma válida, se descarta',d);
+      TRADE_FLOWS_DATA=null;
+    }
+  }catch(e){console.warn('[Trade Flows Error]',e);TRADE_FLOWS_DATA=null;}
 }
 function toggleTradeFlows(){
   S.showTradeFlows=!S.showTradeFlows;
@@ -2453,7 +2525,17 @@ function toggleTradeFlows(){
   renderMapCanvas();
 }
 function drawTradeFlows(ctx,lonToX,latToY){
-  if(!TRADE_FLOWS_DATA)return;
+  // ARREGLO 2: guard completo — antes "if(!TRADE_FLOWS_DATA)" no
+  // alcanzaba porque un objeto de error ({error:true,message}) ES
+  // truthy, así que pasaba el guard y explotaba en el .forEach de abajo.
+  if(!TRADE_FLOWS_DATA||!Array.isArray(TRADE_FLOWS_DATA.flows)){
+    console.warn('[drawTradeFlows] TRADE_FLOWS_DATA no está cargado todavía o no tiene flows');
+    return;
+  }
+  if(!TRADE_FLOWS_DATA.endpoints_geo||!TRADE_FLOWS_DATA.maritime_waypoints){
+    console.warn('[drawTradeFlows] estructura de TRADE_FLOWS_DATA incompleta');
+    return;
+  }
   const geo=TRADE_FLOWS_DATA.endpoints_geo,wp=TRADE_FLOWS_DATA.maritime_waypoints;
   const modeColor={sea:'#2979ff',pipeline:'#ff6d00',rail:'#00e676'};
   TRADE_FLOWS_DATA.flows.forEach(f=>{
@@ -2603,7 +2685,7 @@ function toggleReservesLayer(){
 let TANKER_ROUTES=[];
 async function fetchTankerRoutes(){
   try{
-    const r=await fetch('/api/static-data?file=tanker-routes');const d=await r.json();
+    const r=await fetch('/data/tanker-routes.json');const d=await r.json();
     TANKER_ROUTES=d.routes||[];
     console.log(`[Tanker Routes] ${TANKER_ROUTES.length} rutas típicas cargadas (NO es tracking en vivo: ${d.note})`);
   }catch(e){console.warn('[Tanker Routes Error]',e);}
