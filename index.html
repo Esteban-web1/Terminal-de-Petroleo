@@ -244,7 +244,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .t10-val{color:var(--text);font-weight:600}
 .t10-row:hover{background:var(--panel2)}
 .t10-row.hl{background:rgba(255,109,0,.1);border-left:2px solid var(--orange)}
-.map-main-col{flex:1;min-width:320px;height:calc(100vh - 240px)}
+.map-main-col{flex:1;min-width:320px;aspect-ratio:5/3;max-height:calc(100vh - 260px);overflow:hidden}
 .map-movements-col{width:300px;flex-shrink:0;border:1px solid var(--border2);max-height:calc(100vh - 240px);overflow-y:auto}
 .map-movements-list{padding:6px}
 .mov-row{display:flex;gap:8px;padding:8px 6px;border-bottom:1px solid var(--border);cursor:pointer}
@@ -576,10 +576,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
         <span id="aiStatus" style="font-size:11px;color:var(--text3)">AUTO-ANÁLISIS: ESPERANDO</span>
       </div>
       <div id="analysisTimestamp" class="curve-freshness"></div>
-      <div class="digest-list" id="digestList"></div>
       <div class="sentiment-row" id="sentimentRow"></div>
       <div class="panel-hdr" style="margin-top:6px"><span>🔥 TOP 5 EVENTOS DE MAYOR IMPACTO HOY</span></div>
       <div id="top5EventsList" class="digest-list"></div>
+      <div class="panel-hdr" style="margin-top:6px"><span>📰 RESUMEN DE NOTICIAS</span></div>
+      <div class="digest-list" id="digestList"></div>
       <div class="panel-hdr" style="margin-top:6px"><span>📌 EVENTOS POR SEGUIR HOY (calendario)</span></div>
       <div id="eventsTodayList" class="calendar-list"></div>
     </div>
@@ -1772,7 +1773,7 @@ function manualRefreshChart(){
 async function fetchEIAInventories(){
   const results=await Promise.all(STORAGE_DATA.map(async(s)=>{
     try{
-      const r=await fetch(`/api/eia-data?series=${s.seriesKey}&length=4`);
+      const r=await fetch(`/api/eia?type=inventory&series=${s.seriesKey}&length=4`);
       const d=await r.json();
       if(d.response?.data?.length){
         return{s,latest:d.response.data[0],prev:d.response.data[1]};
@@ -2301,6 +2302,7 @@ const PROD_DATA=[
   {country:'Nigeria',flag:'🇳🇬',prod:1.4,cap:2.5,pct:56,lon:8,lat:9,status:'tension',company:'NNPC / Shell',wb_code:'NGA'},
   {country:'Libia',flag:'🇱🇾',prod:1.1,cap:2.0,pct:55,lon:18,lat:27,status:'conflict',company:'NOC',wb_code:'LBY'},
   {country:'Venezuela',flag:'🇻🇪',prod:0.8,cap:3.0,pct:27,lon:-66,lat:8,status:'sanction',company:'PDVSA',wb_code:'VEN'},
+  {country:'Argentina',flag:'🇦🇷',prod:0.8,cap:1.2,pct:67,lon:-69,lat:-38,status:'stable',company:'YPF (Vaca Muerta)',wb_code:'ARG'},
 ];
 // Capacidades de referencia (EIA Weekly Petroleum Status Report — valores
 // publicados de capacidad de trabajo, cambian muy lentamente). Los niveles
@@ -2512,12 +2514,25 @@ function drawTradeFlows(ctx,lonToX,latToY){
   TRADE_FLOWS_DATA.flows.forEach(f=>{
     const a=geo[f.from],b=geo[f.to];if(!a||!b)return;
     const pts=[a,...(f.via||[]).map(w=>wp[w]).filter(Boolean),b];
-    ctx.strokeStyle=modeColor[f.mode]||'#9099b8';
-    ctx.lineWidth=Math.max(1,Math.min(5,f.volume_mbd*1.1));
+    const col=modeColor[f.mode]||'#9099b8';
+    ctx.strokeStyle=col;
+    ctx.lineWidth=Math.max(1.5,Math.min(5,f.volume_mbd*1.1));
     ctx.setLineDash([7,5]);ctx.lineDashOffset=-tradeFlowDashOffset;
     ctx.beginPath();ctx.moveTo(lonToX(pts[0][0]),latToY(pts[0][1]));
     for(let i=1;i<pts.length;i++)ctx.lineTo(lonToX(pts[i][0]),latToY(pts[i][1]));
     ctx.stroke();
+    // Flecha en el destino
+    const last=pts[pts.length-1],prev=pts[pts.length-2];
+    const ex=lonToX(last[0]),ey=latToY(last[1]);
+    const px=lonToX(prev[0]),py=latToY(prev[1]);
+    const angle=Math.atan2(ey-py,ex-px);
+    const sz=8+f.volume_mbd*1.5;
+    ctx.setLineDash([]);
+    ctx.fillStyle=col;ctx.beginPath();
+    ctx.moveTo(ex,ey);
+    ctx.lineTo(ex-sz*Math.cos(angle-0.4),ey-sz*Math.sin(angle-0.4));
+    ctx.lineTo(ex-sz*Math.cos(angle+0.4),ey-sz*Math.sin(angle+0.4));
+    ctx.closePath();ctx.fill();
   });
   ctx.setLineDash([]);ctx.lineDashOffset=0;
 }
@@ -2687,7 +2702,7 @@ function buildDigest(){
 let STEO_DATA={wti:[],brent:[]};
 async function fetchEIASTEO(){
   try{
-    const r=await fetch('/api/eia-steo');
+    const r=await fetch('/api/eia?type=steo');
     const d=await r.json();
     if(d.wti&&d.brent){
       STEO_DATA=d;
@@ -2815,7 +2830,7 @@ function switchTab(tab){
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('tbn-'+tab).classList.add('active');
   if(tab==='charts'){S.chartData=null;setTimeout(()=>{renderChart();},50);loadRealCandles();fetchAlphaVantage();}
-  if(tab==='map'){setTimeout(()=>{renderMapCanvas();renderProdTable();renderMapSidebar();setMapView(S.mapView);renderThreatIndex();renderMapMovements();renderMapKpis();renderTop10Panel();renderGroupSummary();},50);}
+  if(tab==='map'){setTimeout(()=>{renderMapCanvas();renderProdTable();renderMapSidebar();setMapView(S.mapView);renderThreatIndex();renderMapMovements();renderMapKpis();renderTop10Panel();renderGroupSummary();if(!TRADE_FLOWS_DATA)fetchTradeFlows().then(()=>{S.showTradeFlows=true;const btn=document.getElementById('mt-flows');if(btn)btn.classList.add('active');renderMapCanvas();});},50);}
   if(tab==='news'){renderNews();}
   if(tab==='analysis'){renderAnalysis();if(NEWS.length>3)fetchAISummary();}
   if(tab==='dashboard'){loadDashboard();}
