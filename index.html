@@ -170,7 +170,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .ev-eia{background:#001018;border-color:#002840;color:var(--blue2)}
 .ev-geo{background:#001410;border-color:#004025;color:#69f0ae}
 #tab-news{display:none}
-#tab-news.active{display:block;background:#f3f4f6;color:#16181d;min-height:calc(100vh - 130px);margin:0 -16px;padding:0}
+#tab-news.active{display:block;background:var(--bg);color:var(--text);min-height:calc(100vh - 130px);margin:0 -16px;padding:0}
 .np-ticker{display:flex;overflow-x:auto;background:#16181d;border-bottom:3px solid #d32f2f}
 .np-ticker-item{display:flex;flex-direction:column;padding:10px 20px;border-right:1px solid #2a2d35;font-family:var(--mono);min-width:96px;flex-shrink:0}
 .np-ticker-name{font-size:10px;color:#9099a8;letter-spacing:.5px}
@@ -179,11 +179,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .np-breaking{background:#d32f2f;color:#fff;display:flex;align-items:center;gap:10px;padding:8px 18px;font-size:13px;font-weight:600}
 .np-breaking-tag{background:#fff;color:#d32f2f;padding:2px 9px;font-weight:800;letter-spacing:.5px;border-radius:2px;flex-shrink:0;font-family:var(--mono);font-size:11px}
 .np-body{max-width:1180px;margin:0 auto;padding:20px}
-.np-filters-bar{display:flex;flex-direction:column;gap:6px;padding:0 0 14px;margin-bottom:16px;border-bottom:1px solid #ddd;font-family:var(--mono)}
+.np-filters-bar{display:flex;flex-direction:column;gap:6px;padding:0 0 14px;margin-bottom:16px;border-bottom:1px solid var(--border2);font-family:var(--mono)}
 .np-filters-bar .nf-row{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
-.np-filters-bar .nf-lbl{font-size:10px;color:#888;min-width:50px;letter-spacing:.5px}
-.np-filters-bar .nf-btn{background:#fff;border:1px solid #ccc;color:#555;font-size:11px;padding:3px 8px;cursor:pointer;border-radius:2px;font-family:var(--mono)}
-.np-filters-bar .nf-btn.on{background:#16181d;color:#fff;border-color:#16181d}
+.np-filters-bar .nf-lbl{font-size:10px;color:var(--text3);min-width:50px;letter-spacing:.5px}
+.np-filters-bar .nf-btn{background:var(--panel2);border:1px solid var(--border2);color:var(--text2);font-size:11px;padding:3px 8px;cursor:pointer;border-radius:2px;font-family:var(--mono)}
+.np-filters-bar .nf-btn.on{background:var(--text);color:var(--bg);border-color:var(--text)}
 .np-filters-bar .nf-high.on{border-color:#d32f2f;color:#fff;background:#d32f2f}
 .np-filters-bar .nf-med.on{border-color:#e6a700;color:#1a1a1a;background:#ffd84d}
 .np-filters-bar .nf-low.on{border-color:#0a8a3e;color:#fff;background:#0a8a3e}
@@ -244,8 +244,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .t10-val{color:var(--text);font-weight:600}
 .t10-row:hover{background:var(--panel2)}
 .t10-row.hl{background:rgba(255,109,0,.1);border-left:2px solid var(--orange)}
-.map-main-col{flex:1;min-width:320px}
-.map-movements-col{width:300px;flex-shrink:0;border:1px solid var(--border2);max-height:600px;overflow-y:auto}
+.map-main-col{flex:1;min-width:320px;height:calc(100vh - 240px)}
+.map-movements-col{width:300px;flex-shrink:0;border:1px solid var(--border2);max-height:calc(100vh - 240px);overflow-y:auto}
 .map-movements-list{padding:6px}
 .mov-row{display:flex;gap:8px;padding:8px 6px;border-bottom:1px solid var(--border);cursor:pointer}
 .mov-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
@@ -348,7 +348,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
   </div>
   <div class="tb-ticker"><div class="ticker-track" id="tickerTrack"></div></div>
   <nav class="tab-nav">
-    <button class="tab-btn" id="tbn-dashboard" onclick="switchTab('dashboard')"><span class="tab-icon">🏠</span><span>DASHBOARD</span></button>
     <button class="tab-btn" id="tbn-charts" onclick="switchTab('charts')"><span class="tab-icon">📊</span><span>PRECIOS</span></button>
     <button class="tab-btn" id="tbn-news" onclick="switchTab('news')"><span class="tab-icon">📰</span><span>NOTICIAS</span></button>
     <button class="tab-btn" id="tbn-map" onclick="switchTab('map')"><span class="tab-icon">🗺</span><span>MAPA GLOBAL</span></button>
@@ -361,16 +360,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 
 <div id="mainContent">
   <!-- ═══ TAB: DASHBOARD (4.2) ═══ -->
-  <section id="tab-dashboard" class="tab-section">
-    <div class="dash-grid" id="dashGrid"></div>
-    <div class="dash-note">
-      Nota: el mockup original pedía 2 celdas de "correlación con DXY" y
-      "próximo evento del calendario económico" — esos son Sprint 2
-      (correlaciones macro, calendario), todavía no implementados. Se
-      reemplazaron por KPIs reales que sí están disponibles hoy (curva de
-      futuros y reservas) en vez de mostrar un placeholder vacío.
-    </div>
-  </section>
 
   <!-- ═══ TAB: PRECIOS ═══ -->
   <section id="tab-charts" class="tab-section">
@@ -757,6 +746,8 @@ const EVENT_STYLE={
   opec:{color:'#ffc300',shape:'square',emoji:'🟡'},
   sanction:{color:'#b388ff',shape:'square',emoji:'🟣'},
   supply:{color:'#2979ff',shape:'circle',emoji:'🔵'},
+  futures:{color:'#00e676',shape:'square',emoji:'📊'},
+  fomc:{color:'#ff9100',shape:'square',emoji:'🏛️'},
 };
 let seriesMarkersPlugin=null;
 
@@ -804,12 +795,10 @@ const MONTH_ES_SHORT=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct
 // BUG 1: formato "📅 Mar 25 Jun 2026" + Δ vs vela anterior. Se reusa
 // tanto para el readout fijo (última vela) como para el hover.
 function formatOhlcReadout(d,prevD){
+  if(!d||typeof d.time!=='number')return'';
   const dt=new Date(d.time*1000);
   const fecha=`📅 ${DOW_ES[dt.getUTCDay()]} ${String(dt.getUTCDate()).padStart(2,'0')} ${MONTH_ES_SHORT[dt.getUTCMonth()]} ${dt.getUTCFullYear()}`;
-  // FIX: cuando el asset es "spread" la serie es una LineSeries — Lightweight
-  // Charts devuelve {time,value} en el hover, NO {open,high,low,close}. Si no
-  // se detecta esto, d.open.toFixed() explota con "Cannot read properties of
-  // undefined" (ese era el bug nuevo del screenshot).
+  // LineSeries (spread): devuelve {time,value}, no OHLC
   if(typeof d.value==='number'&&typeof d.open!=='number'){
     let deltaHtml='';
     if(prevD&&typeof prevD.value==='number'&&prevD.value!==0){
@@ -1310,29 +1299,22 @@ function brentContractTickers(count){
 }
 async function fetchBrentHistory(){
   try{
-    // ARREGLO 6: /data/*.json lo sirve Vercel directo como estático, sin
-    // gastar un slot de función — más simple que el proxy que había antes.
     const r=await fetch('/data/brent-history.json');
     const d=await r.json();
-    // ARREGLO 3: si la respuesta no tiene la forma esperada (404, error,
-    // JSON vacío), NO se sobreescribe BRENT_HISTORY — se queda con el
-    // default seguro ({co_curve:[],dated_brent:[]}) en vez de quedar
-    // con un objeto sin esas propiedades que rompe todo lo que llama
-    // BRENT_HISTORY.co_curve.find(...) más abajo.
-    if(d&&Array.isArray(d.co_curve)&&Array.isArray(d.dated_brent)){
+    // Soporta ambas formas: {co_curve:[],dated_brent:[]} o {history:[]}
+    if(d&&Array.isArray(d.co_curve)){
       BRENT_HISTORY=d;
+    }else if(d&&Array.isArray(d.history)){
+      BRENT_HISTORY={co_curve:d.history,dated_brent:[]};
     }else{
-      console.warn('[Brent History] respuesta sin forma válida, se mantiene el default vacío',d);
+      console.warn('[Brent History] forma no reconocida, se mantiene default vacío',d);
     }
   }catch(e){console.warn('[Brent History Error]',e);}
 }
 // Fila de "hoy": manual si existe, si no Yahoo en vivo (hoy)
 async function getTodaysCurveRow(){
-  // ARREGLO 3: guard defensivo — aunque fetchBrentHistory ya garantiza
-  // un default seguro, esto protege también si getTodaysCurveRow se
-  // llega a llamar antes de que fetchBrentHistory termine alguna vez.
-  const co_curve=Array.isArray(BRENT_HISTORY?.co_curve)?BRENT_HISTORY.co_curve:[];
-  const manual=co_curve.find(r=>r.Date===todayISO());
+  const co=Array.isArray(BRENT_HISTORY?.co_curve)?BRENT_HISTORY.co_curve:[];
+  const manual=co.find(r=>r.Date===todayISO());
   if(manual)return{row:manual,source:'manual',label:`Carga manual (workflow) — ${manual.Date}`};
   try{
     const r=await fetch('/api/forward-curve?underlying=brent&count=12');
@@ -1422,10 +1404,11 @@ async function renderFuturosChart(row,daysAgo1,daysAgo2){
 let BRENT_CONTRACTS_CACHE=null;
 function renderFuturosPanel(row){
   BRENT_CONTRACTS_CACHE=brentContractTickers(12);
-  const co_dates=BRENT_HISTORY.co_curve.map(r=>r.Date).sort();
+  const co_arr2=Array.isArray(BRENT_HISTORY?.co_curve)?BRENT_HISTORY.co_curve:[];
+  const co_dates=co_arr2.map(r=>r.Date).sort();
   const idx=co_dates.indexOf(row.Date);
-  const prev1=idx>0?BRENT_HISTORY.co_curve.find(r=>r.Date===co_dates[idx-1]):null;
-  const prev5=idx>=5?BRENT_HISTORY.co_curve.find(r=>r.Date===co_dates[idx-5]):null;
+  const prev1=idx>0?co_arr2.find(r=>r.Date===co_dates[idx-1]):null;
+  const prev5=idx>=5?co_arr2.find(r=>r.Date===co_dates[idx-5]):null;
   const rows=[];
   for(let i=1;i<=12;i++){
     const key=`CO${i}`,price=row[key];
@@ -1789,7 +1772,7 @@ function manualRefreshChart(){
 async function fetchEIAInventories(){
   const results=await Promise.all(STORAGE_DATA.map(async(s)=>{
     try{
-      const r=await fetch(`/api/eia?type=inventory&series=${s.seriesKey}&length=4`);
+      const r=await fetch(`/api/eia-data?series=${s.seriesKey}&length=4`);
       const d=await r.json();
       if(d.response?.data?.length){
         return{s,latest:d.response.data[0],prev:d.response.data[1]};
@@ -1839,19 +1822,10 @@ async function fetchNewsRSS(){  try{
       if(S.tab==='news')renderNews();
       addStatusChip('RSS ✓');
       console.log(`[RSS] ${d.articles.length} noticias cargadas (${d._fuente||''})`);
-      if(d._warnings){
-        console.warn('[RSS] feeds que no respondieron:',d._warnings);
-        // ARREGLO 4: si fallan 3 o más feeds, programar un reintento solo
-        // — sin tapar las noticias reales que SÍ llegaron con un mensaje.
-        if(d._warnings.length>=3&&!rssRetryTimer){
-          addStatusChip(`RSS (${d._warnings.length} feeds caídos, reintentando) ⚠`);
-          rssRetryTimer=setTimeout(()=>{rssRetryTimer=null;fetchNewsRSS();},60000);
-        }
-      }
+      if(d._warnings)console.warn('[RSS] feeds que no respondieron:',d._warnings);
     }
   }catch(e){console.warn('[RSS Error]',e);}
 }
-let rssRetryTimer=null;
 // Orquesta: GNews + RSS multi-fuente SIEMPRE en paralelo (BUG2).
 async function fetchAllNewsSources(){
   newsAnySourceOk=false;
@@ -2240,30 +2214,26 @@ async function translateVisibleHeadlines(items){
   }));
   if(S.tab==='news')renderNews();
 }
-// ARREGLO 1: esta función se llamaba desde renderNews() pero nunca se
-// había definido — ReferenceError real en consola. Puebla el mini-ticker
-// del header de Noticias (#npTicker), que es distinto del ticker principal
-// del topbar (#tickerTrack, ya lo llena updateTicker() más abajo).
-// ARREGLO 1: esta función se había perdido en una edición anterior —
-// se llama desde renderNews() pero nunca quedó definida, rompiendo
-// todo el tab Noticias. Puebla el ticker chico DENTRO del tab Noticias
-// (#npTicker), que es distinto del ticker del topbar (#tickerTrack,
-// que ya tiene su propia función updateTicker() y no se toca acá).
+// renderTicker: puebla el mini-ticker del header de Noticias (#npTicker)
 function renderTicker(){
   const el=document.getElementById('npTicker');if(!el)return;
   el.innerHTML=TICKERS.map(t=>{
-    const p=S.prices[t.key],c=S.changes[t.key];
-    const col=typeof c!=='number'?'var(--text3)':c>0?'var(--green)':c<0?'var(--red)':'var(--text3)';
-    return`<div class="np-ticker-item"><div class="np-ticker-name">${t.sym}</div><div class="np-ticker-price">${typeof p==='number'?'$'+p:'—'}</div><div class="np-ticker-chg" style="color:${col}">${typeof c==='number'?(c>0?'▲':c<0?'▼':'—')+' '+Math.abs(c).toFixed(2)+'%':'—'}</div></div>`;
+    const p=S.prices[t.key],c=S.changes[t.key]||0;
+    const dir=c>0?'up':c<0?'dn':'flat';
+    const col=dir==='up'?'var(--green)':dir==='dn'?'var(--red)':'var(--text3)';
+    return`<div class="np-ticker-item"><div class="np-ticker-name">${t.sym}</div><div class="np-ticker-price">${typeof p==='number'?'$'+p:'—'}</div><div class="np-ticker-chg" style="color:${col}">${c>0?'▲':c<0?'▼':'—'} ${Math.abs(c).toFixed(2)}%</div></div>`;
   }).join('');
 }
 function renderNews(){
   renderTicker();
   const f=S.newsFilter;
   let filtered=NEWS.filter(n=>(f.src==='all'||n.src===f.src||n.srcL.toLowerCase().includes(f.src))&&(f.cat==='all'||n.cat===f.cat)&&(f.imp==='all'||n.impact===f.imp)&&(f.asset==='all'||n.asset===f.asset));
+  // Siempre ordenar: por defecto cronológico (más reciente primero)
   if(f.sort==='impact'){
     const rank={high:0,med:1,low:2};
     filtered=[...filtered].sort((a,b)=>(rank[a.impact]??3)-(rank[b.impact]??3)||((b.realTime||0)-(a.realTime||0)));
+  }else{
+    filtered=[...filtered].sort((a,b)=>(b.realTime||0)-(a.realTime||0));
   }
 
   const breaking=filtered.find(n=>n.impact==='high');
@@ -2509,21 +2479,20 @@ function highlightCountryOnMap(name){
 let TRADE_FLOWS_DATA=null,tradeFlowDashOffset=0,tradeFlowAnimTimer=null;
 async function fetchTradeFlows(){
   try{
-    // ARREGLO 6: /data/*.json se sirve directo como estático, sin función.
     const r=await fetch('/data/trade-flows.json');
     if(!r.ok)throw new Error(`HTTP ${r.status}`);
     const d=await r.json();
-    // ARREGLO 5: nunca asignar una respuesta sin la forma esperada —
-    // antes esto dejaba TRADE_FLOWS_DATA = {error:true,message:...} y
-    // el primer .flows.length de abajo explotaba.
-    if(d&&Array.isArray(d.flows)&&d.endpoints_geo&&d.maritime_waypoints){
-      TRADE_FLOWS_DATA=d;
-      console.log(`[Trade Flows] ${d.flows.length} flujos reales cargados (ref. ${d._fecha_referencia||'—'})`);
-    }else{
-      console.warn('[Trade Flows] respuesta sin forma válida, se descarta',d);
-      TRADE_FLOWS_DATA=null;
+    if(!d||!Array.isArray(d.flows)){
+      console.warn('[fetchTradeFlows] respuesta sin flows válidos');
+      TRADE_FLOWS_DATA={flows:[],endpoints_geo:{},maritime_waypoints:{}};
+      return;
     }
-  }catch(e){console.warn('[Trade Flows Error]',e);TRADE_FLOWS_DATA=null;}
+    TRADE_FLOWS_DATA=d;
+    console.log(`[Trade Flows] ${d.flows.length} flujos reales cargados (ref. ${d._fecha_referencia||'—'})`);
+  }catch(e){
+    console.warn('[Trade Flows Error]',e);
+    TRADE_FLOWS_DATA={flows:[],endpoints_geo:{},maritime_waypoints:{}};
+  }
 }
 function toggleTradeFlows(){
   S.showTradeFlows=!S.showTradeFlows;
@@ -2537,18 +2506,8 @@ function toggleTradeFlows(){
   renderMapCanvas();
 }
 function drawTradeFlows(ctx,lonToX,latToY){
-  // ARREGLO 2: guard completo — antes "if(!TRADE_FLOWS_DATA)" no
-  // alcanzaba porque un objeto de error ({error:true,message}) ES
-  // truthy, así que pasaba el guard y explotaba en el .forEach de abajo.
-  if(!TRADE_FLOWS_DATA||!Array.isArray(TRADE_FLOWS_DATA.flows)){
-    console.warn('[drawTradeFlows] TRADE_FLOWS_DATA no está cargado todavía o no tiene flows');
-    return;
-  }
-  if(!TRADE_FLOWS_DATA.endpoints_geo||!TRADE_FLOWS_DATA.maritime_waypoints){
-    console.warn('[drawTradeFlows] estructura de TRADE_FLOWS_DATA incompleta');
-    return;
-  }
-  const geo=TRADE_FLOWS_DATA.endpoints_geo,wp=TRADE_FLOWS_DATA.maritime_waypoints;
+  if(!TRADE_FLOWS_DATA||!Array.isArray(TRADE_FLOWS_DATA.flows)||TRADE_FLOWS_DATA.flows.length===0)return;
+  const geo=TRADE_FLOWS_DATA.endpoints_geo||{},wp=TRADE_FLOWS_DATA.maritime_waypoints||{};
   const modeColor={sea:'#2979ff',pipeline:'#ff6d00',rail:'#00e676'};
   TRADE_FLOWS_DATA.flows.forEach(f=>{
     const a=geo[f.from],b=geo[f.to];if(!a||!b)return;
@@ -2728,7 +2687,7 @@ function buildDigest(){
 let STEO_DATA={wti:[],brent:[]};
 async function fetchEIASTEO(){
   try{
-    const r=await fetch('/api/eia?type=steo');
+    const r=await fetch('/api/eia-steo');
     const d=await r.json();
     if(d.wti&&d.brent){
       STEO_DATA=d;
