@@ -2566,9 +2566,12 @@ function renderThreatIndex(){
 function renderMapCanvas(){
   const canvas=document.getElementById('mapCanvas');if(!canvas)return;
   const wrap=document.getElementById('mapView');
-  canvas.width=wrap.clientWidth||800;canvas.height=Math.max(wrap.clientHeight||420,420);
+  canvas.width=wrap.clientWidth||800;canvas.height=wrap.clientHeight||420;
   const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;
-  const lonToX=lon=>(lon+180)/360*W,latToY=lat=>(90-lat)/180*H;
+  // Proyección recortada: lat -60 a 75 (sin Antártida, cabe todo incluyendo Argentina)
+  const LAT_MIN=-60,LAT_MAX=75;
+  const lonToX=lon=>(lon+180)/360*W;
+  const latToY=lat=>((LAT_MAX-lat)/(LAT_MAX-LAT_MIN))*H;
   ctx.fillStyle='#040610';ctx.fillRect(0,0,W,H);
   ctx.strokeStyle='rgba(41,121,255,.06)';ctx.lineWidth=.5;
   for(let lon=-180;lon<=180;lon+=30){ctx.beginPath();ctx.moveTo(lonToX(lon),0);ctx.lineTo(lonToX(lon),H);ctx.stroke();}
@@ -2585,16 +2588,16 @@ function renderMapCanvas(){
   }
   const groupCodes=countriesInGroup(S.activeGroup);
   PROD_DATA.forEach(p=>{
-    const px=lonToX(p.lon),py=latToY(p.lat),r=Math.sqrt(p.prod)*4+3;
+    const px=lonToX(p.lon),py=latToY(p.lat),r=Math.sqrt(p.prod)*2.5+2;
     const col={stable:'#00e676',tension:'#ffc300',conflict:'#ff4060',sanction:'#b388ff'}[p.status];
     const inGroup=groupCodes===null||groupCodes.includes(p.wb_code);
     const isHighlighted=HIGHLIGHTED_COUNTRY&&p.country.includes(HIGHLIGHTED_COUNTRY.split(' ')[0]);
-    if(!inGroup)ctx.globalAlpha=.22; // BUG3.2: atenúa los que no pertenecen al grupo activo
-    const grd=ctx.createRadialGradient(px,py,0,px,py,r*3);grd.addColorStop(0,col+'40');grd.addColorStop(1,'transparent');
-    ctx.fillStyle=grd;ctx.beginPath();ctx.arc(px,py,r*3,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle=col+'22';ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(px,py,r,0,Math.PI*2);ctx.fill();ctx.stroke();
-    if(isHighlighted){ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(px,py,r+4,0,Math.PI*2);ctx.stroke();}
-    ctx.fillStyle=col;ctx.font='bold 9px JetBrains Mono';ctx.textAlign='center';ctx.fillText(p.flag+' '+p.prod,px,py-r-3);
+    if(!inGroup)ctx.globalAlpha=.22;
+    const grd=ctx.createRadialGradient(px,py,0,px,py,r*2);grd.addColorStop(0,col+'40');grd.addColorStop(1,'transparent');
+    ctx.fillStyle=grd;ctx.beginPath();ctx.arc(px,py,r*2,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=col+'22';ctx.strokeStyle=col;ctx.lineWidth=1;ctx.beginPath();ctx.arc(px,py,r,0,Math.PI*2);ctx.fill();ctx.stroke();
+    if(isHighlighted){ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(px,py,r+3,0,Math.PI*2);ctx.stroke();}
+    ctx.fillStyle=col;ctx.font='bold 8px JetBrains Mono';ctx.textAlign='center';ctx.fillText(p.flag+' '+p.prod,px,py-r-2);
     ctx.globalAlpha=1;
   });
   if(S.showTankerRoutes&&TANKER_ROUTES.length>0){
@@ -2613,7 +2616,7 @@ function renderMapCanvas(){
   canvas.onmousemove=e=>{
     const rect=canvas.getBoundingClientRect(),mx=(e.clientX-rect.left)*(W/rect.width),my=(e.clientY-rect.top)*(H/rect.height);
     const tip=document.getElementById('mapTooltip');let hit=null,hitReserve=null;
-    PROD_DATA.forEach(p=>{const px=lonToX(p.lon),py=latToY(p.lat),r=Math.sqrt(p.prod)*4+3;if(Math.hypot(mx-px,my-py)<r+10)hit=p;});
+    PROD_DATA.forEach(p=>{const px=lonToX(p.lon),py=latToY(p.lat),r=Math.sqrt(p.prod)*2.5+2;if(Math.hypot(mx-px,my-py)<r+8)hit=p;});
     if(S.showReserves&&!hit){
       const geo=getReservesGeo(),maxR=Math.max(...geo.map(r=>r.reserves));
       geo.forEach(r=>{const px=lonToX(r.lon),py=latToY(r.lat),rad=6+(r.reserves/maxR)*16;if(Math.hypot(mx-px,my-py)<rad+8)hitReserve=r;});
