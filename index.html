@@ -6,55 +6,113 @@
 <title>Terminal de Petróleo</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="alternate icon" href="/favicon.svg">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#060810;--panel:#0e1018;--panel2:#13151f;--panel3:#191c28;
-  --border:#1f2235;--border2:#2a2d40;
-  --text:#e2e4f0;--text2:#9099b8;--text3:#4a5070;
-  --green:#00e676;--green2:#00c853;--red:#ff4060;--red2:#ff1744;
-  --yellow:#ffc300;--blue:#2979ff;--blue2:#82aaff;
-  --orange:#ff6d00;--purple:#b388ff;
-  --mono:'JetBrains Mono',monospace;--sans:'Inter',sans-serif;
+  /* ── Crude Desk (brea + ámbar crudo) — paleta tomada del Monitor de Spreads ── */
+  --bg:#0b0c0e;--bg-elev:#0e1013;
+  --surface:#131619;--surface2:#181c20;--surface3:#1f242a;
+  --panel:var(--surface);--panel2:var(--surface2);--panel3:var(--surface3);
+  --border:#262c33;--border2:#333b44;--border3:#46515e;
+  --text:#f2efe9;--text2:#9aa4ad;--text3:#5d6772;--text-on-dark:#1a1305;
+  --accent:#e8a33d;--accent-soft:rgba(232,163,61,.12);--accent-hover:#f6b850;
+  --accent2:#4cc38a;--warn:#e8a33d;
+  --neg:#e5604d;--neg-soft:rgba(229,96,77,.12);--pos:#4cc38a;--pos-soft:rgba(76,195,138,.12);
+  --green:var(--pos);--green2:var(--pos);--red:var(--neg);--red2:#ff5a45;
+  --yellow:var(--accent);--orange:var(--accent);
+  --blue:#5b9bd5;--blue2:#8ec0e8;--purple:#a78bd1;
+  --curve1:#e8a33d;--curve2:#5d6772;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4);--shadow-md:0 2px 8px rgba(0,0,0,.3);--shadow-lg:0 4px 20px rgba(0,0,0,.35);
+  --mono:'Roboto',sans-serif;--sans:'Roboto',-apple-system,BlinkMacSystemFont,sans-serif;
+  --sidebar-w:230px;--sidebar-w-collapsed:68px;
+}
+[data-theme="light"]{
+  /* ── Pampa (blanco + celeste) ── */
+  --bg:#eef4f9;--bg-elev:#ffffff;
+  --surface:#ffffff;--surface2:#f4f8fc;--surface3:#e7f0f8;
+  --border:#dbe7f1;--border2:#c2d6e6;--border3:#9db8cf;
+  --text:#16314a;--text2:#4a6178;--text3:#8aa0b4;--text-on-dark:#ffffff;
+  --accent:#0093d0;--accent-soft:rgba(0,147,208,.10);--accent-hover:#0079ad;
+  --accent2:#1aa172;--warn:#0093d0;
+  --neg:#e0574e;--neg-soft:rgba(224,87,78,.08);--pos:#1aa172;--pos-soft:rgba(26,161,114,.08);
+  --blue:#0093d0;--blue2:#3fb0e8;--purple:#7a6fc4;
+  --curve1:#0093d0;--curve2:#9bb6cc;
+  --shadow-sm:0 1px 2px rgba(22,49,74,.05);--shadow-md:0 4px 16px rgba(22,49,74,.08);--shadow-lg:0 6px 22px rgba(22,49,74,.10);
 }
 html{font-size:15px}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:hidden;min-height:100vh}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:400;line-height:1.5;overflow-x:hidden;min-height:100vh;transition:background .25s ease,color .25s ease;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:#2a2d40;border-radius:2px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 /* BUG4: #bgCanvas (luces animadas de fondo) eliminado a pedido — fondo
    plano sólido var(--bg) que ya estaba debajo. */
-#app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
-#topBar{position:sticky;top:0;z-index:100;background:rgba(6,8,16,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border2)}
-.tb-row1{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;border-bottom:1px solid var(--border)}
-.tb-brand{display:flex;align-items:center;gap:10px}
-.tb-logo{display:flex;align-items:center;justify-content:center;width:28px;height:28px;flex-shrink:0}
-.tb-title{font-family:'Archivo Black',var(--sans);font-size:17px;color:var(--text);letter-spacing:.5px;text-transform:uppercase}
-.data-badge{font-size:11px;font-family:var(--mono);padding:1px 7px;letter-spacing:1px;border:1px solid}
-.badge-sim{background:#1a1200;border-color:var(--yellow);color:var(--yellow)}
-.badge-live{background:#001a08;border-color:var(--green);color:var(--green)}
-.tb-clocks{display:flex}
-.tb-clock{display:flex;flex-direction:column;align-items:center;padding:3px 11px;border-left:1px solid var(--border);min-width:78px}
-.tc-city{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px}
-.tc-time{font-family:var(--mono);font-size:14px;font-weight:600}
-.tc-status{font-size:10px;font-family:var(--mono);margin-top:1px}
-.tc-open{color:var(--green)}.tc-closed{color:var(--red)}
-.tb-ticker{overflow:hidden;height:26px;background:#090b14;border-bottom:1px solid var(--border)}
+#app,.app{position:relative;z-index:1;display:flex;min-height:100vh}
+
+/* ── SIDEBAR ─────────────────────────────────────────────── */
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--bg-elev);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:width .22s ease;position:sticky;top:0;height:100vh;z-index:100}
+.sidebar.collapsed{width:var(--sidebar-w-collapsed)}
+.sidebar-brand{display:flex;align-items:center;gap:10px;padding:18px 16px;border-bottom:1px solid var(--border);min-height:64px}
+.brand-mark{width:30px;height:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);border-radius:8px}
+.brand-text{overflow:hidden;white-space:nowrap}
+.bt-main{font-size:13px;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.bt-sub{font-size:10.5px;color:var(--text3);margin-top:1px}
+.sidebar.collapsed .brand-text,.sidebar.collapsed .nav-label,.sidebar.collapsed .nav-txt{display:none}
+.nav{flex:1;padding:14px 10px;overflow-y:auto}
+.nav-label{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);padding:0 8px;margin-bottom:8px}
+.tab-btn,.nav-item{width:100%;display:flex;align-items:center;gap:11px;justify-content:flex-start;background:none;border:none;border-radius:7px;color:var(--text2);font-family:var(--sans);font-size:13px;font-weight:500;letter-spacing:0;padding:9px 10px;cursor:pointer;transition:all .15s;margin-bottom:2px;text-align:left}
+.sidebar.collapsed .tab-btn,.sidebar.collapsed .nav-item{justify-content:center;padding:9px 0}
+.tab-btn:hover,.nav-item:hover{color:var(--text);background:var(--surface2)}
+.tab-btn.active,.nav-item.active{color:var(--text-on-dark);background:var(--accent)}
+.tab-icon{font-size:15px;flex-shrink:0;width:18px;text-align:center}
+.sidebar-foot{padding:12px 10px 14px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px}
+.sidebar-status{padding:6px 10px 10px}
+.sidebar.collapsed .sidebar-status{display:none}
+.data-badge{font-size:10.5px;font-family:var(--sans);font-weight:700;padding:2px 8px;letter-spacing:.06em;border-radius:4px;border:1px solid;display:inline-block}
+.badge-sim{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.badge-live{background:var(--pos-soft);border-color:var(--pos);color:var(--pos)}
+.theme-toggle2,.collapse-btn{display:flex;align-items:center;gap:10px;width:100%;background:none;border:1px solid var(--border);border-radius:7px;color:var(--text2);font-size:12.5px;font-weight:500;padding:8px 10px;cursor:pointer;transition:all .15s}
+.theme-toggle2:hover,.collapse-btn:hover{background:var(--surface2);color:var(--accent);border-color:var(--border2)}
+.theme-toggle2 .ic,.collapse-btn .ic{width:17px;height:17px;flex-shrink:0;stroke-width:2;transition:transform .22s ease}
+.sidebar.collapsed .collapse-btn .ic{transform:rotate(180deg)}
+.sidebar.collapsed .theme-toggle2,.sidebar.collapsed .collapse-btn{justify-content:center;padding:9px 0}
+.sidebar.collapsed .theme-toggle2 .lbl-txt,.sidebar.collapsed .collapse-btn .lbl-txt{display:none}
+.tb-clocks{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--border);margin-top:8px;padding-top:8px}
+.tb-clock{display:flex;flex-direction:column;padding:3px 6px;min-width:0}
+.sidebar.collapsed .tb-clocks{display:none}
+.tc-city{font-family:var(--sans);font-size:9px;color:var(--text3);letter-spacing:.06em}
+.tc-time{font-family:var(--sans);font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.tc-status{font-size:9px;font-family:var(--sans);margin-top:1px}
+.tc-open{color:var(--pos)}.tc-closed{color:var(--neg)}
+
+/* ── MAIN / BANNER ───────────────────────────────────────── */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.banner{background:linear-gradient(135deg,var(--surface) 0%,var(--bg-elev) 100%);border-bottom:1px solid var(--border2);padding:22px 32px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:18px;position:relative}
+.banner::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,var(--accent) 0%,color-mix(in srgb,var(--accent) 40%,transparent) 22%,transparent 60%)}
+.banner-tag{font-size:11.5px;font-weight:700;letter-spacing:.1em;color:var(--accent);text-transform:uppercase}
+.banner-title{font-size:32px;font-weight:800;letter-spacing:-.03em;line-height:1.05;margin-top:6px;color:var(--text)}
+.banner-title .accent-word{color:var(--accent)}
+.banner-meta{display:flex;flex-direction:column;gap:6px;align-items:flex-end;text-align:right}
+.banner-meta .lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+.banner-meta .val{font-size:13px;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+@media(max-width:900px){.banner{padding:16px 18px}.banner-title{font-size:24px}}
+
+.tb-ticker{overflow:hidden;height:30px;background:var(--surface2);border-bottom:1px solid var(--border)}
 .ticker-track{display:flex;align-items:center;height:100%;white-space:nowrap;animation:tickerScroll 50s linear infinite;width:max-content}
 .ticker-track:hover{animation-play-state:paused}
 @keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.ticker-item{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:13px;padding:0 12px;border-right:1px solid var(--border)}
-.ti-name{color:var(--text3)}.ti-price{font-weight:600}
-.price-up{color:var(--green)}.price-dn{color:var(--red)}.price-flat{color:var(--text2)}
-.tab-nav{display:flex;background:var(--panel);border-bottom:2px solid var(--border2)}
-.tab-btn{flex:1;background:none;border:none;color:var(--text3);font-family:var(--mono);font-size:13px;letter-spacing:.8px;padding:10px 0;cursor:pointer;transition:all .2s;border-bottom:2px solid transparent;margin-bottom:-2px;display:flex;align-items:center;justify-content:center;gap:7px}
-.tab-btn:hover{color:var(--text2);background:var(--panel2)}
-.tab-btn.active{color:var(--orange);border-bottom-color:var(--orange);background:var(--panel2)}
-.tab-icon{font-size:15px}
-#mainContent{flex:1}
+.ticker-item{display:inline-flex;align-items:center;gap:5px;font-family:var(--sans);font-size:12.5px;font-weight:500;padding:0 14px;border-right:1px solid var(--border)}
+.ti-name{color:var(--text3)}.ti-price{font-weight:700;font-variant-numeric:tabular-nums}
+.price-up{color:var(--pos)}.price-dn{color:var(--neg)}.price-flat{color:var(--text2)}
+
+#mainContent,.content{flex:1;padding:26px 32px 70px;max-width:1500px;width:100%}
+@media(max-width:760px){
+  .sidebar{position:fixed;left:0;top:0;transform:translateX(-100%);transition:transform .25s ease;width:var(--sidebar-w)}
+  .sidebar.mobile-open{transform:translateX(0)}
+  #mainContent,.content{padding:18px 16px 50px}
+}
 .tab-section{display:none}
-.tab-section.active{display:block}
+.tab-section.active{display:block;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-md);overflow:hidden}
 .chart-controls{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;padding:8px 12px;background:var(--panel2);border-bottom:1px solid var(--border)}
 .seg-group{display:flex;border:1px solid var(--border2)}
 .seg-btn{background:none;border:none;border-right:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:12px;padding:4px 9px;cursor:pointer;transition:all .12s;letter-spacing:.3px}
@@ -69,15 +127,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .ind-btn.on-blue{border-color:var(--blue2);color:var(--blue2);background:rgba(130,170,255,.08)}
 .ind-btn.on-purple{border-color:var(--purple);color:var(--purple);background:rgba(179,136,255,.08)}
 .ind-btn.on-green{border-color:var(--green);color:var(--green);background:rgba(0,230,118,.08)}
-.chart-wrap{position:relative;background:#060810;display:flex;justify-content:center;padding:14px}
-.chart-box{position:relative;width:100%;max-width:920px;aspect-ratio:4/3;background:#060810;border:1px solid var(--border2)}
+.chart-wrap{position:relative;background:var(--bg);display:flex;justify-content:center;padding:14px}
+.chart-box{position:relative;width:100%;max-width:920px;aspect-ratio:4/3;background:var(--bg);border:1px solid var(--border2);border-radius:8px;overflow:hidden}
 .chart-spinner{width:14px;height:14px;border:2px solid var(--border2);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
 #lwChart{position:absolute;inset:0}
 .chart-zoom-hint{position:absolute;bottom:6px;right:10px;font-family:var(--mono);font-size:10px;color:var(--text3);pointer-events:none;z-index:5}
-.chart-asset-label{position:absolute;top:8px;right:12px;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text);letter-spacing:1px;pointer-events:none;z-index:5;background:rgba(6,8,16,.75);padding:3px 9px;border-radius:3px;border:1px solid var(--border2)}
-.ohlc-display{position:absolute;top:8px;left:12px;font-family:var(--mono);font-size:12px;pointer-events:none;display:flex;gap:14px;flex-wrap:wrap;z-index:5;background:rgba(6,8,16,.75);padding:3px 8px;border-radius:3px}
-.chart-overlay-msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:8px;background:#060810;color:var(--text3);font-family:var(--mono);font-size:12px;z-index:8;text-align:center;padding:20px}
+.chart-asset-label{position:absolute;top:8px;right:12px;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text);letter-spacing:1px;pointer-events:none;z-index:5;background:rgba(11,12,14,.8);padding:3px 9px;border-radius:3px;border:1px solid var(--border2)}
+.ohlc-display{position:absolute;top:8px;left:12px;font-family:var(--mono);font-size:12px;pointer-events:none;display:flex;gap:14px;flex-wrap:wrap;z-index:5;background:rgba(11,12,14,.8);padding:3px 8px;border-radius:3px}
+.chart-overlay-msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--bg);color:var(--text3);font-family:var(--mono);font-size:12px;z-index:8;text-align:center;padding:20px}
 .chart-overlay-msg.error{color:var(--red)}
 .ohlc-item{display:flex;gap:4px}
 .ohlc-lbl{color:var(--text3)}.ohlc-val{font-weight:600}
@@ -89,7 +147,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .curve-freshness{padding:6px 12px;font-family:var(--mono);font-size:11px;border-bottom:1px solid var(--border2)}
 .curve-freshness.open{color:var(--green)}
 .curve-freshness.closed{color:var(--yellow)}
-.spreads-matrix{border-collapse:collapse;font-family:'IBM Plex Mono',var(--mono);font-size:11px}
+.spreads-matrix{border-collapse:collapse;font-family:'Roboto',var(--mono);font-size:11px}
 .spreads-matrix th,.spreads-matrix td{padding:5px 8px;text-align:center;border:1px solid var(--border)}
 .spreads-matrix th{background:var(--panel3);color:var(--text2);font-weight:700}
 .spreads-matrix td.diag{background:var(--panel3);color:var(--text3)}
@@ -97,21 +155,21 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .spreads-matrix td.clickable:hover{outline:2px solid var(--orange)}
 .spreads-matrix td.selected{outline:2px solid #fff}
 /* BUG5: stack IBM Plex Mono/Sans + naranja brillante, réplica de brent-spread-monitor */
-.bsm-controls{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:10px 14px;background:var(--panel2);border-bottom:1px solid var(--border);font-family:'IBM Plex Sans',var(--sans)}
+.bsm-controls{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:10px 14px;background:var(--panel2);border-bottom:1px solid var(--border);font-family:'Roboto',var(--sans)}
 .bsm-ctrl-group{display:flex;align-items:center;gap:7px}
-.bsm-ctrl-lbl{font-family:'IBM Plex Mono',var(--mono);font-size:10px;color:var(--text3);letter-spacing:.5px}
-.bsm-select{background:var(--panel3);color:var(--text);border:1px solid var(--border2);font-family:'IBM Plex Mono',var(--mono);font-size:11px;padding:4px 8px;border-radius:3px}
+.bsm-ctrl-lbl{font-family:'Roboto',var(--mono);font-size:10px;color:var(--text3);letter-spacing:.5px}
+.bsm-select{background:var(--panel3);color:var(--text);border:1px solid var(--border2);font-family:'Roboto',var(--mono);font-size:11px;padding:4px 8px;border-radius:3px}
 .bsm-swatch{width:14px;height:4px;border-radius:2px;flex-shrink:0}
-.bsm-chart-box{background:#060810;border:1px solid var(--border2);margin:14px;height:380px;position:relative}
+.bsm-chart-box{background:var(--bg);border:1px solid var(--border2);margin:14px;height:380px;position:relative;border-radius:8px;overflow:hidden}
 .bsm-chart-box canvas{padding:10px}
-.curve-chart-box{flex:1;min-width:320px;background:#060810;border:1px solid var(--border2)}
+.curve-chart-box{flex:1;min-width:320px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;overflow:hidden}
 .curve-shape-gauge{display:flex;align-items:center;gap:10px;font-family:var(--mono)}
 .curve-shape-label{font-size:13px;font-weight:700;padding:4px 12px;border-radius:3px}
 .curve-shape-label.contango{background:rgba(255,64,96,.12);color:var(--red)}
 .curve-shape-label.backwardation{background:rgba(0,230,118,.12);color:var(--green)}
 .curve-shape-label.flat{background:rgba(255,195,0,.12);color:var(--yellow)}
 .curve-body{display:flex;gap:14px;padding:14px;flex-wrap:wrap}
-.curve-chart-box{flex:1;min-width:320px;background:#060810;border:1px solid var(--border2)}
+.curve-chart-box{flex:1;min-width:320px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;overflow:hidden}
 .curve-sidebar{width:280px;flex-shrink:0;display:flex;flex-direction:column;gap:4px}
 .curve-spreads-table{font-family:var(--mono);font-size:12px;padding:6px 0}
 .cs-row{display:flex;justify-content:space-between;padding:5px 10px;border-bottom:1px solid var(--border)}
@@ -168,12 +226,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .ev-war{background:#140306;border-color:#500;color:var(--red2)}
 .ev-opec{background:#141000;border-color:#554400;color:var(--yellow)}
 .ev-eia{background:#001018;border-color:#002840;color:var(--blue2)}
-.ev-geo{background:#001410;border-color:#004025;color:#69f0ae}
+.ev-geo{background:#001410;border-color:#004025;color:#4cc38a}
 #tab-news{display:none}
-#tab-news.active{display:block;background:var(--bg);color:var(--text);min-height:calc(100vh - 130px);margin:0 -16px;padding:0}
-.np-ticker{display:flex;overflow-x:auto;background:#16181d;border-bottom:3px solid #d32f2f}
-.np-ticker-item{display:flex;flex-direction:column;padding:10px 20px;border-right:1px solid #2a2d35;font-family:var(--mono);min-width:96px;flex-shrink:0}
-.np-ticker-name{font-size:10px;color:#9099a8;letter-spacing:.5px}
+#tab-news.active{display:block;background:var(--surface);color:var(--text);min-height:calc(100vh - 130px);padding:0}
+.np-ticker{display:flex;overflow-x:auto;background:#181c20;border-bottom:3px solid #d32f2f}
+.np-ticker-item{display:flex;flex-direction:column;padding:10px 20px;border-right:1px solid #333b44;font-family:var(--mono);min-width:96px;flex-shrink:0}
+.np-ticker-name{font-size:10px;color:#9aa4ad;letter-spacing:.5px}
 .np-ticker-price{font-size:16px;font-weight:700;color:#fff}
 .np-ticker-chg{font-size:12px;font-weight:600}
 .np-breaking{background:#d32f2f;color:#fff;display:flex;align-items:center;gap:10px;padding:8px 18px;font-size:13px;font-weight:600}
@@ -233,7 +291,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .threat-chip{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--text2);border:1px solid;border-radius:3px;padding:3px 9px}
 .threat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .map-body-row{display:flex;gap:14px;padding:14px;align-items:stretch}
-.group-filter-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:7px 14px;background:#0a0c15;border-bottom:1px solid var(--border2);font-family:var(--mono)}
+.group-filter-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:7px 14px;background:#0e1013;border-bottom:1px solid var(--border2);font-family:var(--mono)}
 .group-summary{margin-left:auto;font-size:11px;color:var(--text2)}
 .top10-panel{display:grid;grid-template-columns:1fr 1fr;gap:0;width:100%;max-width:920px;border:1px solid var(--border2);margin:0 auto 14px}
 .top10-col{padding:10px 12px;border-right:1px solid var(--border2)}
@@ -251,7 +309,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 .mov-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
 .mov-text{font-size:12px;color:var(--text2);line-height:1.4}
 .mov-meta{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:2px}
-#mapView{position:relative;overflow:hidden;background:#030508;width:100%;aspect-ratio:5/3;max-height:calc(100vh - 280px);border:1px solid var(--border2);flex-shrink:0}
+#mapView{position:relative;overflow:hidden;background:#0b0c0e;width:100%;aspect-ratio:5/3;max-height:calc(100vh - 280px);border:1px solid var(--border2);flex-shrink:0}
 #mapCanvas{display:block;width:100%;height:100%}
 .map-tooltip{position:absolute;background:var(--panel2);border:1px solid var(--border2);padding:10px 12px;font-family:var(--mono);font-size:12px;max-width:220px;pointer-events:none;z-index:10;display:none}
 .map-tooltip.show{display:block}
@@ -318,48 +376,99 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
 <body>
 <div id="app">
 
-<!-- TOPBAR -->
-<div id="topBar">
-  <div class="tb-row1">
-    <div class="tb-brand">
-      <div class="tb-logo" aria-label="Terminal de Petróleo">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C12 2 5 11.5 5 16C5 19.866 8.134 23 12 23C15.866 23 19 19.866 19 16C19 11.5 12 2 12 2Z" fill="var(--orange)"/>
-          <ellipse cx="9.5" cy="15" rx="1.6" ry="2.4" fill="#000" opacity=".25"/>
-        </svg>
-      </div>
-      <div class="tb-title">TERMINAL DE PETRÓLEO</div>
-      <span class="data-badge badge-sim" id="dataBadge">SIMULADO</span>
+<!-- SIDEBAR -->
+<aside class="sidebar collapsed" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-mark">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C12 2 5 11.5 5 16C5 19.866 8.134 23 12 23C15.866 23 19 19.866 19 16C19 11.5 12 2 12 2Z" fill="var(--accent)"/>
+        <ellipse cx="9.5" cy="15" rx="1.6" ry="2.4" fill="#000" opacity=".22"/>
+      </svg>
     </div>
-    <div class="tb-clocks" id="clocksRow">
-      <div class="tb-clock"><span class="tc-city">NUEVA YORK</span><span class="tc-time" id="clk-ny">--:--</span><span class="tc-status" id="st-ny"></span></div>
-      <div class="tb-clock"><span class="tc-city">LONDON</span><span class="tc-time" id="clk-ldn">--:--</span><span class="tc-status" id="st-ldn"></span></div>
-      <div class="tb-clock"><span class="tc-city">DUBAI</span><span class="tc-time" id="clk-dxb">--:--</span><span class="tc-status" id="st-dxb"></span></div>
-      <div class="tb-clock"><span class="tc-city">SINGAPORE</span><span class="tc-time" id="clk-sgp">--:--</span><span class="tc-status" id="st-sgp"></span></div>
-      <div class="tb-clock"><span class="tc-city">BUE. AIRES</span><span class="tc-time" id="clk-bue">--:--</span><span class="tc-status" id="st-bue"></span></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <div style="text-align:right">
-        <div id="apiStatus" style="font-family:var(--mono);font-size:11px;color:var(--text3);line-height:1.8"></div>
-        <div id="lastUpdate" style="font-family:var(--mono);font-size:10px;color:var(--text3)">Última actualización: --:--:--</div>
-      </div>
-      <button id="btnGlobalRefresh" onclick="globalRefresh()" title="Actualizar todos los datos" style="background:var(--panel3);border:1px solid var(--border2);color:var(--text2);font-size:14px;padding:5px 9px;cursor:pointer;border-radius:3px">🔄</button>
+    <div class="brand-text">
+      <div class="bt-main">Terminal de Petróleo</div>
+      <div class="bt-sub">Mercado Global de Crudo</div>
     </div>
   </div>
-  <div class="tb-ticker"><div class="ticker-track" id="tickerTrack"></div></div>
-  <nav class="tab-nav">
-    <button class="tab-btn" id="tbn-charts" onclick="switchTab('charts')"><span class="tab-icon">📊</span><span>PRECIOS</span></button>
-    <button class="tab-btn" id="tbn-news" onclick="switchTab('news')"><span class="tab-icon">📰</span><span>NOTICIAS</span></button>
-    <button class="tab-btn" id="tbn-map" onclick="switchTab('map')"><span class="tab-icon">🗺</span><span>MAPA GLOBAL</span></button>
-    <button class="tab-btn" id="tbn-analysis" onclick="switchTab('analysis')"><span class="tab-icon">🔍</span><span>ANÁLISIS 24H</span></button>
-    <button class="tab-btn" id="tbn-macro" onclick="switchTab('macro')"><span class="tab-icon">🌐</span><span>MACRO</span></button>
-    <button class="tab-btn" id="tbn-futuros" onclick="switchTab('futuros')"><span class="tab-icon">📉</span><span>FUTUROS BRENT</span></button>
-    <button class="tab-btn" id="tbn-spreads" onclick="switchTab('spreads')"><span class="tab-icon">🔲</span><span>SPREADS</span></button>
+  <nav class="nav">
+    <div class="nav-label">Paneles</div>
+    <button class="tab-btn" id="tbn-charts" onclick="switchTab('charts')" title="Precios">
+      <svg class="tab-icon-svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+      <span class="nav-txt">Precios</span>
+    </button>
+    <button class="tab-btn" id="tbn-news" onclick="switchTab('news')" title="Noticias">
+      <svg class="tab-icon-svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M8 8h8M8 12h8M8 16h4"/></svg>
+      <span class="nav-txt">Noticias</span>
+    </button>
+    <button class="tab-btn" id="tbn-map" onclick="switchTab('map')" title="Mapa Global">
+      <svg class="tab-icon-svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18z"/></svg>
+      <span class="nav-txt">Mapa Global</span>
+    </button>
+    <button class="tab-btn" id="tbn-analysis" onclick="switchTab('analysis')" title="Análisis 24h">
+      <svg class="tab-icon-svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <span class="nav-txt">Análisis 24h</span>
+    </button>
+    <button class="tab-btn" id="tbn-macro" onclick="switchTab('macro')" title="Macro">
+      <svg class="tab-icon-svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 4 6 4 9s-1.5 6.4-4 9c-2.5-2.6-4-6-4-9s1.5-6.4 4-9z"/></svg>
+      <span class="nav-txt">Macro</span>
+    </button>
+    <button class="tab-btn" id="tbn-futuros" onclick="switchTab('futuros')" title="Futuros Brent">
+      <svg class="tab-icon-svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 9l4 4 3-3 5 5"/></svg>
+      <span class="nav-txt">Futuros Brent</span>
+    </button>
+    <button class="tab-btn" id="tbn-spreads" onclick="switchTab('spreads')" title="Spreads">
+      <svg class="tab-icon-svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      <span class="nav-txt">Spreads</span>
+    </button>
   </nav>
-</div>
+  <div class="sidebar-foot">
+    <div class="sidebar-status">
+      <span class="data-badge badge-sim" id="dataBadge">SIMULADO</span>
+      <div id="apiStatus" style="font-size:10.5px;color:var(--text3);line-height:1.7;margin-top:7px"></div>
+      <div id="lastUpdate" style="font-size:10px;color:var(--text3)">Última actualización: --:--:--</div>
+      <div class="tb-clocks" id="clocksRow">
+        <div class="tb-clock"><span class="tc-city">N. YORK</span><span class="tc-time" id="clk-ny">--:--</span><span class="tc-status" id="st-ny"></span></div>
+        <div class="tb-clock"><span class="tc-city">LONDRES</span><span class="tc-time" id="clk-ldn">--:--</span><span class="tc-status" id="st-ldn"></span></div>
+        <div class="tb-clock"><span class="tc-city">DUBAI</span><span class="tc-time" id="clk-dxb">--:--</span><span class="tc-status" id="st-dxb"></span></div>
+        <div class="tb-clock"><span class="tc-city">SINGAPUR</span><span class="tc-time" id="clk-sgp">--:--</span><span class="tc-status" id="st-sgp"></span></div>
+        <div class="tb-clock"><span class="tc-city">BUE. AIRES</span><span class="tc-time" id="clk-bue">--:--</span><span class="tc-status" id="st-bue"></span></div>
+      </div>
+    </div>
+    <button class="theme-toggle2" id="theme-toggle" onclick="toggleTheme()" aria-label="Cambiar tema" title="Cambiar tema">
+      <svg id="theme-icon" class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+      </svg>
+      <span class="lbl-txt" id="theme-label">Tema claro</span>
+    </button>
+    <button id="btnGlobalRefresh" class="collapse-btn" onclick="globalRefresh()" title="Actualizar todos los datos">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v6h-6"/></svg>
+      <span class="lbl-txt">Actualizar</span>
+    </button>
+    <button class="collapse-btn" onclick="toggleSidebar()" aria-label="Contraer menú" title="Contraer menú">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+      <span class="lbl-txt">Contraer</span>
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="banner">
+    <div>
+      <div class="banner-tag" id="banner-tag">Mercado de Petróleo</div>
+      <div class="banner-title" id="banner-title">Precios <span class="accent-word">en Vivo</span></div>
+    </div>
+    <div class="banner-meta">
+      <div class="lbl">Última actualización</div>
+      <div class="val" id="lastUpdate2">--:--:--</div>
+    </div>
+  </header>
+  <div class="tb-ticker"><div class="ticker-track" id="tickerTrack"></div></div>
 
 <div id="mainContent">
   <!-- ═══ TAB: DASHBOARD (4.2) ═══ -->
+
 
   <!-- ═══ TAB: PRECIOS ═══ -->
   <section id="tab-charts" class="tab-section">
@@ -619,7 +728,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
     <div class="bsm-controls">
       <div class="bsm-ctrl-group">
         <span class="bsm-ctrl-lbl">CURVA ACTUAL</span>
-        <span class="bsm-swatch" style="background:#ff6d00"></span>
+        <span class="bsm-swatch" style="background:#e8a33d"></span>
       </div>
       <div class="bsm-ctrl-group">
         <span class="bsm-ctrl-lbl">COMPARAR 1</span>
@@ -631,7 +740,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
           <option value="180">6 meses atrás</option>
           <option value="365">1 año atrás</option>
         </select>
-        <span class="bsm-swatch" style="background:#2979ff"></span>
+        <span class="bsm-swatch" style="background:#5b9bd5"></span>
       </div>
       <div class="bsm-ctrl-group">
         <span class="bsm-ctrl-lbl">COMPARAR 2</span>
@@ -643,7 +752,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
           <option value="180">6 meses atrás</option>
           <option value="365">1 año atrás</option>
         </select>
-        <span class="bsm-swatch" style="background:#b388ff"></span>
+        <span class="bsm-swatch" style="background:#a78bd1"></span>
       </div>
     </div>
     <div class="bsm-chart-box">
@@ -691,6 +800,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:h
       <table id="spreadsMatrixTable" class="spreads-matrix"></table>
     </div>
   </section>
+</div>
 </div>
 </div>
 
@@ -743,12 +853,12 @@ async function loadEvents(){
   }catch(e){console.warn('[Eventos] no se pudo cargar data/events.json — el chart queda sin markers',e);}
 }
 const EVENT_STYLE={
-  conflict:{color:'#ff4060',shape:'circle',emoji:'🔴'},
-  opec:{color:'#ffc300',shape:'square',emoji:'🟡'},
-  sanction:{color:'#b388ff',shape:'square',emoji:'🟣'},
-  supply:{color:'#2979ff',shape:'circle',emoji:'🔵'},
-  futures:{color:'#00e676',shape:'square',emoji:'📊'},
-  fomc:{color:'#ff9100',shape:'square',emoji:'🏛️'},
+  conflict:{color:'#e5604d',shape:'circle',emoji:'🔴'},
+  opec:{color:'#e8a33d',shape:'square',emoji:'🟡'},
+  sanction:{color:'#a78bd1',shape:'square',emoji:'🟣'},
+  supply:{color:'#5b9bd5',shape:'circle',emoji:'🔵'},
+  futures:{color:'#4cc38a',shape:'square',emoji:'📊'},
+  fomc:{color:'#f6b850',shape:'square',emoji:'🏛️'},
 };
 let seriesMarkersPlugin=null;
 
@@ -835,11 +945,11 @@ function renderChart(){
   if(lbl)lbl.textContent=ASSET_NAMES[S.asset]||S.asset.toUpperCase();
 
   lwChart=LightweightCharts.createChart(container,{
-    layout:{background:{type:'solid',color:'#060810'},textColor:'#9099b8',fontFamily:'JetBrains Mono, monospace',fontSize:10,
-      panes:{separatorColor:'#1f2235',separatorHoverColor:'#2a2d40'}},
+    layout:{background:{type:'solid',color:'#0b0c0e'},textColor:'#9aa4ad',fontFamily:'Roboto, sans-serif',fontSize:10,
+      panes:{separatorColor:'#262c33',separatorHoverColor:'#333b44'}},
     grid:{vertLines:{color:'rgba(255,255,255,.04)'},horzLines:{color:'rgba(255,255,255,.04)'}},
-    rightPriceScale:{borderColor:'#1f2235'},
-    timeScale:{borderColor:'#1f2235',timeVisible:true,secondsVisible:false},
+    rightPriceScale:{borderColor:'#262c33'},
+    timeScale:{borderColor:'#262c33',timeVisible:true,secondsVisible:false},
     crosshair:{mode:LightweightCharts.CrosshairMode.Normal,
       vertLine:{color:'rgba(255,255,255,.15)',width:1,style:LightweightCharts.LineStyle.Dashed},
       horzLine:{color:'rgba(255,255,255,.15)',width:1,style:LightweightCharts.LineStyle.Dashed}},
@@ -853,11 +963,11 @@ function renderChart(){
     // BUG 4 fix: el spread es una serie CALCULADA (brent.close - wti.close),
     // no tiene OHLC real propio — se grafica como línea, no velas, para no
     // sugerir que hay un mercado de "velas de spread" que no existe.
-    lwCandleSeries=lwChart.addSeries(LightweightCharts.LineSeries,{color:'#ffd600',lineWidth:2});
+    lwCandleSeries=lwChart.addSeries(LightweightCharts.LineSeries,{color:'#f6b850',lineWidth:2});
     lwCandleSeries.setData(ohlc.map(d=>({time:d.time,value:d.close})));
   }else{
     lwCandleSeries=lwChart.addSeries(LightweightCharts.CandlestickSeries,{
-      upColor:'#00e676',downColor:'#ff4060',borderVisible:false,wickUpColor:'#00e676',wickDownColor:'#ff4060'
+      upColor:'#4cc38a',downColor:'#e5604d',borderVisible:false,wickUpColor:'#4cc38a',wickDownColor:'#e5604d'
     });
     lwCandleSeries.setData(ohlc.map(d=>({time:d.time,open:d.open,high:d.high,low:d.low,close:d.close})));
   }
@@ -866,17 +976,17 @@ function renderChart(){
   const livePrice=S.prices[S.asset];
   if(typeof livePrice==='number'){
     lwCandleSeries.createPriceLine({
-      price:livePrice,color:'#ffd600',lineWidth:1,lineStyle:LightweightCharts.LineStyle.Dotted,
+      price:livePrice,color:'#f6b850',lineWidth:1,lineStyle:LightweightCharts.LineStyle.Dotted,
       axisLabelVisible:true,title:'EN VIVO'
     });
   }
 
   // Overlays sobre el panel principal (pane 0)
   [
-    {k:'sma20',data:smaArr(closes,20),color:'#ffd600'},
-    {k:'sma50',data:smaArr(closes,Math.min(50,closes.length)),color:'#82aaff'},
-    {k:'sma200',data:smaArr(closes,Math.min(200,closes.length)),color:'#b388ff'},
-    {k:'ema20',data:emaArr(closes,20),color:'#ff9100'},
+    {k:'sma20',data:smaArr(closes,20),color:'#f6b850'},
+    {k:'sma50',data:smaArr(closes,Math.min(50,closes.length)),color:'#8ec0e8'},
+    {k:'sma200',data:smaArr(closes,Math.min(200,closes.length)),color:'#a78bd1'},
+    {k:'ema20',data:emaArr(closes,20),color:'#f6b850'},
   ].forEach(ov=>{
     if(!S.ind[ov.k])return;
     const s=lwChart.addSeries(LightweightCharts.LineSeries,{color:ov.color,lineWidth:1,priceLineVisible:false,lastValueVisible:false});
@@ -899,7 +1009,7 @@ function renderChart(){
   }
   if(S.ind.rsi){
     const rsiVals=calcRSI(closes);
-    const rsi=lwChart.addSeries(LightweightCharts.LineSeries,{color:'#00e676',lineWidth:1.5,priceLineVisible:false,lastValueVisible:true},paneIdx);
+    const rsi=lwChart.addSeries(LightweightCharts.LineSeries,{color:'#4cc38a',lineWidth:1.5,priceLineVisible:false,lastValueVisible:true},paneIdx);
     rsi.setData(rsiVals.map((v,i)=>v===null?null:{time:ohlc[i].time,value:v}).filter(Boolean));
     rsi.createPriceLine({price:70,color:'rgba(255,64,96,.4)',lineWidth:1,lineStyle:LightweightCharts.LineStyle.Dashed,axisLabelVisible:true,title:'70'});
     rsi.createPriceLine({price:30,color:'rgba(0,230,118,.4)',lineWidth:1,lineStyle:LightweightCharts.LineStyle.Dashed,axisLabelVisible:true,title:'30'});
@@ -909,9 +1019,9 @@ function renderChart(){
     const m=calcMACD(closes);
     const hist=lwChart.addSeries(LightweightCharts.HistogramSeries,{},paneIdx);
     hist.setData(m.hist.map((v,i)=>v===null?null:{time:ohlc[i].time,value:v,color:v>=0?'rgba(0,230,118,.5)':'rgba(255,64,96,.5)'}).filter(Boolean));
-    const macdLine=lwChart.addSeries(LightweightCharts.LineSeries,{color:'#82aaff',lineWidth:1.3,priceLineVisible:false,lastValueVisible:false},paneIdx);
+    const macdLine=lwChart.addSeries(LightweightCharts.LineSeries,{color:'#8ec0e8',lineWidth:1.3,priceLineVisible:false,lastValueVisible:false},paneIdx);
     macdLine.setData(m.macd.map((v,i)=>v===null?null:{time:ohlc[i].time,value:v}).filter(Boolean));
-    const sigLine=lwChart.addSeries(LightweightCharts.LineSeries,{color:'#ffc300',lineWidth:1,priceLineVisible:false,lastValueVisible:false},paneIdx);
+    const sigLine=lwChart.addSeries(LightweightCharts.LineSeries,{color:'#e8a33d',lineWidth:1,priceLineVisible:false,lastValueVisible:false},paneIdx);
     sigLine.setData(m.sig.map((v,i)=>v===null?null:{time:ohlc[i].time,value:v}).filter(Boolean));
     paneIdx++;
   }
@@ -1046,7 +1156,7 @@ function sparklineSvg(values){
   const min=Math.min(...values),max=Math.max(...values),range=max-min||1;
   const w=100,h=30;
   const pts=values.map((v,i)=>`${(i/(values.length-1)*w).toFixed(1)},${(h-((v-min)/range)*h).toFixed(1)}`).join(' ');
-  const col=values[values.length-1]>=values[0]?'#00e676':'#ff4060';
+  const col=values[values.length-1]>=values[0]?'#4cc38a':'#e5604d';
   return`<svg class="crack-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.5"/></svg>`;
 }
 async function fetchCrackHistory(){
@@ -1376,9 +1486,9 @@ async function renderFuturosChart(row,daysAgo1,daysAgo2){
   const labels=[];for(let i=1;i<=12;i++){if(typeof row[`CO${i}`]==='number')labels.push(`CO${i}`);}
   const todayData=labels.map(l=>row[l]);
   const[cmp1,cmp2]=await Promise.all([fetchCompareCurve(daysAgo1),fetchCompareCurve(daysAgo2)]);
-  const datasets=[{label:'Hoy',data:todayData,borderColor:'#ff6d00',backgroundColor:'#ff6d00',borderWidth:2.5,pointRadius:3,tension:0}];
-  if(cmp1)datasets.push({label:document.getElementById('futurosCompare1').selectedOptions[0].text,data:labels.map(l=>{const c=cmp1.find(x=>x.label===l);return c?c.price:null;}),borderColor:'#2979ff',backgroundColor:'#2979ff',borderWidth:1.5,pointRadius:2,borderDash:[5,3],tension:0});
-  if(cmp2)datasets.push({label:document.getElementById('futurosCompare2').selectedOptions[0].text,data:labels.map(l=>{const c=cmp2.find(x=>x.label===l);return c?c.price:null;}),borderColor:'#b388ff',backgroundColor:'#b388ff',borderWidth:1.5,pointRadius:2,borderDash:[5,3],tension:0});
+  const datasets=[{label:'Hoy',data:todayData,borderColor:'#e8a33d',backgroundColor:'#e8a33d',borderWidth:2.5,pointRadius:3,tension:0}];
+  if(cmp1)datasets.push({label:document.getElementById('futurosCompare1').selectedOptions[0].text,data:labels.map(l=>{const c=cmp1.find(x=>x.label===l);return c?c.price:null;}),borderColor:'#5b9bd5',backgroundColor:'#5b9bd5',borderWidth:1.5,pointRadius:2,borderDash:[5,3],tension:0});
+  if(cmp2)datasets.push({label:document.getElementById('futurosCompare2').selectedOptions[0].text,data:labels.map(l=>{const c=cmp2.find(x=>x.label===l);return c?c.price:null;}),borderColor:'#a78bd1',backgroundColor:'#a78bd1',borderWidth:1.5,pointRadius:2,borderDash:[5,3],tension:0});
 
   const ctx=document.getElementById('futurosChartCanvas');
   if(FUTUROS_CHART){FUTUROS_CHART.destroy();FUTUROS_CHART=null;}
@@ -1389,15 +1499,15 @@ async function renderFuturosChart(row,daysAgo1,daysAgo2){
       responsive:true,maintainAspectRatio:false,
       interaction:{mode:'index',intersect:false},
       plugins:{
-        legend:{labels:{color:'#9099b8',font:{family:'IBM Plex Mono',size:11}}},
+        legend:{labels:{color:'#9aa4ad',font:{family:'Roboto',size:11}}},
         tooltip:{callbacks:{label:ctx=>{
           const c=BRENT_CONTRACTS_CACHE?.find(x=>x.label===ctx.label);
           return`${ctx.dataset.label}: $${ctx.parsed.y?.toFixed(2)??'—'}${c?' ('+c.month+')':''}`;
         }}},
       },
       scales:{
-        x:{ticks:{color:'#9099b8',font:{family:'IBM Plex Mono'}},grid:{color:'rgba(255,255,255,.04)'}},
-        y:{ticks:{color:'#9099b8',font:{family:'IBM Plex Mono'},callback:v=>'$'+v},grid:{color:'rgba(255,255,255,.04)'}},
+        x:{ticks:{color:'#9aa4ad',font:{family:'Roboto'}},grid:{color:'rgba(255,255,255,.04)'}},
+        y:{ticks:{color:'#9aa4ad',font:{family:'Roboto'},callback:v=>'$'+v},grid:{color:'rgba(255,255,255,.04)'}},
       },
     },
   });
@@ -1498,13 +1608,13 @@ async function renderSpreadHistChart(){
     if(SPREAD_CHART){SPREAD_CHART.destroy();SPREAD_CHART=null;}
     SPREAD_CHART=new Chart(ctx,{
       type:'line',
-      data:{labels:points.map(p=>p.date),datasets:[{label:`${SPREAD_STATE.pair} (${SPREAD_STATE.unit.toUpperCase()})`,data:points.map(p=>p.value),borderColor:'#ff6d00',backgroundColor:'rgba(255,109,0,.08)',fill:true,borderWidth:2,pointRadius:0,tension:.15}]},
+      data:{labels:points.map(p=>p.date),datasets:[{label:`${SPREAD_STATE.pair} (${SPREAD_STATE.unit.toUpperCase()})`,data:points.map(p=>p.value),borderColor:'#e8a33d',backgroundColor:'rgba(255,109,0,.08)',fill:true,borderWidth:2,pointRadius:0,tension:.15}]},
       options:{
         responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{labels:{color:'#9099b8',font:{family:'IBM Plex Mono',size:11}}}},
+        plugins:{legend:{labels:{color:'#9aa4ad',font:{family:'Roboto',size:11}}}},
         scales:{
-          x:{ticks:{color:'#9099b8',font:{family:'IBM Plex Mono'},maxTicksLimit:10},grid:{color:'rgba(255,255,255,.04)'}},
-          y:{ticks:{color:'#9099b8',font:{family:'IBM Plex Mono'},callback:v=>SPREAD_STATE.unit==='usd'?'$'+v:v+'%'},grid:{color:'rgba(255,255,255,.04)'}},
+          x:{ticks:{color:'#9aa4ad',font:{family:'Roboto'},maxTicksLimit:10},grid:{color:'rgba(255,255,255,.04)'}},
+          y:{ticks:{color:'#9aa4ad',font:{family:'Roboto'},callback:v=>SPREAD_STATE.unit==='usd'?'$'+v:v+'%'},grid:{color:'rgba(255,255,255,.04)'}},
         },
       },
     });
@@ -1514,7 +1624,7 @@ function renderSpreadChartEmpty(msg){
   if(SPREAD_CHART){SPREAD_CHART.destroy();SPREAD_CHART=null;}
   const ctx=document.getElementById('spreadHistChartCanvas').getContext('2d');
   ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
-  ctx.fillStyle='#5a6178';ctx.font='12px IBM Plex Mono';ctx.textAlign='center';
+  ctx.fillStyle='#5d6772';ctx.font='12px Roboto';ctx.textAlign='center';
   ctx.fillText(msg,ctx.canvas.width/2,ctx.canvas.height/2);
 }
 function spreadColor(v,maxAbs){
@@ -1888,18 +1998,18 @@ const SOURCE_BADGE_COLORS={
   'BLOOMBERG':'#1a1f3a',    // azul oscuro
   'FINANCIAL TIMES':'#fff1e5', // rosa salmón (fondo claro, texto oscuro)
   'WSJ':'#000000',
-  'OPEC':'#ffc300',
-  'EIA TODAY IN ENERGY':'#2979ff',
-  'OILPRICE.COM':'#ff6d00',
+  'OPEC':'#e8a33d',
+  'EIA TODAY IN ENERGY':'#5b9bd5',
+  'OILPRICE.COM':'#e8a33d',
 };
-function sourceBadgeColor(srcL){return SOURCE_BADGE_COLORS[srcL]||'#5a6178';}
+function sourceBadgeColor(srcL){return SOURCE_BADGE_COLORS[srcL]||'#5d6772';}
 
 async function fetchGNews(){  try{
     const query=encodeURIComponent('crude oil OPEC Brent WTI petroleum');
     const url = `/api/news-gnews?q=${query}&lang=en&max=10`;
     const r=await fetch(url);const d=await r.json();
     if(d.articles&&d.articles.length>0){
-      const srcColors={'Reuters':'#ff9100','Bloomberg':'#2979ff','CNBC':'#00e676','Financial Times':'#ff5252'};
+      const srcColors={'Reuters':'#f6b850','Bloomberg':'#5b9bd5','CNBC':'#4cc38a','Financial Times':'#e5604d'};
       d.articles.forEach((a,i)=>{
         const srcName=a.source?.name||'GNEWS';
         const pubDate=new Date(a.publishedAt);
@@ -1908,7 +2018,7 @@ async function fetchGNews(){  try{
           realTime:pubDate.getTime(), // timestamp real completo — para filtrar por 24h de verdad
           ts:pubDate.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',hour12:false}),
           src:'gnews',srcL:srcName.substring(0,12).toUpperCase(),
-          srcColor:srcColors[srcName]||'#9099b8',
+          srcColor:srcColors[srcName]||'#9aa4ad',
           impact:classifyImpact(a.title+' '+(a.description||'')),
           cat:classifyCategory(a.title+' '+(a.description||'')),
           asset:classifyAsset(a.title+' '+(a.description||'')),
@@ -1943,7 +2053,7 @@ async function fetchNewsAPI(){  try{
           realTime:pubDate.getTime(),
           ts:pubDate.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',hour12:false}),
           src:'newsapi',srcL:(a.source?.name||'NEWS').substring(0,12).toUpperCase(),
-          srcColor:'#ff9100',impact:'med',cat:'prod',hl:a.title,hi:false,chg:'',url:a.url,image:a.urlToImage||null,desc:a.description||''
+          srcColor:'#f6b850',impact:'med',cat:'prod',hl:a.title,hi:false,chg:'',url:a.url,image:a.urlToImage||null,desc:a.description||''
         });
       });
       dedupeNews();if(NEWS.length>60)NEWS.splice(60);
@@ -2089,7 +2199,10 @@ function markUpdated(){
   const el=document.getElementById('lastUpdate');
   if(!el)return;
   const now=new Date();
-  el.textContent='Última actualización: '+now.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})+' ART';
+  const txt=now.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})+' ART';
+  el.textContent='Última actualización: '+txt;
+  const el2=document.getElementById('lastUpdate2');
+  if(el2)el2.textContent=txt;
 }
 // MEJORA 7: botón de refresh manual global — vuelve a pedir todo lo real
 async function globalRefresh(){
@@ -2310,9 +2423,9 @@ const PROD_DATA=[
 // ARA (Europa) y Singapore Hub se sacaron: no hay fuente gratuita verificada
 // para esos niveles — mostrar números ahí habría sido inventarlos.
 const STORAGE_DATA=[
-  {hub:'Cushing, OK (EE.UU.)',abbr:'CUSH',level:null,cap:90,fill:null,chg:null,col:'#ff4060',seriesKey:'cushing_stocks'},
-  {hub:'EE.UU. Total (excl. SPR)',abbr:'UST',level:null,cap:770,fill:null,chg:null,col:'#2979ff',seriesKey:'crude_stocks'},
-  {hub:'Gasolina terminada (EE.UU.)',abbr:'GAS',level:null,cap:250,fill:null,chg:null,col:'#ffc300',seriesKey:'gasoline_stocks'},
+  {hub:'Cushing, OK (EE.UU.)',abbr:'CUSH',level:null,cap:90,fill:null,chg:null,col:'#e5604d',seriesKey:'cushing_stocks'},
+  {hub:'EE.UU. Total (excl. SPR)',abbr:'UST',level:null,cap:770,fill:null,chg:null,col:'#5b9bd5',seriesKey:'crude_stocks'},
+  {hub:'Gasolina terminada (EE.UU.)',abbr:'GAS',level:null,cap:250,fill:null,chg:null,col:'#e8a33d',seriesKey:'gasoline_stocks'},
 ];
 // ── RESERVAS PROBADAS DE PETRÓLEO ──────────────────────────────
 // Dato REAL pero NO en vivo: las reservas probadas se actualizan una
@@ -2351,12 +2464,12 @@ function renderMapSidebar(){
   }).join('');
   const geo=getReservesGeo().sort((a,b)=>b.reserves-a.reserves);
   const maxR=Math.max(...geo.map(r=>r.reserves));
-  document.getElementById('reservesCards').innerHTML=geo.map(r=>`<div class="storage-card"><div class="sc-hub">${r.flag} ${r.country}</div><div class="sc-fill-bar"><div class="sc-fill-inner" style="width:${(r.reserves/maxR*100).toFixed(0)}%;background:#b388ff"></div></div><div class="sc-stats"><span>${r.reserves} mil M bbl</span><span style="color:var(--text3)">dato anual</span></div></div>`).join('');
+  document.getElementById('reservesCards').innerHTML=geo.map(r=>`<div class="storage-card"><div class="sc-hub">${r.flag} ${r.country}</div><div class="sc-fill-bar"><div class="sc-fill-inner" style="width:${(r.reserves/maxR*100).toFixed(0)}%;background:#a78bd1"></div></div><div class="sc-stats"><span>${r.reserves} mil M bbl</span><span style="color:var(--text3)">dato anual</span></div></div>`).join('');
 }
 function renderProdTable(){
   const statusCls={stable:'status-stable',tension:'status-tension',conflict:'status-conflict',sanction:'status-sanction'};
   const statusLbl={stable:'✓ ESTABLE',tension:'⚠ TENSIÓN',conflict:'🔴 CONFLICTO',sanction:'⛔ SANCIÓN'};
-  const barCols={stable:'#00e676',tension:'#ffc300',conflict:'#ff4060',sanction:'#b388ff'};
+  const barCols={stable:'#4cc38a',tension:'#e8a33d',conflict:'#e5604d',sanction:'#a78bd1'};
   document.getElementById('prodTableBody').innerHTML=PROD_DATA.map(p=>`<tr><td>${p.flag} ${p.country}</td><td><strong>${p.prod}</strong> Mb/d<div class="prod-bar-bg"><div class="prod-bar-fill" style="width:${(p.prod/p.cap*100).toFixed(0)}%;background:${barCols[p.status]}"></div></div></td><td>${p.cap} Mb/d</td><td><span style="color:${barCols[p.status]}">${p.pct}%</span></td><td style="color:var(--text3)">${p.company}</td><td class="${statusCls[p.status]}">${statusLbl[p.status]}</td></tr>`).join('');
 }
 /* ── FRONTERAS POLÍTICAS REALES ───────────────────────────
@@ -2510,11 +2623,11 @@ function toggleTradeFlows(){
 function drawTradeFlows(ctx,lonToX,latToY){
   if(!TRADE_FLOWS_DATA||!Array.isArray(TRADE_FLOWS_DATA.flows)||TRADE_FLOWS_DATA.flows.length===0)return;
   const geo=TRADE_FLOWS_DATA.endpoints_geo||{},wp=TRADE_FLOWS_DATA.maritime_waypoints||{};
-  const modeColor={sea:'#2979ff',pipeline:'#ff6d00',rail:'#00e676'};
+  const modeColor={sea:'#5b9bd5',pipeline:'#e8a33d',rail:'#4cc38a'};
   TRADE_FLOWS_DATA.flows.forEach(f=>{
     const a=geo[f.from],b=geo[f.to];if(!a||!b)return;
     const pts=[a,...(f.via||[]).map(w=>wp[w]).filter(Boolean),b];
-    const col=modeColor[f.mode]||'#9099b8';
+    const col=modeColor[f.mode]||'#9aa4ad';
     ctx.strokeStyle=col;
     ctx.lineWidth=Math.max(1.5,Math.min(5,f.volume_mbd*1.1));
     ctx.setLineDash([7,5]);ctx.lineDashOffset=-tradeFlowDashOffset;
@@ -2551,9 +2664,9 @@ function computeChokepointRisk(cp){
     const t=(n.hl+' '+(n.desc||'')).toLowerCase();
     return cp.keywords.some(k=>t.includes(k));
   });
-  if(matches.length===0)return{level:'green',col:'#00e676',matches:[]};
+  if(matches.length===0)return{level:'green',col:'#4cc38a',matches:[]};
   const hasHighSignal=matches.some(n=>n.impact==='high'||RISK_HIGH_KW.some(k=>n.hl.toLowerCase().includes(k)));
-  return hasHighSignal?{level:'red',col:'#ff4060',matches}:{level:'yellow',col:'#ffc300',matches};
+  return hasHighSignal?{level:'red',col:'#e5604d',matches}:{level:'yellow',col:'#e8a33d',matches};
 }
 function renderThreatIndex(){
   const el=document.getElementById('threatIndexBar');if(!el)return;
@@ -2572,7 +2685,7 @@ function renderMapCanvas(){
   const LAT_MIN=-60,LAT_MAX=75;
   const lonToX=lon=>(lon+180)/360*W;
   const latToY=lat=>((LAT_MAX-lat)/(LAT_MAX-LAT_MIN))*H;
-  ctx.fillStyle='#040610';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#0b0c0e';ctx.fillRect(0,0,W,H);
   ctx.strokeStyle='rgba(41,121,255,.06)';ctx.lineWidth=.5;
   for(let lon=-180;lon<=180;lon+=30){ctx.beginPath();ctx.moveTo(lonToX(lon),0);ctx.lineTo(lonToX(lon),H);ctx.stroke();}
   for(let lat=-90;lat<=90;lat+=30){ctx.beginPath();ctx.moveTo(0,latToY(lat));ctx.lineTo(W,latToY(lat));ctx.stroke();}
@@ -2582,14 +2695,14 @@ function renderMapCanvas(){
     const geo=getReservesGeo(),maxR=Math.max(...geo.map(r=>r.reserves));
     geo.forEach(r=>{
       const px=lonToX(r.lon),py=latToY(r.lat),rad=6+(r.reserves/maxR)*16;
-      ctx.strokeStyle='#b388ff';ctx.lineWidth=2;ctx.setLineDash([2,2]);
+      ctx.strokeStyle='#a78bd1';ctx.lineWidth=2;ctx.setLineDash([2,2]);
       ctx.beginPath();ctx.arc(px,py,rad,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
     });
   }
   const groupCodes=countriesInGroup(S.activeGroup);
   PROD_DATA.forEach(p=>{
     const px=lonToX(p.lon),py=latToY(p.lat),r=Math.sqrt(p.prod)*2.5+2;
-    const col={stable:'#00e676',tension:'#ffc300',conflict:'#ff4060',sanction:'#b388ff'}[p.status];
+    const col={stable:'#4cc38a',tension:'#e8a33d',conflict:'#e5604d',sanction:'#a78bd1'}[p.status];
     const inGroup=groupCodes===null||groupCodes.includes(p.wb_code);
     const isHighlighted=HIGHLIGHTED_COUNTRY&&p.country.includes(HIGHLIGHTED_COUNTRY.split(' ')[0]);
     if(!inGroup)ctx.globalAlpha=.22;
@@ -2597,7 +2710,7 @@ function renderMapCanvas(){
     ctx.fillStyle=grd;ctx.beginPath();ctx.arc(px,py,r*2,0,Math.PI*2);ctx.fill();
     ctx.fillStyle=col+'22';ctx.strokeStyle=col;ctx.lineWidth=1;ctx.beginPath();ctx.arc(px,py,r,0,Math.PI*2);ctx.fill();ctx.stroke();
     if(isHighlighted){ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(px,py,r+3,0,Math.PI*2);ctx.stroke();}
-    ctx.fillStyle=col;ctx.font='bold 8px JetBrains Mono';ctx.textAlign='center';ctx.fillText(p.flag+' '+p.prod,px,py-r-2);
+    ctx.fillStyle=col;ctx.font='bold 8px Roboto';ctx.textAlign='center';ctx.fillText(p.flag+' '+p.prod,px,py-r-2);
     ctx.globalAlpha=1;
   });
   if(S.showTankerRoutes&&TANKER_ROUTES.length>0){
@@ -2611,7 +2724,7 @@ function renderMapCanvas(){
   CHOKEPOINTS.forEach(h=>{
     const risk=computeChokepointRisk(h);
     const hx=lonToX(h.lon),hy=latToY(h.lat),label=(risk.level==='red'?'⚠ ':risk.level==='yellow'?'◈ ':'◈ ')+h.label;
-    ctx.fillStyle='rgba(6,8,16,.8)';ctx.fillRect(hx-2,hy-12,ctx.measureText(label).width+10,14);ctx.fillStyle=risk.col;ctx.font='9px JetBrains Mono';ctx.textAlign='left';ctx.fillText(label,hx+2,hy-2);
+    ctx.fillStyle='rgba(11,12,14,.85)';ctx.fillRect(hx-2,hy-12,ctx.measureText(label).width+10,14);ctx.fillStyle=risk.col;ctx.font='9px Roboto';ctx.textAlign='left';ctx.fillText(label,hx+2,hy-2);
   });
   canvas.onmousemove=e=>{
     const rect=canvas.getBoundingClientRect(),mx=(e.clientX-rect.left)*(W/rect.width),my=(e.clientY-rect.top)*(H/rect.height);
@@ -2621,8 +2734,8 @@ function renderMapCanvas(){
       const geo=getReservesGeo(),maxR=Math.max(...geo.map(r=>r.reserves));
       geo.forEach(r=>{const px=lonToX(r.lon),py=latToY(r.lat),rad=6+(r.reserves/maxR)*16;if(Math.hypot(mx-px,my-py)<rad+8)hitReserve=r;});
     }
-    if(hit){const col={stable:'#00e676',tension:'#ffc300',conflict:'#ff4060',sanction:'#b388ff'}[hit.status];tip.innerHTML=`<div class="mt-country">${hit.flag} ${hit.country}</div><div class="mt-row"><span class="mt-lbl">Producción</span><span class="mt-val">${hit.prod} Mb/d</span></div><div class="mt-row"><span class="mt-lbl">Capacidad</span><span class="mt-val">${hit.cap} Mb/d</span></div><div class="mt-row"><span class="mt-lbl">Utilización</span><span class="mt-val" style="color:${col}">${hit.pct}%</span></div><div class="mt-row"><span class="mt-lbl">Compañía</span><span class="mt-val">${hit.company}</span></div>`;tip.style.left=Math.min(e.offsetX+10,canvas.clientWidth-230)+'px';tip.style.top=Math.max(e.offsetY-20,5)+'px';tip.classList.add('show');}
-    else if(hitReserve){tip.innerHTML=`<div class="mt-country">${hitReserve.flag} ${hitReserve.country}</div><div class="mt-row"><span class="mt-lbl">Reservas probadas</span><span class="mt-val" style="color:#b388ff">${hitReserve.reserves} mil M bbl</span></div><div class="mt-row"><span class="mt-lbl">Periodicidad</span><span class="mt-val" style="color:var(--text3)">Anual, no en vivo</span></div>`;tip.style.left=Math.min(e.offsetX+10,canvas.clientWidth-230)+'px';tip.style.top=Math.max(e.offsetY-20,5)+'px';tip.classList.add('show');}
+    if(hit){const col={stable:'#4cc38a',tension:'#e8a33d',conflict:'#e5604d',sanction:'#a78bd1'}[hit.status];tip.innerHTML=`<div class="mt-country">${hit.flag} ${hit.country}</div><div class="mt-row"><span class="mt-lbl">Producción</span><span class="mt-val">${hit.prod} Mb/d</span></div><div class="mt-row"><span class="mt-lbl">Capacidad</span><span class="mt-val">${hit.cap} Mb/d</span></div><div class="mt-row"><span class="mt-lbl">Utilización</span><span class="mt-val" style="color:${col}">${hit.pct}%</span></div><div class="mt-row"><span class="mt-lbl">Compañía</span><span class="mt-val">${hit.company}</span></div>`;tip.style.left=Math.min(e.offsetX+10,canvas.clientWidth-230)+'px';tip.style.top=Math.max(e.offsetY-20,5)+'px';tip.classList.add('show');}
+    else if(hitReserve){tip.innerHTML=`<div class="mt-country">${hitReserve.flag} ${hitReserve.country}</div><div class="mt-row"><span class="mt-lbl">Reservas probadas</span><span class="mt-val" style="color:#a78bd1">${hitReserve.reserves} mil M bbl</span></div><div class="mt-row"><span class="mt-lbl">Periodicidad</span><span class="mt-val" style="color:var(--text3)">Anual, no en vivo</span></div>`;tip.style.left=Math.min(e.offsetX+10,canvas.clientWidth-230)+'px';tip.style.top=Math.max(e.offsetY-20,5)+'px';tip.classList.add('show');}
     else tip.classList.remove('show');
   };
   canvas.onmouseleave=()=>document.getElementById('mapTooltip').classList.remove('show');
@@ -2761,12 +2874,12 @@ function renderAnalysis(){
   const geoCount=NEWS.slice(0,15).filter(n=>n.cat==='geo').length;
   const opecCount=NEWS.slice(0,15).filter(n=>n.cat==='opec').length;
   const biasPct=ANALYSIS_BIAS?Math.min(100,Math.round(50+((ANALYSIS_BIAS.scoreBull-ANALYSIS_BIAS.scoreBear)*8))):50;
-  const biasCol=biasPct>55?'#00e676':biasPct<45?'#ff4060':'#ffc300';
+  const biasCol=biasPct>55?'#4cc38a':biasPct<45?'#e5604d':'#e8a33d';
   document.getElementById('sentimentRow').innerHTML=[
     {label:'SESGO DIRECCIONAL (real)',value:biasPct,desc:ANALYSIS_BIAS?ANALYSIS_BIAS.label.replace(/[▲▼—]/g,'').trim():'—',col:biasCol},
-    {label:'EVENTOS GEOPOLÍTICOS (15 noticias)',value:Math.min(100,geoCount*20),desc:`${geoCount} activos`,col:geoCount>2?'#ff4060':geoCount>0?'#ffc300':'#00e676'},
-    {label:'ACTIVIDAD OPEC+ (15 noticias)',value:Math.min(100,opecCount*25),desc:`${opecCount} activos`,col:'#2979ff'},
-  ].map(s=>`<div class="sent-card"><div class="sent-label">${s.label}</div><svg class="sent-gauge" viewBox="0 0 60 60"><circle cx="30" cy="30" r="24" fill="none" stroke="#1f2235" stroke-width="6"/><circle cx="30" cy="30" r="24" fill="none" stroke="${s.col}" stroke-width="6" stroke-dasharray="${(s.value/100)*150.8} 150.8" stroke-dashoffset="37.7" stroke-linecap="round" transform="rotate(-90 30 30)"/></svg><div class="sent-value" style="color:${s.col}">${s.value}</div><div class="sent-desc">${s.desc}</div></div>`).join('');
+    {label:'EVENTOS GEOPOLÍTICOS (15 noticias)',value:Math.min(100,geoCount*20),desc:`${geoCount} activos`,col:geoCount>2?'#e5604d':geoCount>0?'#e8a33d':'#4cc38a'},
+    {label:'ACTIVIDAD OPEC+ (15 noticias)',value:Math.min(100,opecCount*25),desc:`${opecCount} activos`,col:'#5b9bd5'},
+  ].map(s=>`<div class="sent-card"><div class="sent-label">${s.label}</div><svg class="sent-gauge" viewBox="0 0 60 60"><circle cx="30" cy="30" r="24" fill="none" stroke="#262c33" stroke-width="6"/><circle cx="30" cy="30" r="24" fill="none" stroke="${s.col}" stroke-width="6" stroke-dasharray="${(s.value/100)*150.8} 150.8" stroke-dashoffset="37.7" stroke-linecap="round" transform="rotate(-90 30 30)"/></svg><div class="sent-value" style="color:${s.col}">${s.value}</div><div class="sent-desc">${s.desc}</div></div>`).join('');
 
   // BUG4: top 5 eventos de mayor impacto del día
   const t5=document.getElementById('top5EventsList');
@@ -2792,7 +2905,7 @@ const BG_CENTERS=[{lon:45,lat:24,p:9},{lon:53,lat:32,p:3.5},{lon:48,lat:29,p:2.4
 /* ── TICKER & CLOCKS ──────────────────────── */
 const TICKERS=[{sym:'BRENT ICE',key:'brent'},{sym:'WTI NYMEX',key:'wti'},{sym:'COIL FUT',key:'coil'},{sym:'NAT GAS',key:'ng'},{sym:'HEATING OIL',key:'heatoil'},{sym:'RBOB GAS',key:'rbob'}];
 function buildTicker(){
-  let html='';for(let rep=0;rep<2;rep++){TICKERS.forEach(t=>{const p=S.prices[t.key],c=S.changes[t.key]||0,dir=c>0?'up':c<0?'dn':'flat';html+=`<span class="ticker-item" id="tk-${t.key}-${rep}"><span class="ti-name">${t.sym}</span><span class="ti-price price-${dir}">$${p}</span><span class="ti-price price-${dir}" style="font-size:12px"> ${c>0?'▲':c<0?'▼':'—'}${Math.abs(c).toFixed(2)}%</span></span><span style="color:#1f2235;padding:0 4px">|</span>`;});}
+  let html='';for(let rep=0;rep<2;rep++){TICKERS.forEach(t=>{const p=S.prices[t.key],c=S.changes[t.key]||0,dir=c>0?'up':c<0?'dn':'flat';html+=`<span class="ticker-item" id="tk-${t.key}-${rep}"><span class="ti-name">${t.sym}</span><span class="ti-price price-${dir}">$${p}</span><span class="ti-price price-${dir}" style="font-size:12px"> ${c>0?'▲':c<0?'▼':'—'}${Math.abs(c).toFixed(2)}%</span></span><span style="color:#262c33;padding:0 4px">|</span>`;});}
   document.getElementById('tickerTrack').innerHTML=html;
 }
 function updateTicker(){
@@ -2826,12 +2939,27 @@ function updateClocks(){
 }
 
 /* ── UI CONTROLS ──────────────────────────── */
+const TAB_META={
+  charts:{tag:'Mercado de Petróleo',title:'Precios <span class="accent-word">en Vivo</span>'},
+  news:{tag:'Sala de Prensa',title:'Noticias <span class="accent-word">del Mercado</span>'},
+  map:{tag:'Geopolítica del Crudo',title:'Mapa <span class="accent-word">Global</span>'},
+  analysis:{tag:'Resumen Editorial',title:'Análisis <span class="accent-word">24h</span>'},
+  macro:{tag:'Contexto Macroeconómico',title:'Panel <span class="accent-word">Macro</span>'},
+  futuros:{tag:'Futuros ICE Brent',title:'Curva de <span class="accent-word">Futuros</span>'},
+  spreads:{tag:'Futuros ICE Brent',title:'Monitor de <span class="accent-word">Spreads</span>'}
+};
 function switchTab(tab){
   S.tab=tab;
   document.querySelectorAll('.tab-section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('tbn-'+tab).classList.add('active');
+  const bi=TAB_META[tab];
+  if(bi){
+    const bt=document.getElementById('banner-tag'),bttl=document.getElementById('banner-title');
+    if(bt)bt.textContent=bi.tag;
+    if(bttl)bttl.innerHTML=bi.title;
+  }
   if(tab==='charts'){S.chartData=null;setTimeout(()=>{renderChart();},50);loadRealCandles();fetchAlphaVantage();}
   if(tab==='map'){setTimeout(()=>{renderMapCanvas();renderProdTable();renderMapSidebar();setMapView(S.mapView);renderThreatIndex();renderMapMovements();renderMapKpis();renderTop10Panel();renderGroupSummary();if(!TRADE_FLOWS_DATA)fetchTradeFlows().then(()=>{S.showTradeFlows=true;const btn=document.getElementById('mt-flows');if(btn)btn.classList.add('active');renderMapCanvas();});},50);}
   if(tab==='news'){renderNews();}
@@ -2840,7 +2968,38 @@ function switchTab(tab){
   if(tab==='macro'){loadCalendarEvents();fetchMacroCorrelations();}
   if(tab==='futuros'){loadFuturosTab();}
   if(tab==='spreads'){loadSpreadsTab();}
+  if(window.innerWidth<=760){const sb=document.getElementById('sidebar');if(sb)sb.classList.remove('mobile-open');}
   savePrefs();
+}
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  if(window.innerWidth<=760){sb.classList.toggle('mobile-open');return;}
+  sb.classList.toggle('collapsed');
+  setTimeout(()=>{
+    if(S.tab==='map'&&typeof renderMapCanvas==='function')renderMapCanvas();
+    if(S.tab==='charts'&&typeof renderChart==='function')renderChart();
+    window.dispatchEvent(new Event('resize'));
+  },240);
+}
+let darkMode=true;
+function toggleTheme(){
+  darkMode=!darkMode;
+  const label=document.getElementById('theme-label'),icon=document.getElementById('theme-icon');
+  if(darkMode){
+    document.documentElement.removeAttribute('data-theme');
+    if(label)label.textContent='Tema claro';
+    if(icon)icon.innerHTML='<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>';
+  }else{
+    document.documentElement.setAttribute('data-theme','light');
+    if(label)label.textContent='Tema oscuro';
+    if(icon)icon.innerHTML='<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+  }
+  try{localStorage.setItem('tdp_theme',darkMode?'dark':'light');}catch(e){}
+  if(S.tab==='charts'&&typeof renderChart==='function')renderChart();
+  if(S.tab==='map'&&typeof renderMapCanvas==='function')renderMapCanvas();
+  if(typeof renderCrackCards==='function')renderCrackCards();
+  if(typeof loadFuturosTab==='function'&&S.tab==='futuros')loadFuturosTab();
+  if(typeof loadSpreadsTab==='function'&&S.tab==='spreads')loadSpreadsTab();
 }
 function selAsset(a,btn){
   S.asset=a;S.hover=-1;S.chartData=null;
@@ -2872,6 +3031,12 @@ function toggleInd(ind,btn,onCls){
 
 /* ── INIT ─────────────────────────────────── */
 document.addEventListener('DOMContentLoaded',()=>{
+  try{
+    if(localStorage.getItem('tdp_theme')==='light'){
+      darkMode=true; // toggleTheme() flips it, so pre-flip to land on light
+      toggleTheme();
+    }
+  }catch(e){}
   buildTicker();updateClocks();
   setInterval(updateClocks,1000);
   setInterval(updateTicker,3000);
@@ -2912,9 +3077,9 @@ document.addEventListener('DOMContentLoaded',()=>{
     S.curveUnderlying=saved.curveUnderlying||S.curveUnderlying;
     S.curveCount=saved.curveCount||S.curveCount;
     restoreUIFromState();
-    switchTab(saved.tab||'dashboard');
+    switchTab(saved.tab&&saved.tab!=='dashboard'?saved.tab:'charts');
   }else{
-    switchTab('dashboard');
+    switchTab('charts');
   }
   window.addEventListener('resize',()=>{
     // El gráfico (Lightweight Charts) se autoajusta solo via autoSize:true
