@@ -52,37 +52,40 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:
 /* ── SIDEBAR ─────────────────────────────────────────────── */
 .sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--bg-elev);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:width .22s ease;position:sticky;top:0;height:100vh;z-index:100}
 .sidebar.collapsed{width:var(--sidebar-w-collapsed)}
-.sidebar-brand{display:flex;align-items:center;gap:10px;padding:18px 16px;border-bottom:1px solid var(--border);min-height:64px}
-.brand-mark{width:30px;height:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);border-radius:8px}
+.sidebar-brand{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border);min-height:56px}
+.brand-mark{width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);border-radius:8px}
 .brand-text{overflow:hidden;white-space:nowrap}
 .bt-main{font-size:13px;font-weight:700;color:var(--text);letter-spacing:-.01em}
 .bt-sub{font-size:10.5px;color:var(--text3);margin-top:1px}
 .sidebar.collapsed .brand-text,.sidebar.collapsed .nav-label,.sidebar.collapsed .nav-txt{display:none}
-.nav{flex:1;padding:14px 10px;overflow-y:auto}
-.nav-label{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);padding:0 8px;margin-bottom:8px}
-.tab-btn,.nav-item{width:100%;display:flex;align-items:center;gap:11px;justify-content:flex-start;background:none;border:none;border-radius:7px;color:var(--text2);font-family:var(--sans);font-size:13px;font-weight:500;letter-spacing:0;padding:9px 10px;cursor:pointer;transition:all .15s;margin-bottom:2px;text-align:left}
-.sidebar.collapsed .tab-btn,.sidebar.collapsed .nav-item{justify-content:center;padding:9px 0}
+.nav{flex:1;padding:10px 8px;overflow-y:auto;min-height:0}
+.nav-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);padding:0 8px;margin-bottom:6px}
+.tab-btn,.nav-item{width:100%;display:flex;align-items:center;gap:10px;justify-content:flex-start;background:none;border:none;border-radius:7px;color:var(--text2);font-family:var(--sans);font-size:12.5px;font-weight:500;letter-spacing:0;padding:7px 9px;cursor:pointer;transition:all .15s;margin-bottom:1px;text-align:left}
+.sidebar.collapsed .tab-btn,.sidebar.collapsed .nav-item{justify-content:center;padding:7px 0}
 .tab-btn:hover,.nav-item:hover{color:var(--text);background:var(--surface2)}
 .tab-btn.active,.nav-item.active{color:var(--text-on-dark);background:var(--accent)}
 .tab-icon{font-size:15px;flex-shrink:0;width:18px;text-align:center}
-.sidebar-foot{padding:12px 10px 14px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px}
-.sidebar-status{padding:6px 10px 10px}
+.sidebar-foot{padding:8px 8px 10px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.sidebar-status{padding:4px 6px 6px}
 .sidebar.collapsed .sidebar-status{display:none}
 .data-badge{font-size:10.5px;font-family:var(--sans);font-weight:700;padding:2px 8px;letter-spacing:.06em;border-radius:4px;border:1px solid;display:inline-block}
 .badge-sim{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
 .badge-live{background:var(--pos-soft);border-color:var(--pos);color:var(--pos)}
-.theme-toggle2,.collapse-btn{display:flex;align-items:center;gap:10px;width:100%;background:none;border:1px solid var(--border);border-radius:7px;color:var(--text2);font-size:12.5px;font-weight:500;padding:8px 10px;cursor:pointer;transition:all .15s}
-.theme-toggle2:hover,.collapse-btn:hover{background:var(--surface2);color:var(--accent);border-color:var(--border2)}
-.theme-toggle2 .ic,.collapse-btn .ic{width:17px;height:17px;flex-shrink:0;stroke-width:2;transition:transform .22s ease}
+#apiStatus{max-height:32px;overflow:hidden}
+.footer-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.footer-actions button,.theme-toggle2,.collapse-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:none;border:1px solid var(--border);border-radius:7px;color:var(--text2);font-size:12.5px;font-weight:500;padding:7px 0;cursor:pointer;transition:all .15s}
+.footer-actions button:hover,.theme-toggle2:hover,.collapse-btn:hover{background:var(--surface2);color:var(--accent);border-color:var(--border2)}
+.footer-actions button .ic,.theme-toggle2 .ic,.collapse-btn .ic{width:16px;height:16px;flex-shrink:0;stroke-width:2;transition:transform .22s ease}
+.footer-actions .lbl-txt{display:none}
+.collapse-btn .ic{transition:transform .22s ease}
 .sidebar.collapsed .collapse-btn .ic{transform:rotate(180deg)}
-.sidebar.collapsed .theme-toggle2,.sidebar.collapsed .collapse-btn{justify-content:center;padding:9px 0}
-.sidebar.collapsed .theme-toggle2 .lbl-txt,.sidebar.collapsed .collapse-btn .lbl-txt{display:none}
-.tb-clocks{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--border);margin-top:8px;padding-top:8px}
-.tb-clock{display:flex;flex-direction:column;padding:3px 6px;min-width:0}
+.sidebar.collapsed .footer-actions{grid-template-columns:1fr}
+.tb-clocks{display:grid;grid-template-columns:repeat(3,1fr);gap:3px 4px;border-top:1px solid var(--border);margin-top:6px;padding-top:6px}
+.tb-clock{display:flex;flex-direction:column;padding:1px 2px;min-width:0}
 .sidebar.collapsed .tb-clocks{display:none}
-.tc-city{font-family:var(--sans);font-size:9px;color:var(--text3);letter-spacing:.06em}
-.tc-time{font-family:var(--sans);font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
-.tc-status{font-size:9px;font-family:var(--sans);margin-top:1px}
+.tc-city{font-family:var(--sans);font-size:8.5px;color:var(--text3);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tc-time{font-family:var(--sans);font-size:11px;font-weight:600;font-variant-numeric:tabular-nums}
+.tc-status{font-size:8.5px;font-family:var(--sans);margin-top:0}
 .tc-open{color:var(--pos)}.tc-closed{color:var(--neg)}
 
 /* ── MAIN / BANNER ───────────────────────────────────────── */
@@ -128,7 +131,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:
 .ind-btn.on-purple{border-color:var(--purple);color:var(--purple);background:rgba(179,136,255,.08)}
 .ind-btn.on-green{border-color:var(--green);color:var(--green);background:rgba(0,230,118,.08)}
 .chart-wrap{position:relative;background:var(--bg);display:flex;justify-content:center;padding:14px}
-.chart-box{position:relative;width:100%;max-width:920px;aspect-ratio:4/3;background:var(--bg);border:1px solid var(--border2);border-radius:8px;overflow:hidden}
+.chart-box{position:relative;width:100%;max-width:1100px;height:clamp(340px,52vh,520px);background:var(--bg);border:1px solid var(--border2);border-radius:8px;overflow:hidden}
 .chart-spinner{width:14px;height:14px;border:2px solid var(--border2);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
 #lwChart{position:absolute;inset:0}
@@ -290,7 +293,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:
 .threat-index-bar{display:flex;gap:8px;flex-wrap:wrap;padding:8px 14px;background:var(--panel2);border-bottom:1px solid var(--border)}
 .threat-chip{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--text2);border:1px solid;border-radius:3px;padding:3px 9px}
 .threat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.map-body-row{display:flex;gap:14px;padding:14px;align-items:stretch}
+.map-body-row{display:flex;gap:14px;padding:14px;align-items:stretch;min-height:0}
 .group-filter-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:7px 14px;background:#0e1013;border-bottom:1px solid var(--border2);font-family:var(--mono)}
 .group-summary{margin-left:auto;font-size:11px;color:var(--text2)}
 .top10-panel{display:grid;grid-template-columns:1fr 1fr;gap:0;width:100%;max-width:920px;border:1px solid var(--border2);margin:0 auto 14px}
@@ -303,14 +306,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:
 .t10-row:hover{background:var(--panel2)}
 .t10-row.hl{background:rgba(255,109,0,.1);border-left:2px solid var(--orange)}
 .map-main-col{flex:1;min-width:0}
-.map-movements-col{width:300px;flex-shrink:0;border:1px solid var(--border2);overflow-y:auto;max-height:calc(100vh - 280px)}
+.map-movements-col{width:300px;flex-shrink:0;border:1px solid var(--border2);overflow-y:auto;max-height:clamp(420px,76vh,820px)}
 .map-movements-list{padding:6px}
 .mov-row{display:flex;gap:8px;padding:8px 6px;border-bottom:1px solid var(--border);cursor:pointer}
 .mov-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
 .mov-text{font-size:12px;color:var(--text2);line-height:1.4}
 .mov-meta{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:2px}
-#mapView{position:relative;overflow:hidden;background:#0b0c0e;width:100%;aspect-ratio:5/3;max-height:calc(100vh - 280px);border:1px solid var(--border2);flex-shrink:0}
+#mapView{position:relative;overflow:hidden;background:#0b0c0e;width:100%;height:clamp(420px,76vh,820px);border:1px solid var(--border2);flex-shrink:0;cursor:grab}
+#mapView.dragging{cursor:grabbing}
 #mapCanvas{display:block;width:100%;height:100%}
+.map-zoom-controls{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:4px;z-index:6}
+.map-zoom-controls button{width:30px;height:30px;background:rgba(19,22,25,.88);border:1px solid var(--border2);color:var(--text);font-size:16px;font-weight:700;border-radius:6px;cursor:pointer;line-height:1;transition:all .12s}
+.map-zoom-controls button:hover{background:var(--accent);color:var(--text-on-dark);border-color:var(--accent)}
+.map-zoom-controls button:last-child{font-size:14px}
 .map-tooltip{position:absolute;background:var(--panel2);border:1px solid var(--border2);padding:10px 12px;font-family:var(--mono);font-size:12px;max-width:220px;pointer-events:none;z-index:10;display:none}
 .map-tooltip.show{display:block}
 .mt-country{font-size:14px;font-weight:700;color:var(--yellow);margin-bottom:6px}
@@ -441,14 +449,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:
       </svg>
       <span class="lbl-txt" id="theme-label">Tema claro</span>
     </button>
-    <button id="btnGlobalRefresh" class="collapse-btn" onclick="globalRefresh()" title="Actualizar todos los datos">
-      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v6h-6"/></svg>
-      <span class="lbl-txt">Actualizar</span>
-    </button>
-    <button class="collapse-btn" onclick="toggleSidebar()" aria-label="Contraer menú" title="Contraer menú">
-      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
-      <span class="lbl-txt">Contraer</span>
-    </button>
+    <div class="footer-actions">
+      <button id="btnGlobalRefresh" onclick="globalRefresh()" title="Actualizar todos los datos" aria-label="Actualizar todos los datos">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v6h-6"/></svg>
+        <span class="lbl-txt">Actualizar</span>
+      </button>
+      <button class="collapse-btn" onclick="toggleSidebar()" aria-label="Contraer menú" title="Contraer / expandir menú">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+        <span class="lbl-txt">Contraer</span>
+      </button>
+    </div>
   </div>
 </aside>
 
@@ -643,6 +653,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:
         <div id="mapView">
           <canvas id="mapCanvas"></canvas>
           <div class="map-tooltip" id="mapTooltip"></div>
+          <div class="map-zoom-controls">
+            <button onclick="mapZoomIn()" title="Acercar">+</button>
+            <button onclick="mapZoomOut()" title="Alejar">−</button>
+            <button onclick="mapZoomReset()" title="Restablecer vista">⟲</button>
+          </div>
         </div>
         <div id="listView">
           <table class="prod-table">
@@ -813,6 +828,7 @@ const S = {
   ind:{sma20:false,sma50:false,sma200:false,ema20:false,bb:false,volume:true,rsi:false,macd:false},
   newsFilter:{src:'all',cat:'all',imp:'all',asset:'all',sort:'recent'},
   mapView:'map', hover:-1, showReserves:false, showTankerRoutes:false, showTradeFlows:false, activeGroup:'all', curveUnderlying:'wti', curveCount:6,
+  mapZoom:1, mapPanX:0, mapPanY:0,
   prices:{brent:74.38,wti:70.81,coil:71.42,ng:2.847,heatoil:2.118,rbob:2.264},
   changes:{brent:+0.57,wti:-0.46,coil:+0.25,ng:+1.10,heatoil:0,rbob:-0.40},
   chartData:null, liveActive:false
@@ -1721,12 +1737,14 @@ function fmtCountdown(target){
 let CALENDAR_EVENTS=[];
 async function loadCalendarEvents(){
   const recurring=[
-    {title:'EIA Weekly Petroleum Status Report',importance:'alta',target:nextWeekday(3,10,30),meta:'Todos los miércoles 10:30 ET — recurrencia real de la industria'},
+    {title:'EIA Weekly Petroleum Status Report',importance:'alta',target:nextWeekday(3,10,30),meta:'Todos los miércoles 10:30 ET — recurrencia real de la industria',url:'https://www.eia.gov/petroleum/supply/weekly/'},
     {title:'API Stocks (American Petroleum Institute)',importance:'media',target:nextWeekday(2,16,30),meta:'Todos los martes 16:30 ET'},
+    {title:'CFTC Commitments of Traders (COT) — futuros de petróleo',importance:'media',target:nextWeekday(5,15,30),meta:'Todos los viernes 15:30 ET — posicionamiento especulativo real',url:'https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm'},
     {title:'Baker Hughes Rig Count',importance:'media',target:nextWeekday(5,13,0),meta:'Todos los viernes 13:00 ET'},
     {title:'EIA STEO (mensual) — aproximado',importance:'media',target:nextMonthlyApprox(2),meta:'≈ 2da semana del mes (no hay día fijo exacto publicado)'},
     {title:'OPEC MOMR (mensual) — aproximado',importance:'media',target:nextMonthlyApprox(2),meta:'≈ 2da semana del mes (no hay día fijo exacto publicado)'},
-    {title:'IEA Oil Market Report (mensual) — aproximado',importance:'media',target:nextMonthlyApprox(2),meta:'≈ 2da semana del mes (no hay día fijo exacto publicado)'},
+    {title:'IEA Oil Market Report (mensual) — aproximado',importance:'media',target:nextMonthlyApprox(2),meta:'≈ 2da semana del mes (no hay día fijo exacto publicado)',url:'https://www.iea.org/reports/oil-market-report'},
+    {title:'Vencimiento mensual — futuros ICE Brent (front month)',importance:'media',target:nextMonthlyApprox(4),meta:'≈ último tramo del mes — el día exacto de expiración varía según el calendario ICE',url:'https://www.ice.com/products/219/Brent-Crude-Futures'},
   ].filter(e=>e.target);
 
   let hardcoded=[];
@@ -2553,22 +2571,24 @@ function renderGroupSummary(){
 
 /* ═══════════════════════════════════════════════
    BUG 3.3 — TOP 10 EXPORTADORES/IMPORTADORES NETOS
-   Reales, Energy Institute Statistical Review 2024 + EIA International
-   Energy Statistics (ver _fecha_referencia). Hardcodeado a propósito
-   porque ninguna API gratuita da esto consolidado y verificable en
-   vivo — se documenta la fecha exacta en vez de simular un feed.
+   Reales, Energy Institute Statistical Review of World Energy 2025
+   (comercio 2024, publicado 2025) + EIA International Energy Statistics.
+   Es el consolidado anual más reciente que existe: el comercio bilateral
+   de petróleo solo se publica con esa periodicidad, ninguna API gratuita
+   lo da en vivo — se documenta la fecha exacta en vez de simular un feed.
+   Actualizado a la última revisión disponible (jun-2026).
 ═══════════════════════════════════════════════ */
 const TOP10_EXPORTERS=[
-  {country:'Arabia Saudita',flag:'🇸🇦',mbd:6.8},{country:'Rusia',flag:'🇷🇺',mbd:4.7},
-  {country:'Canadá',flag:'🇨🇦',mbd:4.2},{country:'Irak',flag:'🇮🇶',mbd:3.4},
-  {country:'EAU',flag:'🇦🇪',mbd:2.9},{country:'EE.UU.',flag:'🇺🇸',mbd:2.0},
+  {country:'Arabia Saudita',flag:'🇸🇦',mbd:7.3},{country:'Rusia',flag:'🇷🇺',mbd:4.7},
+  {country:'Canadá',flag:'🇨🇦',mbd:4.3},{country:'Irak',flag:'🇮🇶',mbd:3.5},
+  {country:'EAU',flag:'🇦🇪',mbd:2.7},{country:'EE.UU.',flag:'🇺🇸',mbd:2.0},
   {country:'Kuwait',flag:'🇰🇼',mbd:2.0},{country:'Nigeria',flag:'🇳🇬',mbd:1.5},
-  {country:'Kazajistán',flag:'🇰🇿',mbd:1.4},{country:'Noruega',flag:'🇳🇴',mbd:1.1},
+  {country:'Kazajistán',flag:'🇰🇿',mbd:1.6},{country:'Noruega',flag:'🇳🇴',mbd:1.1},
 ];
 const TOP10_IMPORTERS=[
-  {country:'China',flag:'🇨🇳',mbd:11.0},{country:'EE.UU.',flag:'🇺🇸',mbd:5.0},
-  {country:'India',flag:'🇮🇳',mbd:4.8},{country:'Japón',flag:'🇯🇵',mbd:2.6},
-  {country:'Corea del Sur',flag:'🇰🇷',mbd:2.6},{country:'Alemania',flag:'🇩🇪',mbd:1.8},
+  {country:'China',flag:'🇨🇳',mbd:11.1},{country:'EE.UU.',flag:'🇺🇸',mbd:6.6},
+  {country:'India',flag:'🇮🇳',mbd:4.8},{country:'Corea del Sur',flag:'🇰🇷',mbd:2.6},
+  {country:'Japón',flag:'🇯🇵',mbd:2.5},{country:'Alemania',flag:'🇩🇪',mbd:1.8},
   {country:'Países Bajos',flag:'🇳🇱',mbd:1.7},{country:'Italia',flag:'🇮🇹',mbd:1.3},
   {country:'España',flag:'🇪🇸',mbd:1.2},{country:'Tailandia',flag:'🇹🇭',mbd:1.0},
 ];
@@ -2683,8 +2703,11 @@ function renderMapCanvas(){
   const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;
   // Proyección recortada: lat -60 a 75 (sin Antártida, cabe todo incluyendo Argentina)
   const LAT_MIN=-60,LAT_MAX=75;
-  const lonToX=lon=>(lon+180)/360*W;
-  const latToY=lat=>((LAT_MAX-lat)/(LAT_MAX-LAT_MIN))*H;
+  const lonToXBase=lon=>(lon+180)/360*W;
+  const latToYBase=lat=>((LAT_MAX-lat)/(LAT_MAX-LAT_MIN))*H;
+  const zoom=S.mapZoom||1,panX=S.mapPanX||0,panY=S.mapPanY||0;
+  const lonToX=lon=>(lonToXBase(lon)-W/2)*zoom+W/2+panX;
+  const latToY=lat=>(latToYBase(lat)-H/2)*zoom+H/2+panY;
   ctx.fillStyle='#0b0c0e';ctx.fillRect(0,0,W,H);
   ctx.strokeStyle='rgba(41,121,255,.06)';ctx.lineWidth=.5;
   for(let lon=-180;lon<=180;lon+=30){ctx.beginPath();ctx.moveTo(lonToX(lon),0);ctx.lineTo(lonToX(lon),H);ctx.stroke();}
@@ -2714,11 +2737,15 @@ function renderMapCanvas(){
     ctx.globalAlpha=1;
   });
   if(S.showTankerRoutes&&TANKER_ROUTES.length>0){
+    ctx.strokeStyle='rgba(232,163,61,.45)';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
     TANKER_ROUTES.forEach(rt=>{
-      const x1=lonToX(rt.from[0]),y1=latToY(rt.from[1]),x2=lonToX(rt.to[0]),y2=latToY(rt.to[1]);
-      ctx.strokeStyle='rgba(255,109,0,.35)';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
-      ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.setLineDash([]);
+      const pts=rt.path||(rt.from&&rt.to?[rt.from,rt.to]:[]);
+      if(pts.length<2)return;
+      ctx.beginPath();ctx.moveTo(lonToX(pts[0][0]),latToY(pts[0][1]));
+      for(let i=1;i<pts.length;i++)ctx.lineTo(lonToX(pts[i][0]),latToY(pts[i][1]));
+      ctx.stroke();
     });
+    ctx.setLineDash([]);
   }
   if(S.showTradeFlows)drawTradeFlows(ctx,lonToX,latToY);
   CHOKEPOINTS.forEach(h=>{
@@ -2783,6 +2810,42 @@ function toggleReservesLayer(){
   S.showReserves=!S.showReserves;
   document.getElementById('mt-reserves').classList.toggle('active',S.showReserves);
   renderMapCanvas();
+}
+/* ── Zoom & pan del mapa ─────────────────────────────────── */
+function mapZoomIn(){S.mapZoom=Math.min(8,(S.mapZoom||1)*1.4);renderMapCanvas();}
+function mapZoomOut(){
+  S.mapZoom=Math.max(1,(S.mapZoom||1)/1.4);
+  if(S.mapZoom<=1.001){S.mapZoom=1;S.mapPanX=0;S.mapPanY=0;}
+  renderMapCanvas();
+}
+function mapZoomReset(){S.mapZoom=1;S.mapPanX=0;S.mapPanY=0;renderMapCanvas();}
+let _mapDrag=null;
+function initMapInteractions(){
+  const wrap=document.getElementById('mapView');
+  if(!wrap||wrap._zoomBound)return;
+  wrap._zoomBound=true;
+  wrap.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const factor=e.deltaY<0?1.18:1/1.18;
+    S.mapZoom=Math.min(8,Math.max(1,(S.mapZoom||1)*factor));
+    if(S.mapZoom<=1.001){S.mapZoom=1;S.mapPanX=0;S.mapPanY=0;}
+    renderMapCanvas();
+  },{passive:false});
+  wrap.addEventListener('mousedown',e=>{
+    if(S.mapZoom<=1)return;
+    _mapDrag={x:e.clientX,y:e.clientY,panX:S.mapPanX||0,panY:S.mapPanY||0};
+    wrap.classList.add('dragging');
+  });
+  window.addEventListener('mousemove',e=>{
+    if(!_mapDrag)return;
+    const canvas=document.getElementById('mapCanvas');if(!canvas)return;
+    const rect=canvas.getBoundingClientRect();
+    const scaleX=canvas.width/rect.width,scaleY=canvas.height/rect.height;
+    S.mapPanX=_mapDrag.panX+(e.clientX-_mapDrag.x)*scaleX;
+    S.mapPanY=_mapDrag.panY+(e.clientY-_mapDrag.y)*scaleY;
+    renderMapCanvas();
+  });
+  window.addEventListener('mouseup',()=>{_mapDrag=null;wrap.classList.remove('dragging');});
 }
 let TANKER_ROUTES=[];
 async function fetchTankerRoutes(){
@@ -2961,7 +3024,7 @@ function switchTab(tab){
     if(bttl)bttl.innerHTML=bi.title;
   }
   if(tab==='charts'){S.chartData=null;setTimeout(()=>{renderChart();},50);loadRealCandles();fetchAlphaVantage();}
-  if(tab==='map'){setTimeout(()=>{renderMapCanvas();renderProdTable();renderMapSidebar();setMapView(S.mapView);renderThreatIndex();renderMapMovements();renderMapKpis();renderTop10Panel();renderGroupSummary();if(!TRADE_FLOWS_DATA)fetchTradeFlows().then(()=>{S.showTradeFlows=true;const btn=document.getElementById('mt-flows');if(btn)btn.classList.add('active');renderMapCanvas();});},50);}
+  if(tab==='map'){setTimeout(()=>{renderMapCanvas();initMapInteractions();renderProdTable();renderMapSidebar();setMapView(S.mapView);renderThreatIndex();renderMapMovements();renderMapKpis();renderTop10Panel();renderGroupSummary();if(!TRADE_FLOWS_DATA)fetchTradeFlows().then(()=>{S.showTradeFlows=true;const btn=document.getElementById('mt-flows');if(btn)btn.classList.add('active');renderMapCanvas();});},50);}
   if(tab==='news'){renderNews();}
   if(tab==='analysis'){renderAnalysis();if(NEWS.length>3)fetchAISummary();}
   if(tab==='dashboard'){loadDashboard();}
