@@ -1,121 +1,140 @@
 [
   {
-    "time": 1568462400,
+    "time": 1645660800,
     "type": "conflict",
-    "date": "2019-09-14",
-    "title": "Ataque con drones a Abqaiq/Khurais (Arabia Saudita)",
-    "desc": "Ataque atribuido a Irán/Houthis sobre instalaciones de Saudi Aramco; tumbó ~5% de la oferta mundial por días. Brent +15% la apertura siguiente."
-  },
-  {
-    "time": 1583668800,
-    "type": "opec",
-    "date": "2020-03-08",
-    "title": "Colapso del acuerdo OPEC+ — guerra de precios Arabia-Rusia",
-    "desc": "Rusia se niega a profundizar los recortes; Arabia Saudita responde bajando precios oficiales y subiendo producción."
-  },
-  {
-    "time": 1586692800,
-    "type": "opec",
-    "date": "2020-04-12",
-    "title": "OPEC+ acuerda el recorte histórico de 9.7 Mb/d",
-    "desc": "El mayor recorte de producción coordinado de la historia, en respuesta al colapso de demanda por COVID-19."
-  },
-  {
-    "time": 1587384000,
-    "type": "supply",
-    "date": "2020-04-20",
-    "title": "WTI cierra en negativo (-$37.63/bbl)",
-    "desc": "Colapso de demanda por COVID-19 sumado a falta de capacidad de almacenamiento en Cushing, OK."
-  },
-  {
-    "time": 1613390400,
-    "type": "supply",
-    "date": "2021-02-15",
-    "title": "Tormenta invernal Uri paraliza producción en Texas",
-    "desc": "Cortes de electricidad masivos dejan fuera de servicio gran parte de la producción de petróleo y gas de Texas por días."
-  },
-  {
-    "time": 1645704000,
-    "type": "conflict",
-    "date": "2022-02-24",
     "title": "Rusia invade Ucrania",
-    "desc": "Inicio de la guerra; Brent supera los $100/bbl por primera vez desde 2014 en los días siguientes."
+    "desc": "Comienza la guerra Rusia-Ucrania; el Brent supera los $100/bbl por primera vez desde 2014."
   },
   {
-    "time": 1646740800,
+    "time": 1646697600,
     "type": "sanction",
-    "date": "2022-03-08",
-    "title": "EE.UU. prohíbe importaciones de petróleo ruso",
-    "desc": "Biden anuncia el embargo unilateral de EE.UU. a crudo, gas y carbón ruso."
+    "title": "EE.UU. prohíbe el petróleo ruso",
+    "desc": "Washington prohíbe la importación de petróleo, gas y carbón de Rusia."
   },
   {
-    "time": 1670241600,
+    "time": 1654128000,
+    "type": "opec",
+    "title": "OPEC+ acelera el aumento de producción",
+    "desc": "El grupo adelanta el cronograma de incrementos de cuota para julio-agosto."
+  },
+  {
+    "time": 1664928000,
+    "type": "opec",
+    "title": "OPEC+ recorta 2 millones de b/d",
+    "desc": "Mayor recorte desde 2020; tensiona la relación entre Arabia Saudita y EE.UU."
+  },
+  {
+    "time": 1670198400,
     "type": "sanction",
-    "date": "2022-12-05",
-    "title": "Embargo de la UE a crudo ruso + tope de precio G7 ($60)",
-    "desc": "Entra en vigor el embargo marítimo de la UE y el price cap del G7/Australia sobre crudo ruso."
+    "title": "Embargo UE + price cap del G7 al crudo ruso",
+    "desc": "Entra en vigor el tope de precio de USD 60/bbl y el embargo marítimo europeo."
   },
   {
-    "time": 1680436800,
+    "time": 1680393600,
     "type": "opec",
-    "date": "2023-04-02",
-    "title": "Recorte voluntario sorpresa de OPEC+ (~1.16 Mb/d)",
-    "desc": "Arabia Saudita y otros miembros anuncian recortes voluntarios adicionales fuera de una reunión programada."
+    "title": "OPEC+ anuncia recorte voluntario sorpresa",
+    "desc": "Recorte adicional de ~1.16 millones de b/d liderado por Arabia Saudita y Rusia."
   },
   {
-    "time": 1685880000,
-    "type": "opec",
-    "date": "2023-06-04",
-    "title": "Arabia Saudita anuncia recorte voluntario extra de 1 Mb/d",
-    "desc": "Recorte unilateral saudí más allá del acuerdo OPEC+ vigente, buscando sostener precios."
-  },
-  {
-    "time": 1696680000,
+    "time": 1696636800,
     "type": "conflict",
-    "date": "2023-10-07",
-    "title": "Ataque de Hamás a Israel — comienza la guerra en Gaza",
-    "desc": "Escalada geopolítica en Medio Oriente con impacto en la prima de riesgo del petróleo."
+    "title": "Ataque de Hamás a Israel",
+    "desc": "Comienza la guerra en Gaza; suben las primas de riesgo geopolítico en Medio Oriente."
   },
   {
-    "time": 1705060800,
+    "time": 1700352000,
     "type": "conflict",
-    "date": "2024-01-12",
-    "title": "EE.UU./Reino Unido bombardean posiciones Houthi en Yemen",
-    "desc": "Respuesta a los ataques Houthi contra buques en el Mar Rojo, que venían desviando rutas de tanqueros."
+    "title": "Los hutíes atacan buques en el Mar Rojo",
+    "desc": "Comienzan los ataques a la navegación comercial cerca de Bab el-Mandeb."
   },
   {
-    "time": 1713009600,
+    "time": 1701302400,
+    "type": "opec",
+    "title": "OPEC+ profundiza recortes para 2024",
+    "desc": "Se extienden y amplían los recortes voluntarios hacia el primer trimestre de 2024."
+  },
+  {
+    "time": 1705017600,
     "type": "conflict",
-    "date": "2024-04-13",
-    "title": "Irán ataca a Israel con drones y misiles",
-    "desc": "Primer ataque directo de Irán contra territorio israelí, escalada significativa del riesgo geopolítico regional."
+    "title": "EE.UU. y Reino Unido atacan a los hutíes",
+    "desc": "Primeros ataques directos contra posiciones hutíes en Yemen por la crisis del Mar Rojo."
   },
   {
-    "time": 1417089600,
+    "time": 1712966400,
+    "type": "conflict",
+    "title": "Irán ataca a Israel directamente",
+    "desc": "Primer ataque directo de Irán con drones y misiles contra territorio israelí."
+  },
+  {
+    "time": 1717286400,
     "type": "opec",
-    "date": "2014-11-27",
-    "title": "OPEC decide NO recortar producción pese al desplome de precios",
-    "desc": "Marca el inicio de la guerra de precios 2014-2016 contra el shale estadounidense."
+    "title": "OPEC+ extiende recortes hasta 2025",
+    "desc": "El grupo prolonga la mayoría de los recortes voluntarios con un cronograma de salida gradual."
   },
   {
-    "time": 1480507200,
+    "time": 1727740800,
+    "type": "conflict",
+    "title": "Irán lanza ~180 misiles contra Israel",
+    "desc": "Fuerte escalada regional; mercado descuenta prima de riesgo por posible respuesta israelí a infraestructura petrolera."
+  },
+  {
+    "time": 1736467200,
+    "type": "sanction",
+    "title": "EE.UU. amplía sanciones a la 'flota fantasma' rusa",
+    "desc": "Nuevas sanciones a petroleras y buques usados para eludir el price cap al crudo ruso."
+  },
+  {
+    "time": 1740960000,
     "type": "opec",
-    "date": "2016-11-30",
-    "title": "OPEC acuerda su primer recorte de producción en 8 años",
-    "desc": "Acuerdo de Argel se concreta; primer recorte formal desde 2008."
+    "title": "OPEC+ confirma el desmantelamiento gradual de recortes",
+    "desc": "El grupo inicia la reversión progresiva de los recortes voluntarios desde abril."
   },
   {
-    "time": 1525780800,
-    "type": "sanction",
-    "date": "2018-05-08",
-    "title": "Trump retira a EE.UU. del acuerdo nuclear con Irán",
-    "desc": "Reimposición de sanciones petroleras a Irán, sacando ~1-2 Mb/d del mercado en los meses siguientes."
+    "time": 1748736000,
+    "type": "supply",
+    "title": "OPEC+ acelera el retorno de producción",
+    "desc": "Tercer mes consecutivo de incrementos por encima del cronograma original."
   },
   {
-    "time": 1548676800,
-    "type": "sanction",
-    "date": "2019-01-28",
-    "title": "EE.UU. sanciona a PDVSA (Venezuela)",
-    "desc": "Sanciones directas a la petrolera estatal venezolana, cortando virtualmente las exportaciones a EE.UU."
+    "time": 1772236800,
+    "type": "conflict",
+    "title": "EE.UU. e Israel atacan a Irán — comienza la guerra",
+    "desc": "Ataques aéreos conjuntos contra objetivos iraníes; arranca el conflicto que la AIE calificaría luego como el mayor shock de oferta de petróleo de la historia."
+  },
+  {
+    "time": 1772409600,
+    "type": "conflict",
+    "title": "Irán restringe el Estrecho de Ormuz",
+    "desc": "El tránsito por Ormuz cae a un goteo; el Brent salta 10-13% a ~USD 80-82/bbl."
+  },
+  {
+    "time": 1773187200,
+    "type": "supply",
+    "title": "La AIE libera 400 millones de barriles de emergencia",
+    "desc": "Los países miembro acuerdan por unanimidad la mayor liberación coordinada de reservas estratégicas de la historia."
+  },
+  {
+    "time": 1773273600,
+    "type": "supply",
+    "title": "La AIE reporta -8 mb/d de oferta global",
+    "desc": "Producción del Golfo recortada en al menos 8 millones de b/d por la disrupción en Ormuz."
+  },
+  {
+    "time": 1773705600,
+    "type": "conflict",
+    "title": "Brent supera los USD 100/bbl",
+    "desc": "Primera vez por encima de los tres dígitos desde 2022."
+  },
+  {
+    "time": 1774224000,
+    "type": "conflict",
+    "title": "Brent toca máximos cercanos a USD 120/bbl",
+    "desc": "Pico de la crisis: máximo en casi cuatro años en medio de la incertidumbre sobre Ormuz."
+  },
+  {
+    "time": 1780617600,
+    "type": "conflict",
+    "title": "EE.UU. e Irán anuncian acuerdo interino",
+    "desc": "Se detienen las hostilidades; los precios retroceden desde los máximos de la guerra a medida que se retoma el tránsito por Ormuz."
   }
 ]
