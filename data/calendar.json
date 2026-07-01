@@ -1,19 +1,41 @@
 [
-  {"type":"fomc","title":"FOMC — Decisión de tasas (Fed)","importance":"alta","dateET":"2026-07-29T14:00:00","source":"federalreserve.gov","url":"https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},
-  {"type":"fomc","title":"FOMC — Decisión de tasas (Fed)","importance":"alta","dateET":"2026-09-16T14:00:00","source":"federalreserve.gov","url":"https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},
-  {"type":"fomc","title":"FOMC — Decisión de tasas (Fed)","importance":"alta","dateET":"2026-10-28T14:00:00","source":"federalreserve.gov","url":"https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},
-  {"type":"fomc","title":"FOMC — Decisión de tasas (Fed)","importance":"alta","dateET":"2026-12-09T14:00:00","source":"federalreserve.gov","url":"https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},
-  {"type":"opec","title":"OPEC+ JMMC 67ª — Reunión del comité (estimada, bimestral)","importance":"alta","dateET":"2026-08-01T09:00:00","estimated":true,"source":"Cadencia bimestral: 64ª 1-feb, 65ª 5-abr, 66ª 7-jun (todas confirmadas en opec.org)","url":"https://www.opec.org/opec_web/en/press_room/28.htm"},
-  {"type":"opec","title":"OPEC+ JMMC 68ª — Reunión del comité (estimada, bimestral)","importance":"alta","dateET":"2026-10-03T09:00:00","estimated":true,"source":"Cadencia bimestral estimada","url":"https://www.opec.org/opec_web/en/press_room/28.htm"},
-  {"type":"opec","title":"OPEC+ ONOMM 42ª — Reunión ministerial plena (estimada, semestral)","importance":"alta","dateET":"2026-12-05T09:00:00","estimated":true,"source":"Cadencia semestral: 41ª confirmada 7-jun-2026","url":"https://www.opec.org/opec_web/en/press_room/28.htm"},
-  {"type":"futures","title":"Vto. futuros WTI CLQ26 (Ago) — NYMEX","importance":"alta","dateET":"2026-07-21T14:30:00","estimated":true,"source":"CME Group: 3er día hábil antes del 25 del mes anterior al delivery","url":"https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.calendar.html"},
-  {"type":"futures","title":"Vto. futuros WTI CLU26 (Sep) — NYMEX","importance":"alta","dateET":"2026-08-20T14:30:00","estimated":true,"source":"CME Group: regla estándar de vencimiento CL","url":"https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.calendar.html"},
-  {"type":"futures","title":"Vto. futuros WTI CLV26 (Oct) — NYMEX","importance":"alta","dateET":"2026-09-22T14:30:00","estimated":true,"source":"CME Group","url":"https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.calendar.html"},
-  {"type":"futures","title":"Vto. futuros WTI CLX26 (Nov) — NYMEX","importance":"alta","dateET":"2026-10-20T14:30:00","estimated":true,"source":"CME Group","url":"https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.calendar.html"},
-  {"type":"futures","title":"Vto. futuros WTI CLZ26 (Dic) — NYMEX","importance":"alta","dateET":"2026-11-20T14:30:00","estimated":true,"source":"CME Group","url":"https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.calendar.html"},
-  {"type":"futures","title":"Vto. opciones WTI CLQ26 (Ago) — NYMEX","importance":"media","dateET":"2026-07-16T14:30:00","estimated":true,"source":"CME Group: 3 días hábiles antes del vto. del futuro subyacente","url":"https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.calendar.html"},
-  {"type":"futures","title":"Vto. opciones WTI CLU26 (Sep) — NYMEX","importance":"media","dateET":"2026-08-17T14:30:00","estimated":true,"source":"CME Group","url":"https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.calendar.html"},
-  {"type":"futures","title":"Vto. futuros Brent BZQ26 (Ago) — ICE","importance":"alta","dateET":"2026-06-30T19:00:00","estimated":true,"source":"ICE: último día hábil del 2do mes antes del delivery","url":"https://www.ice.com/products/219/Brent-Crude-Futures/expiry"},
-  {"type":"futures","title":"Vto. futuros Brent BZU26 (Sep) — ICE","importance":"alta","dateET":"2026-07-31T19:00:00","estimated":true,"source":"ICE","url":"https://www.ice.com/products/219/Brent-Crude-Futures/expiry"},
-  {"type":"futures","title":"Vto. futuros Brent BZV26 (Oct) — ICE","importance":"alta","dateET":"2026-08-31T19:00:00","estimated":true,"source":"ICE","url":"https://www.ice.com/products/219/Brent-Crude-Futures/expiry"}
+  {
+    "title": "Informe de empleo EE.UU. (Nonfarm Payrolls) — junio 2026",
+    "importance": "alta",
+    "dateET": "2026-07-02T08:30:00",
+    "source": "U.S. Bureau of Labor Statistics",
+    "estimated": false,
+    "url": "https://www.bls.gov/schedule/news_release/empsit.htm"
+  },
+  {
+    "title": "CPI EE.UU. (inflación) — junio 2026",
+    "importance": "alta",
+    "dateET": "2026-07-14T08:30:00",
+    "source": "U.S. Bureau of Labor Statistics",
+    "estimated": false,
+    "url": "https://www.bls.gov/cpi/"
+  },
+  {
+    "title": "Reunión FOMC (Fed) — decisión de tasas + conferencia de prensa",
+    "importance": "alta",
+    "dateET": "2026-07-29T14:00:00",
+    "source": "Federal Reserve — Kevin Warsh preside",
+    "estimated": false,
+    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+  },
+  {
+    "title": "Reunión OPEC+ (grupo de los ocho) — próxima cita mensual",
+    "importance": "alta",
+    "dateET": "2026-08-02T09:00:00",
+    "source": "OPEC — fecha exacta aún no confirmada oficialmente",
+    "estimated": true
+  },
+  {
+    "title": "PCE — indicador de inflación preferido de la Fed (mayo 2026)",
+    "importance": "media",
+    "dateET": "2026-07-25T08:30:00",
+    "source": "U.S. Bureau of Economic Analysis",
+    "estimated": false,
+    "url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+  }
 ]
