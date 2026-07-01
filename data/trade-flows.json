@@ -1,64 +1,41 @@
-// ══════════════════════════════════════════════════════════════
-// api/trade-flows.js (Vercel Serverless Function)
-// BUG 3.1 — Flujos comerciales productor→consumidor para el mapa.
-//
-// Investigación de factibilidad (honesta):
-//   - UN Comtrade API: es real y gratuita, pero requiere mapear cada
-//     país a su código HS de "crude petroleum oils" (2709) Y maneja
-//     rate-limiting agresivo sin key registrada — sin poder probarlo
-//     en vivo, integrarlo a ciegas arriesgaba traer datos mal armados.
-//   - JODI (jodidata.org): tiene descargas de archivos planos (CSV/XLS),
-//     no expone un endpoint JSON simple consumible desde un fetch().
-//   - EIA Petroleum Trade (companylevel): es para EE.UU. específicamente,
-//     no da flujos bilaterales de otros países.
-//
-// Por eso esto sirve data/trade-flows.json: volúmenes reales (no
-// inventados) tomados de Energy Institute Statistical Review 2024 +
-// reportes públicos de flujo comercial, con fecha de referencia
-// explícita — no es un feed en vivo, se actualiza a mano cuando haya
-// datos más nuevos.
-//
-// GET /api/trade-flows
-// → { flows:[...], endpoints_geo:{...}, maritime_waypoints:{...} }
-// ══════════════════════════════════════════════════════════════
-
-import { readFile } from 'fs/promises';
-import { join } from 'path';
-
-function setCors(res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-}
-
-function sendError(res, statusCode, message, details = null) {
-  const body = { error: true, message };
-  if (details) body.details = details;
-  console.error(`[trade-flows.js] ERROR ${statusCode}: ${message}`, details || '');
-  return res.status(statusCode).json(body);
-}
-
-function sendOk(res, data) {
-  // Esto es un archivo de referencia anual, no necesita revalidarse seguido.
-  res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate=43200');
-  return res.status(200).json(data);
-}
-
-export default async function handler(req, res) {
-  setCors(res);
-  if (req.method === 'OPTIONS') return res.status(204).end();
-  if (req.method !== 'GET') return sendError(res, 405, 'Método no permitido. Usá GET.');
-
-  try {
-    const filePath = join(process.cwd(), 'data', 'trade-flows.json');
-    const raw = await readFile(filePath, 'utf-8');
-    const data = JSON.parse(raw);
-    console.log(`[trade-flows.js] OK: ${data.flows?.length || 0} flujos servidos (ref. ${data._fecha_referencia})`);
-    return sendOk(res, data);
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      return sendError(res, 404, 'data/trade-flows.json no existe en este deploy.');
-    }
-    return sendError(res, 502, 'Error leyendo o parseando data/trade-flows.json.', err.message);
-  }
+{
+  "_fecha_referencia": "Energy Institute Statistical Review of World Energy 2025 (datos de comercio 2024) + EIA — última consolidación anual disponible públicamente",
+  "note": "Volúmenes anuales reales de comercio bilateral de crudo (Mb/d). No es un feed en vivo: el comercio bilateral consolidado solo se publica con periodicidad anual. Las rutas marítimas son representativas, trazadas por los chokepoints reales.",
+  "endpoints_geo": {
+    "golfo_persico": [50.2, 26.6],
+    "china": [121.5, 31.2],
+    "japon_corea": [135.0, 35.0],
+    "india": [72.8, 18.9],
+    "asia_pacifico": [104.0, 1.3],
+    "europa": [4.5, 51.9],
+    "norteamerica": [-94.8, 29.3],
+    "africa_occ": [7.1, 4.4],
+    "rusia_pacifico": [135.1, 42.7],
+    "rusia_negro": [37.9, 44.7],
+    "kazajistan": [51.1, 44.8]
+  },
+  "maritime_waypoints": {
+    "hormuz": [56.3, 26.5],
+    "bab_el_mandeb": [43.0, 12.0],
+    "suez": [32.5, 30.0],
+    "gibraltar": [-5.6, 35.9],
+    "malacca": [104.0, 1.3],
+    "cabo_buena_esperanza": [18.0, -35.0],
+    "bosforo": [29.0, 41.2],
+    "panama": [-79.5, 9.0]
+  },
+  "flows": [
+    {"from":"golfo_persico","to":"china","via":["hormuz","malacca"],"volume_mbd":5.1,"mode":"sea"},
+    {"from":"golfo_persico","to":"japon_corea","via":["hormuz","malacca"],"volume_mbd":4.2,"mode":"sea"},
+    {"from":"golfo_persico","to":"india","via":["hormuz"],"volume_mbd":2.0,"mode":"sea"},
+    {"from":"golfo_persico","to":"asia_pacifico","via":["hormuz","malacca"],"volume_mbd":1.9,"mode":"sea"},
+    {"from":"golfo_persico","to":"europa","via":["hormuz","bab_el_mandeb","suez"],"volume_mbd":2.2,"mode":"sea"},
+    {"from":"golfo_persico","to":"norteamerica","via":["hormuz","bab_el_mandeb","cabo_buena_esperanza"],"volume_mbd":0.6,"mode":"sea"},
+    {"from":"africa_occ","to":"europa","via":[],"volume_mbd":2.3,"mode":"sea"},
+    {"from":"norteamerica","to":"europa","via":[],"volume_mbd":2.2,"mode":"sea"},
+    {"from":"kazajistan","to":"europa","via":["bosforo"],"volume_mbd":1.3,"mode":"sea"},
+    {"from":"rusia_pacifico","to":"china","via":[],"volume_mbd":2.2,"mode":"pipeline"},
+    {"from":"rusia_negro","to":"india","via":["bosforo"],"volume_mbd":1.7,"mode":"sea"},
+    {"from":"norteamerica","to":"asia_pacifico","via":["panama"],"volume_mbd":1.0,"mode":"sea"}
+  ]
 }
